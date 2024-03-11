@@ -12,6 +12,7 @@ class process : public QObject
 public:
     explicit process(QObject *parent = nullptr);
     void startProgram(QString path);
+    void stopProgram();
 
 signals:
     void programFinished();

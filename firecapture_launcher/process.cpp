@@ -24,5 +24,13 @@ void process::startProgram(QString path)
                      });
 
     programProcess.setWorkingDirectory(wd);
+    programProcess.setProcessChannelMode(QProcess::ForwardedErrorChannel);
+
     programProcess.start(path, arguments);
+}
+
+// Close FireCapture
+void process::stopProgram()
+{
+    programProcess.close();
 }
