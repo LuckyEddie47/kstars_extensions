@@ -1,3 +1,5 @@
+// Provides the interface to KStars for this plugin
+
 #ifndef KSTARSINTERFACE_H
 #define KSTARSINTERFACE_H
 

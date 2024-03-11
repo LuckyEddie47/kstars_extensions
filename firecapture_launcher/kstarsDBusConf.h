@@ -1,3 +1,5 @@
+// Provides some common DBus strings for KStars
+
 #ifndef KSTARSDBUSCONF_H
 #define KSTARSDBUSCONF_H
 

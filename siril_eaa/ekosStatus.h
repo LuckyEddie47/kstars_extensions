@@ -1,3 +1,6 @@
+// Provides status' for KStars DBus calls
+// enums copied from ekos.h in kstars 3.6.9
+
 #ifndef EKOSSTATUS_H
 #define EKOSSTATUS_H
 

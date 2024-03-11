@@ -1,3 +1,5 @@
+// Provides an exit call that can handled by the event loop
+
 #ifndef BOMBOUT_H
 #define BOMBOUT_H
 

@@ -1,3 +1,5 @@
+// Provides the interface to Siril for this plugin
+
 #ifndef PROCESS_H
 #define PROCESS_H
 
