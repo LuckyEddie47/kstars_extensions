@@ -1,0 +1,19 @@
+#ifndef BOMBOUT_H
+#define BOMBOUT_H
+
+#include "qcoreapplication.h"
+#include <QObject>
+
+class bombout : public QObject
+{
+    Q_OBJECT
+public:
+    explicit bombout(QObject *parent = nullptr) {
+        qDebug("Exiting plugin");
+        QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
+    };
+
+signals:
+};
+
+#endif // BOMBOUT_H
