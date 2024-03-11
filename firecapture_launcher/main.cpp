@@ -3,7 +3,6 @@
 #include <QFile>
 #include <QTextStream>
 #include <QtDBus>
-#include <thread>
 
 #include "log.h"
 #include "kstarsinterface.h"
@@ -23,19 +22,19 @@ int main(int argc, char *argv[])
 
     // Check that the config file exists, is accessible,
     // and contains a path that also exists
-    QString Sirilpath = "";
-    QFile Siril;
+    QString FCpath = "";
+    QFile FC;
     QString confFileName = QString("%1%2%3%4")
         .arg(app.applicationDirPath(), "/", app.applicationName(), ".conf");
     QFile confFile(confFileName);
     if (confFile.exists()) {
         if (confFile.open(QIODevice::ReadOnly)) {
             QTextStream in (&confFile);
-            Sirilpath = in.readLine();
-            Siril.setFileName(Sirilpath);
-            if (!Siril.exists()) {
+            FCpath = in.readLine();
+            FC.setFileName(FCpath);
+            if (!FC.exists()) {
                 m_log.out(QString("Conf file %1 contains path '%2' which does not exist")
-                              .arg(confFileName, Sirilpath));
+                              .arg(confFileName, FCpath));
                 okayToProceed = false;
                 bombout();
             }
@@ -117,22 +116,22 @@ int main(int argc, char *argv[])
 
     // Setup FireCapture, connect to status and when closed
     // reconnect the camera INDI driver
-//    if (okayToProceed) {
-//
-//        QObject::connect(&m_process, &process::programStarted, [&m_log] () {
-//            m_log.out("FireCapture started");
-//        });
-//
-//        QObject::connect(&m_process, &process::programFinished, [&m_kstarsinterface, &m_log, &app] () {
-//            m_log.out("FireCapture closed, reconnecting camera");
-//            m_kstarsinterface.reconnectCamera();
-//            m_log.out("All done");
-//            bombout();
-//        });
-//
-//        m_log.out("Starting FireCapture");
-//        m_process.startProgram(FCpath);
-//    }
+    if (okayToProceed) {
+
+        QObject::connect(&m_process, &process::programStarted, [&m_log] () {
+            m_log.out("FireCapture started");
+        });
+
+        QObject::connect(&m_process, &process::programFinished, [&m_kstarsinterface, &m_log, &app] () {
+            m_log.out("FireCapture closed, reconnecting camera");
+            m_kstarsinterface.reconnectCamera();
+            m_log.out("All done");
+            bombout();
+        });
+
+        m_log.out("Starting FireCapture");
+        m_process.startProgram(FCpath);
+    }
 
     return app.exec();
 }

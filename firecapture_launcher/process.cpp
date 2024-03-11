@@ -4,6 +4,7 @@ process::process(QObject *parent)
     : QObject{parent}
 {}
 
+// Launch FireCapture
 void process::startProgram(QString path)
 {
     bool result = false;

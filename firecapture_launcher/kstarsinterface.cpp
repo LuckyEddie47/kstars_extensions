@@ -2,22 +2,25 @@
 #include "kstarsDBusConf.h"
 
 #include <QtDBus>
-#include <QDebug>
+//#include <QDebug>
 
 kstarsinterface::kstarsinterface(QObject *parent)
 {
+    // Create a long term DBus Interface to monitor status signals
     QDBusInterface *monInterface = new QDBusInterface(serviceName, pathEkos, EkosInterface, QDBusConnection::sessionBus(), this);
     if (monInterface->isValid()) {
         connect(monInterface, SIGNAL(EAAStatusChanged(bool)), this, SLOT(receiverStatusChanged(bool)));
     }
 }
 
+// Ephemeral test for usable DBus
 bool kstarsinterface::checkDBus()
 {
     if (QDBusConnection::sessionBus().isConnected()) return true;
     else return false;
 }
 
+// Ephemeral test for running KStars
 bool kstarsinterface::checkKStarsService()
 {
     QDBusInterface interface(serviceName, "/", ksInterface, bus, this);
@@ -25,6 +28,7 @@ bool kstarsinterface::checkKStarsService()
     else return false;
 }
 
+// Ephemeral test for idle Ekos Scheduler
 SchedulerState kstarsinterface::checkSchedulerStatus()
 {
     SchedulerState m_state = SCHEDULER_UNKNOWN;
@@ -35,6 +39,7 @@ SchedulerState kstarsinterface::checkSchedulerStatus()
     return m_state;
 }
 
+// Ephemeral test for idle Ekos Capture Module
 CaptureState kstarsinterface::checkCaptureStatus()
 {
     CaptureState m_state = CAPTURE_UNKNOWN;
@@ -45,6 +50,7 @@ CaptureState kstarsinterface::checkCaptureStatus()
     return m_state;
 }
 
+// Get the current Ekos Capture Module camera name
 void kstarsinterface::getCamera()
 {
     QDBusInterface interface(serviceName, pathCapture);
@@ -53,6 +59,7 @@ void kstarsinterface::getCamera()
     }
 }
 
+// Disconnect the INDI driver for the camera named in the Ekos Capture Module
 bool kstarsinterface::disconnectCamera()
 {
     bool result = false;
@@ -83,11 +90,11 @@ bool kstarsinterface::disconnectCamera()
             result = true;
             break;
         }
-
     }
     return result;
 }
 
+// Reconnect the previously disconnected camera INDI driver
 void kstarsinterface::reconnectCamera() {
     if (cameraName != "") {
         QDBusInterface interfaceCam(serviceName, cameraInterface);
@@ -95,24 +102,28 @@ void kstarsinterface::reconnectCamera() {
     }
 }
 
+/* Not used in this plugin
+ *
+// Setup the Ekos Manager preview to take images from passed file rather than the Capture Module
 void kstarsinterface::setFITSfromFile(bool previewFromFile)
 {
     QDBusInterface interfaceEkos(serviceName, pathEkos, EkosInterface);
     QDBusMessage messageOpen = interfaceEkos.call("setFITSfromFile", previewFromFile);
-    QList<QVariant> args = messageOpen.arguments();
 }
 
+// Pass a filename to the Ekos Manager preview
 void kstarsinterface::openFITSfile(const QString &filePath)
 {
     QDBusInterface interfaceEkos(serviceName, pathEkos, EkosInterface);
     QDBusMessage messageOpen = interfaceEkos.call("previewFile", filePath);
-    QList<QVariant> args = messageOpen.arguments();
 }
 
+// Handle Ekos status changes
 void kstarsinterface::receiverStatusChanged(bool status)
 {
     if (status == false) {
         emit stopEAAsession();
     }
 }
+*/
 

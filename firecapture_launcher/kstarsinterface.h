@@ -21,6 +21,7 @@ public:
     bool disconnectCamera();
     void reconnectCamera();
 
+/* Not used in this plugin
     void setFITSfromFile(bool previewFromFile);
     void openFITSfile(const QString &filePath);
 
@@ -29,6 +30,7 @@ public slots:
 
 signals:
     void stopEAAsession();
+*/
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();
