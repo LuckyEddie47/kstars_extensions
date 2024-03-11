@@ -63,30 +63,34 @@ int main(int argc, char *argv[])
                                         okayToProceed = true;
                             }
                         }
-                        if (!okayToProceed) qDebug() << QString(".conf file %1 minimum KStars version does not match this plugin").arg(confFileName);
-                    }  else qDebug() << QString(".conf file %1 does not contain a valid minimum_kstars_version string").append(confFileName);
-                } else qDebug() << QString(".conf file %1 does not contain a valid minimum_kstars_version string").append(confFileName);
+                    }
+                }
             }
 
             // Check that the .conf file contains a valid path for FireCapture
             if (okayToProceed) {
                 confTS.seek(0);
+                okayToProceed = false;
                 while (!confTS.atEnd()) {
                     QString confLine = confTS.readLine();
                     if (confLine.contains("firecapture_path=")) {
-                        FCpath = confLine;
+                        FCpath = confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
                         FC.setFileName(FCpath);
-                        if (!FC.exists()) {
+                        if (FC.exists()) {
+                            okayToProceed = true;
+                        } else {
                             qDebug() << (QString("Conf file %1 contains path '%2' which does not exist")
-                                          .arg(confFileName, FCpath));
-                            okayToProceed = false;
+                                             .arg(confFileName, FCpath));
                             bombout();
                         }
-                    } else qDebug() << QString(".conf file does not contain a firecapture_path string");
+                    }
                 }
             } else qDebug() << QString(".conf file %1 does not contain a valid minimum_kstars_version string").append(confFileName);
         } else qDebug() << QString("Can't access .conf file %1").arg(confFileName);
     } else qDebug() << QString(".conf file %1 disappeared").arg(confFileName);
+    if (okayToProceed) qDebug() << QString("Configuration file is okay");
+    else bombout();
+
 
     // Check that the DBus service is running
     if (okayToProceed) {
@@ -151,6 +155,8 @@ int main(int argc, char *argv[])
            bombout();
        };
    }
+
+   QObject::connect(&m_kstarsinterface, &kstarsinterface::stopSession, &m_process, &process::stopProgram);
 
    // Setup FireCapture, connect to status and when closed
    // reconnect the camera INDI driver

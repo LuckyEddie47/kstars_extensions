@@ -117,13 +117,12 @@ void kstarsinterface::openFITSfile(const QString &filePath)
     QDBusInterface interfaceEkos(serviceName, pathEkos, EkosInterface);
     QDBusMessage messageOpen = interfaceEkos.call("previewFile", filePath);
 }
-
-// Handle Ekos status changes
-void kstarsinterface::receiverStatusChanged(bool status)
-{
-    if (status == false) {
-        emit stopEAAsession();
-    }
-}
 */
 
+// Handle Ekos status changes
+void kstarsinterface::receiverStatusChanged(pluginState status)
+{
+    if (status == PLUGIN_STOP_REQUESTED) {
+        emit stopSession();
+    }
+}

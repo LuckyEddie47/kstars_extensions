@@ -24,13 +24,13 @@ public:
 /* Not used in this plugin
     void setFITSfromFile(bool previewFromFile);
     void openFITSfile(const QString &filePath);
+*/
 
 public slots:
-    void receiverStatusChanged(bool status);
+    void receiverStatusChanged(pluginState status);
 
 signals:
-    void stopEAAsession();
-*/
+    void stopSession();
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();

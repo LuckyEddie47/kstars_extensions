@@ -112,4 +112,12 @@ typedef enum
     SCHEDULER_UNKNOWN
 } SchedulerState;
 
+typedef enum
+{
+    PLUGIN_START_REQUESTED,
+    PLUGIN_STARTED,
+    PLUGIN_STOP_REQUESTED,
+    PLUGIN_STOPPED,
+} pluginState;
+
 #endif // EKOSSTATUS_H
