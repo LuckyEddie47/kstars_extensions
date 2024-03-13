@@ -30,6 +30,9 @@ void process::startProgram(QString path)
                      });
 
     programProcess.setWorkingDirectory(wd);
+
+    programProcess.setProcessChannelMode(QProcess::ForwardedChannels);
+
     programProcess.start(path, arguments);
 }
 
@@ -74,9 +77,6 @@ void process::programRunning()
     if (okayToProceed) {
         notifier = new QSocketNotifier(fd, QSocketNotifier::Read, this);
         connect(notifier, &QSocketNotifier::activated, this, &process::readMessage);
-//        buffer = new char[1024];
-
-        qDebug() << "Got here";
     }
 }
 
@@ -100,4 +100,16 @@ void process::readMessage()
     }
 
     emit sirilMessage (QString(messageBA));
+}
+
+// Send command to Siril
+void process::sendSirilCommand(QString command)
+{
+    QFile commandPipe(sirilCommands);
+    if (commandPipe.open(QIODevice::WriteOnly)) {
+        commandPipe.setTextModeEnabled(true);
+        QTextStream commandTS(&commandPipe);
+        commandTS << command << Qt::endl;
+        commandPipe.close();
+    }
 }

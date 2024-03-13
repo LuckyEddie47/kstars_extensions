@@ -18,6 +18,7 @@ public slots:
     void startProgram(QString path);
     void stopProgram();
     void programRunning();
+    void sendSirilCommand(QString command);
 //    QString livestackImage(QString filename);
 
 signals:
@@ -38,8 +39,6 @@ private:
     int fd;
     int flags;
     QFile* messagePipe;
-    QFile* comandPipe;
-//    char* buffer;
 };
 
 #endif // PROCESS_H

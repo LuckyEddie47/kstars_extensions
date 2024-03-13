@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QtDBus>
+#include <QTimer>
 
 #include "log.h"
 #include "kstarsinterface.h"
@@ -170,5 +171,10 @@ int main(int argc, char *argv[])
         m_log.out("Starting Siril");
         m_process.startProgram(Sirilpath);
     }
+
+    QTimer::singleShot(2000, &app, [&m_process] () {
+        m_process.sendSirilCommand("ping");
+    });
+
     return app.exec();
 }
