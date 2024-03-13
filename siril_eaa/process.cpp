@@ -2,6 +2,7 @@
 
 #include "fcntl.h"
 #include <QDebug>
+#include <QTimer>
 
 process::process(QObject *parent)
     : QObject{parent}
@@ -10,8 +11,6 @@ process::process(QObject *parent)
 // Launch Siril
 void process::startProgram(QString path)
 {
-    bool okayToProceed = false;
-
     QString wd = path.left(path.lastIndexOf("/"));
     QStringList arguments;
     arguments << "-p";
@@ -19,15 +18,25 @@ void process::startProgram(QString path)
     connect(&programProcess, &QProcess::started, this, [=] (){
         emit programStarted();
     });
+    connect(&programProcess, &QProcess::stateChanged, this, [this] (QProcess::ProcessState state){
+        if (state == QProcess::Running) {
+            QTimer::singleShot(1000, this, &process::programRunning);
 
+        }
+    });
     connect(&programProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
-                     [=](int exitCode, QProcess::ExitStatus exitStatus)
-                     {
+                     [=](int exitCode, QProcess::ExitStatus exitStatus) {
                          emit programFinished();
                      });
 
     programProcess.setWorkingDirectory(wd);
     programProcess.start(path, arguments);
+}
+
+// Setup Siril pipes
+void process::programRunning()
+{
+    bool okayToProceed = false;
 
     messagePipe = new QFile(sirilMessages);
     if (messagePipe->exists()) {
@@ -65,9 +74,12 @@ void process::startProgram(QString path)
     if (okayToProceed) {
         notifier = new QSocketNotifier(fd, QSocketNotifier::Read, this);
         connect(notifier, &QSocketNotifier::activated, this, &process::readMessage);
-        buffer = new char[1024];
+//        buffer = new char[1024];
+
+        qDebug() << "Got here";
     }
 }
+
 
 // Close Siril
 void process::stopProgram()
@@ -78,6 +90,7 @@ void process::stopProgram()
 // Read message from Siril
 void process::readMessage()
 {
+    char buffer[1024];
     QByteArray messageBA;
     while (messagePipe->read(buffer, sizeof(buffer)) > 0) {
         messageBA.append(buffer);

@@ -155,8 +155,6 @@ int main(int argc, char *argv[])
     }
 
     QObject::connect(&m_kstarsinterface, &kstarsinterface::stopSession, &m_process, &process::stopProgram);
-    QObject::connect(&m_process, &process::sirilMessage, &m_log, &logger::out);
-
 
     // Setup Siril
     if (okayToProceed) {
@@ -168,6 +166,7 @@ int main(int argc, char *argv[])
             m_log.out("All done");
             bombout();
         });
+        QObject::connect(&m_process, &process::sirilMessage, &m_log, &logger::out);
         m_log.out("Starting Siril");
         m_process.startProgram(Sirilpath);
     }

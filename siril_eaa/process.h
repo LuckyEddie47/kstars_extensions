@@ -17,6 +17,7 @@ public:
 public slots:
     void startProgram(QString path);
     void stopProgram();
+    void programRunning();
 //    QString livestackImage(QString filename);
 
 signals:
@@ -26,11 +27,11 @@ signals:
     void processError(QString error);
 
 private:
-    QProcess programProcess;
     bool startLivestacking();
     bool stopLivestacking();
     void readMessage();
 
+    QProcess programProcess;
     QString sirilMessages = "/tmp/siril_command.out";
     QString sirilCommands = "/tmp/siril_command.in";
     QSocketNotifier* notifier;
@@ -38,7 +39,7 @@ private:
     int flags;
     QFile* messagePipe;
     QFile* comandPipe;
-    char* buffer;
+//    char* buffer;
 };
 
 #endif // PROCESS_H
