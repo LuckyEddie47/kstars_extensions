@@ -18,22 +18,19 @@ public:
     bool disconnectInterface();
     CaptureState checkCaptureStatus();
     SchedulerState checkSchedulerStatus();
-    bool disconnectCamera();
-    void reconnectCamera();
 
     void setFITSfromFile(bool previewFromFile);
     void openFITSfile(const QString &filePath);
 
 public slots:
-    void receiverStatusChanged(bool status);
+    void receiverStatusChanged(pluginState status);
 
 signals:
-    void stopEAAsession();
+    void stopSession();
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();
     QDBusInterface *monInterface;
-    void getCamera();
 
     QString cameraName = "";
     QString cameraInterface = "";

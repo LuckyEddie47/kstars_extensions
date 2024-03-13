@@ -2,14 +2,13 @@
 #include "kstarsDBusConf.h"
 
 #include <QtDBus>
-//#include <QDebug>
 
 kstarsinterface::kstarsinterface(QObject *parent)
 {
     // Create a long term DBus Interface to monitor status signals
     QDBusInterface *monInterface = new QDBusInterface(serviceName, pathEkos, EkosInterface, QDBusConnection::sessionBus(), this);
     if (monInterface->isValid()) {
-        connect(monInterface, SIGNAL(EAAStatusChanged(bool)), this, SLOT(receiverStatusChanged(bool)));
+        connect(monInterface, SIGNAL(pluginStatusChanged(int)), this, SLOT(receiverStatusChanged(int)));
     }
 }
 
@@ -101,23 +100,6 @@ void kstarsinterface::reconnectCamera() {
         QDBusMessage messageResconnect = interfaceCam.call("Connect");
     }
 }
-
-/* Not used in this plugin
- *
-// Setup the Ekos Manager preview to take images from passed file rather than the Capture Module
-void kstarsinterface::setFITSfromFile(bool previewFromFile)
-{
-    QDBusInterface interfaceEkos(serviceName, pathEkos, EkosInterface);
-    QDBusMessage messageOpen = interfaceEkos.call("setFITSfromFile", previewFromFile);
-}
-
-// Pass a filename to the Ekos Manager preview
-void kstarsinterface::openFITSfile(const QString &filePath)
-{
-    QDBusInterface interfaceEkos(serviceName, pathEkos, EkosInterface);
-    QDBusMessage messageOpen = interfaceEkos.call("previewFile", filePath);
-}
-*/
 
 // Handle Ekos status changes
 void kstarsinterface::receiverStatusChanged(pluginState status)

@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core DBus)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core DBus Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network)
 
 add_executable(Siril_EAA
   main.cpp
@@ -23,7 +23,7 @@ add_executable(Siril_EAA
   bombout.h
 
 )
-target_link_libraries(Siril_EAA Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus)
+target_link_libraries(Siril_EAA Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus Qt${QT_VERSION_MAJOR}::Network)
 
 include(GNUInstallDirs)
 install(TARGETS Siril_EAA

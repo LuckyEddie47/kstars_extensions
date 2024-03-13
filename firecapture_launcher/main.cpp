@@ -28,7 +28,6 @@ int main(int argc, char *argv[])
     // Check that the config file contains a line starting
     // minimum_kstars_version=xx.yy.zz
     // and that the xx.yy.zz matches the MIN_KSTARS_VERSION
-
     QString FCpath = "";
     QFile FC;
     QString confFileName = QString("%1%2%3%4")
