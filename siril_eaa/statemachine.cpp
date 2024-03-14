@@ -22,6 +22,7 @@ void statemachine::createMachine()
     // Define states
     QState *checkingConf = new QState();
     QState *doesConfExist = new QState(checkingConf);
+    QState *isConfAccessible = new QState(checkingConf);
     QState *isVersionValid = new QState(checkingConf);
     QState *isPathValid = new QState(checkingConf);
     QFinalState *confIsValid = new QFinalState(checkingConf);
@@ -75,8 +76,16 @@ void statemachine::createMachine()
     machine->setInitialState(checkingConf);
 
     // Define state transistions
-    doesConfExist->addTransition(m_confChecker, SIGNAL(confExists), isVersionValid);
+    connect(doesConfExist, &QAbstractState::entered, m_confChecker, &confChecker::confExisting);
+    doesConfExist->addTransition(m_confChecker, SIGNAL(confExists), isConfAccessible);
+    connect(isConfAccessible, &QAbstractState::entered, m_confChecker, &confChecker::confAccessing);
+    isConfAccessible->addTransition(m_confChecker, SIGNAL(confAccessible), isVersionValid)    ;
+    connect(isVersionValid, &QAbstractState::entered, m_confChecker, &confChecker::versionValidating);
     isVersionValid->addTransition(m_confChecker, SIGNAL(versionValid), isPathValid);
+    connect(isPathValid, &QAbstractState::entered, m_confChecker, &confChecker::pathValidating);
     isPathValid->addTransition(m_confChecker, SIGNAL(pathValid), confIsValid);
     checkingConf->addTransition(checkingConf, SIGNAL(finished), checkingEkos);
+
+    // State function overrides
+
 }

@@ -16,9 +16,9 @@ public:
     explicit statemachine(QString appFilePath, QObject *parent = nullptr);
 
 private slots:
-    void checkConf();
-    void checkVersion();
-    void checkPath();
+//    void checkConf();
+//    void checkVersion();
+//    void checkPath();
 
 signals:
     void confExists();
