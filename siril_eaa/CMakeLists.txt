@@ -24,6 +24,7 @@ add_executable(Siril_EAA
   statemachine.h statemachine.cpp
   confchecker.h confchecker.cpp
   kstarsVersion.h
+  sirilinterface.h sirilinterface.cpp
 
 )
 target_link_libraries(Siril_EAA Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus

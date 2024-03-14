@@ -13,8 +13,21 @@ class kstarsinterface : public QObject
     Q_OBJECT
 public:
     explicit kstarsinterface(QObject *parent = nullptr);
-    bool checkDBus();
-    bool checkKStarsService();
+
+    void confExisting();
+    void confAccessing();
+    void versionValidating();
+    void pathValidating();
+
+    void dbusAccessing();
+    void kstarsAccessing();
+    void schedulerChecking();
+    void captureChecking();
+    void captureJobChecking();
+
+    void captureJobSettingUp();
+    void captureJobRunning();
+
     bool disconnectInterface();
     CaptureState checkCaptureStatus();
     SchedulerState checkSchedulerStatus();
@@ -26,6 +39,7 @@ public slots:
     void receiverStatusChanged(pluginState status);
 
 signals:
+
     void stopSession();
 
 private:

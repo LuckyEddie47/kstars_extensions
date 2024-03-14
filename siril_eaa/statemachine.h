@@ -16,15 +16,8 @@ public:
     explicit statemachine(QString appFilePath, QObject *parent = nullptr);
 
 private slots:
-//    void checkConf();
-//    void checkVersion();
-//    void checkPath();
 
 signals:
-    void confExists();
-    void versionValid();
-    void pathValid();
-//    void confValid();
 
 private:
     QStateMachine* machine;

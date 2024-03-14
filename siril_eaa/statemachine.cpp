@@ -29,13 +29,13 @@ void statemachine::createMachine()
     checkingConf->setInitialState(doesConfExist);
 
     QState *checkingEkos = new QState();
-    QState *dbusAccessible = new QState(checkingEkos);
-    QState *kstarsAccessible = new QState(checkingEkos);
-    QState *schedulerIdle = new QState(checkingEkos);
-    QState *captureIdle = new QState(checkingEkos);
-    QState *captureJobValid = new QState(checkingEkos);
-    QFinalState *ekosValid = new QFinalState(checkingEkos);
-    checkingEkos->setInitialState(dbusAccessible);
+    QState *checkingDbus = new QState(checkingEkos);
+    QState *checkingKstars = new QState(checkingEkos);
+    QState *checkingScheduler = new QState(checkingEkos);
+    QState *checkingCapture = new QState(checkingEkos);
+    QState *checkingCaptureJob = new QState(checkingEkos);
+    QFinalState *ekosIsValid = new QFinalState(checkingEkos);
+    checkingEkos->setInitialState(checkingDbus);
 
     QState *settingUpSiril = new QState();
     QState *launchingSiril = new QState(settingUpSiril);
@@ -86,6 +86,5 @@ void statemachine::createMachine()
     isPathValid->addTransition(m_confChecker, SIGNAL(pathValid), confIsValid);
     checkingConf->addTransition(checkingConf, SIGNAL(finished), checkingEkos);
 
-    // State function overrides
 
 }
