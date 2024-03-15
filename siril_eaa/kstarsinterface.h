@@ -14,11 +14,6 @@ class kstarsinterface : public QObject
 public:
     explicit kstarsinterface(QObject *parent = nullptr);
 
-    void confExisting();
-    void confAccessing();
-    void versionValidating();
-    void pathValidating();
-
     void dbusAccessing();
     void kstarsAccessing();
     void schedulerChecking();
@@ -39,7 +34,11 @@ public slots:
     void receiverStatusChanged(pluginState status);
 
 signals:
-
+    void dbusAccessible();
+    void kstarsAccessible();
+    void schedulerIdle();
+    void captureIdle();
+    void errorMessage(QString errorDetail);
     void stopSession();
 
 private:
