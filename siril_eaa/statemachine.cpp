@@ -40,6 +40,7 @@ void statemachine::createMachine()
     QState *settingUpSiril = new QState();
     QState *launchingSiril = new QState(settingUpSiril);
     QState *checkingSiril = new QState(settingUpSiril);
+    QState *connectingSiril = new QState(settingUpSiril);
     QState *settingWDSiril = new QState(settingUpSiril);
     QState *settingLSSiril = new QState(settingUpSiril);
     QFinalState *sirilSetup = new QFinalState(settingUpSiril);
@@ -102,8 +103,19 @@ void statemachine::createMachine()
     connect(m_kstarsinterface, &kstarsinterface::captureJobCount, this, &statemachine::setLoopMode); // Note odd one out passing jobCount
 
     // Siril setup
-    connect(launchingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::startProgram);
+    connect(launchingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::startSiril);
+    launchingSiril->addTransition(m_sirilinterface, SIGNAL(sirilStarted()), connectingSiril);
+    connect(connectingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::connectSiril);
+    connectingSiril->addTransition(m_sirilinterface, SIGNAL(sirilConnected()), checkingSiril);
+    connect(checkingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::checkSiril);
+    checkingSiril->addTransition(m_sirilinterface, SIGNAL(sirilReady()), settingWDSiril);
 
+    // need sirilinterface::setwd from kstars
+
+    connect(settingWDSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::setSirilWD);
+    settingWDSiril->addTransition(m_sirilinterface, SIGNAL(sirilCdSuccess()), settingLSSiril);
+    connect(settingLSSiril, & QAbstractState::entered, m_sirilinterface, &sirilinterface::setSirilLS);
+    settingLSSiril->addTransition(m_sirilinterface, SIGNAL(sirilLsStarted()), runningLS);
 
     // Connect error signals
     connect(m_confChecker, &confChecker::errorMessage, this, &statemachine::handleError);

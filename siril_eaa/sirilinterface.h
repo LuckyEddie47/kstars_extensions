@@ -14,17 +14,26 @@ public:
 
 public slots:
     void setSirilPath(QString path);
-    void startProgram();
+    void startSiril();
+    void connectSiril();
+    void checkSiril();
+    void setWD(QString workingDir);
+    void setSirilWD();
+    void setSirilLS();
     void stopProgram();
-    void programRunning();
+//    void programRunning();
     void sendSirilCommand(QString command);
     //    QString livestackImage(QString filename);
 
 signals:
-    void programFinished();
-    void programStarted();
+    void sirilFinished();
+    void sirilStarted();
+    void sirilConnected();
+    void sirilReady();
+    void sirilCdSuccess();
+    void sirilLsStarted();
     void sirilMessage(QString message);
-    void processError(QString error);
+//    void processError(QString error);
 
     void errorMessage(QString errorDetail);
 
@@ -39,7 +48,8 @@ private:
     QSocketNotifier* notifier;
     int fd;
     int flags;
-    QString sirilPath;
+    QString sirilPath = "";
+    QString workingDir = "";
     QFile* messagePipe;
 };
 

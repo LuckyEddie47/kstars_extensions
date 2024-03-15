@@ -14,8 +14,14 @@ void sirilinterface::setSirilPath(QString path)
     sirilPath = path;
 }
 
+// Set the working directory for Siril
+void sirilinterface::setWD(QString path)
+{
+    workingDir = path;
+}
+
 // Launch Siril
-void sirilinterface::startProgram()
+void sirilinterface::startSiril()
 {
     if (sirilPath != "") {
         QString wd = sirilPath.left(sirilPath.lastIndexOf("/"));
@@ -23,17 +29,11 @@ void sirilinterface::startProgram()
         arguments << "-p";
 
         connect(&programProcess, &QProcess::started, this, [=] (){
-            emit programStarted();
-        });
-        connect(&programProcess, &QProcess::stateChanged, this, [this] (QProcess::ProcessState state){
-            if (state == QProcess::Running) {
-                QTimer::singleShot(1000, this, &sirilinterface::programRunning);
-
-            }
+            emit sirilStarted();
         });
         connect(&programProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
                 [=](int exitCode, QProcess::ExitStatus exitStatus) {
-                    emit programFinished();
+                    emit sirilFinished();
                 });
 
         programProcess.setWorkingDirectory(wd);
@@ -45,8 +45,8 @@ void sirilinterface::startProgram()
     }
 }
 
-// Setup Siril pipes
-void sirilinterface::programRunning()
+// Setup Siril read pipe
+void sirilinterface::connectSiril()
 {
     bool okayToProceed = false;
 
@@ -54,13 +54,13 @@ void sirilinterface::programRunning()
     if (messagePipe->exists()) {
         okayToProceed = true;
     } else {
-        emit processError(QString("Input file: %1 does not exist").arg(sirilMessages));
+        emit errorMessage(QString("Input file: %1 does not exist").arg(sirilMessages));
         okayToProceed = false;
     }
 
     if (okayToProceed) {
         if (!messagePipe->open(QFile::ReadOnly | QFile::Unbuffered)) {
-            emit processError(QString("Can not open message pipe %1").arg(sirilMessages));
+            emit errorMessage(QString("Can not open message pipe %1").arg(sirilMessages));
             okayToProceed = false;
         }
     }
@@ -70,7 +70,7 @@ void sirilinterface::programRunning()
 
         flags = fcntl(fd, F_GETFL, 0);
         if (flags == -1) {
-            emit processError("Can not access message pipe flags");
+            emit errorMessage("Can not access message pipe flags");
             okayToProceed = false;
         }
     }
@@ -78,7 +78,7 @@ void sirilinterface::programRunning()
     if (okayToProceed) {
         flags = fcntl(fd, F_SETFL, flags | O_NONBLOCK);
         if (flags == -1) {
-            emit processError("Can not set message pipe flags");
+            emit errorMessage("Can not set message pipe flags");
             okayToProceed = false;
         }
     }
@@ -86,9 +86,33 @@ void sirilinterface::programRunning()
     if (okayToProceed) {
         notifier = new QSocketNotifier(fd, QSocketNotifier::Read, this);
         connect(notifier, &QSocketNotifier::activated, this, &sirilinterface::readMessage);
+        emit sirilConnected();
     }
 }
 
+// Check Siril is ready and responding
+void sirilinterface::checkSiril()
+{
+    QTimer::singleShot(1000, this, [this] {
+        sendSirilCommand("ping");
+    });
+}
+
+// Set Sirils working directory
+void sirilinterface::setSirilWD()
+{
+    if (workingDir != "") {
+        sendSirilCommand(QString("cd ").append(workingDir));
+    } else {
+        emit errorMessage("Working directory has not been set");
+    }
+}
+
+// Set Siril in LiveStacking mode
+void sirilinterface::setSirilLS()
+{
+    sendSirilCommand("start_ls");
+}
 
 // Close Siril
 void sirilinterface::stopProgram()
@@ -106,6 +130,14 @@ void sirilinterface::readMessage()
     }
     if (messageBA.contains("\n")) {
         messageBA.truncate(messageBA.lastIndexOf("\n"));
+    }
+
+    if (QString(messageBA) == "ready") {
+        emit sirilReady();
+    } else if (QString(messageBA).contains("status: success cd")) {
+        emit sirilCdSuccess();
+    } else if (QString(messageBA).contains("status: success start_ls")) {
+        emit sirilLsStarted();
     }
 
     emit sirilMessage (QString(messageBA));
