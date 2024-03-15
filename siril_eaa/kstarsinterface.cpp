@@ -102,3 +102,9 @@ void kstarsinterface::receiverStatusChanged(pluginState status)
         emit stopSession();
     }
 }
+
+void kstarsinterface::captureStopAndReset()
+{
+    //stop capture command
+    setFITSfromFile(false);
+}

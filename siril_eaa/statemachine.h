@@ -3,7 +3,7 @@
 
 #include "log.h"
 #include "kstarsinterface.h"
-#include "process.h"
+#include "sirilinterface.h"
 #include "confchecker.h"
 
 #include <QObject>
@@ -18,15 +18,17 @@ public:
 private slots:
 
 signals:
+    void haltMachine();
 
 private:
     QStateMachine* machine;
     confChecker* m_confChecker;
     logger* m_logger;
     kstarsinterface* m_kstarsinterface;
-    process* m_process;
+    sirilinterface* m_sirilinterface;
 
     void createMachine();
+    void handleError(QString errorMessage);
 };
 
 #endif // STATEMACHINE_H

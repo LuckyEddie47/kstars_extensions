@@ -12,7 +12,7 @@ statemachine::statemachine(QString appFilePath, QObject *parent)
     m_confChecker = new confChecker(appFilePath, this);
     m_logger = new logger(this);
     m_kstarsinterface = new kstarsinterface(this);
-    m_process = new process(this);
+    m_sirilinterface = new sirilinterface(this);
 
     createMachine();
 }
@@ -86,5 +86,25 @@ void statemachine::createMachine()
     isPathValid->addTransition(m_confChecker, SIGNAL(pathValid), confIsValid);
     checkingConf->addTransition(checkingConf, SIGNAL(finished), checkingEkos);
 
+    connect(checkingDbus, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::dbusAccessing);
+    checkingDbus->addTransition(m_kstarsinterface, SIGNAL(dbusAccessible), checkingKstars);
+    connect(checkingKstars, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::kstarsAccessing);
+    checkingKstars->addTransition(m_kstarsinterface, SIGNAL(kstarsAccessible), checkingScheduler);
+    connect(checkingScheduler, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::schedulerChecking);
+    checkingScheduler->addTransition(m_kstarsinterface, SIGNAL(schedulerIdle), checkingCapture);
+    connect(checkingCapture, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureChecking);
+    checkingCapture->addTransition(m_kstarsinterface, SIGNAL(captureIdle), checkingCaptureJob);
 
+
+    connect(m_confChecker, &confChecker::errorMessage, this, &statemachine::handleError);
+    connect(m_kstarsinterface, &kstarsinterface::errorMessage, this, &statemachine::handleError);
+    connect(m_sirilinterface, &sirilinterface::errorMessage, this, &statemachine::handleError);
+}
+
+void statemachine::handleError(QString errorMessage)
+{
+    m_logger->out(errorMessage);
+    m_logger->out("Closing extension");
+    m_kstarsinterface->captureStopAndReset();
+    m_sirilinterface->sendSirilCommand("exit");
 }

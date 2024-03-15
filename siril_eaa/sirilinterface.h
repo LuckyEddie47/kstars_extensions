@@ -25,6 +25,8 @@ signals:
     void sirilMessage(QString message);
     void processError(QString error);
 
+    void errorMessage(QString errorDetail);
+
 private:
     bool startLivestacking();
     bool stopLivestacking();

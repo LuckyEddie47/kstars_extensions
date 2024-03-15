@@ -22,6 +22,7 @@ public:
 
     void captureJobSettingUp();
     void captureJobRunning();
+    void captureStopAndReset();
 
     bool disconnectInterface();
     CaptureState checkCaptureStatus();

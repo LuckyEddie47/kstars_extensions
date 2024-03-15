@@ -19,7 +19,7 @@ add_executable(Siril_EAA
   kstarsinterface.h kstarsinterface.cpp
   kstarsDBusConf.h
   ekosStatus.h
-  process.h process.cpp
+
   bombout.h
   statemachine.h statemachine.cpp
   confchecker.h confchecker.cpp
