@@ -27,8 +27,12 @@ private:
     kstarsinterface* m_kstarsinterface;
     sirilinterface* m_sirilinterface;
 
+    QString sirilPath = "";
+    bool captureLoopMode = false;
+
     void createMachine();
     void handleError(QString errorMessage);
+    void setLoopMode(int jobCount);
 };
 
 #endif // STATEMACHINE_H

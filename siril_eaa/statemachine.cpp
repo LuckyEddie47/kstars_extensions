@@ -76,29 +76,41 @@ void statemachine::createMachine()
     machine->setInitialState(checkingConf);
 
     // Define state transistions
+    // Configuration file
     connect(doesConfExist, &QAbstractState::entered, m_confChecker, &confChecker::confExisting);
-    doesConfExist->addTransition(m_confChecker, SIGNAL(confExists), isConfAccessible);
+    doesConfExist->addTransition(m_confChecker, SIGNAL(confExists()), isConfAccessible);
     connect(isConfAccessible, &QAbstractState::entered, m_confChecker, &confChecker::confAccessing);
-    isConfAccessible->addTransition(m_confChecker, SIGNAL(confAccessible), isVersionValid)    ;
+    isConfAccessible->addTransition(m_confChecker, SIGNAL(confAccessible()), isVersionValid)    ;
     connect(isVersionValid, &QAbstractState::entered, m_confChecker, &confChecker::versionValidating);
-    isVersionValid->addTransition(m_confChecker, SIGNAL(versionValid), isPathValid);
+    isVersionValid->addTransition(m_confChecker, SIGNAL(versionValid()), isPathValid);
     connect(isPathValid, &QAbstractState::entered, m_confChecker, &confChecker::pathValidating);
-    isPathValid->addTransition(m_confChecker, SIGNAL(pathValid), confIsValid);
-    checkingConf->addTransition(checkingConf, SIGNAL(finished), checkingEkos);
+    isPathValid->addTransition(m_confChecker, SIGNAL(pathValid()), confIsValid);
+    connect(m_confChecker, &confChecker::sirilPathIs, m_sirilinterface, &sirilinterface::setSirilPath); // Note odd one out passing path
+    checkingConf->addTransition(checkingConf, SIGNAL(finished()), checkingEkos);
 
+    // KStars status
     connect(checkingDbus, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::dbusAccessing);
-    checkingDbus->addTransition(m_kstarsinterface, SIGNAL(dbusAccessible), checkingKstars);
+    checkingDbus->addTransition(m_kstarsinterface, SIGNAL(dbusAccessible()), checkingKstars);
     connect(checkingKstars, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::kstarsAccessing);
-    checkingKstars->addTransition(m_kstarsinterface, SIGNAL(kstarsAccessible), checkingScheduler);
+    checkingKstars->addTransition(m_kstarsinterface, SIGNAL(kstarsAccessible()), checkingScheduler);
     connect(checkingScheduler, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::schedulerChecking);
-    checkingScheduler->addTransition(m_kstarsinterface, SIGNAL(schedulerIdle), checkingCapture);
+    checkingScheduler->addTransition(m_kstarsinterface, SIGNAL(schedulerIdle()), checkingCapture);
     connect(checkingCapture, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureChecking);
-    checkingCapture->addTransition(m_kstarsinterface, SIGNAL(captureIdle), checkingCaptureJob);
+    checkingCapture->addTransition(m_kstarsinterface, SIGNAL(captureIdle()), checkingCaptureJob);
+    connect(checkingCaptureJob, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureGettingJobCount);
+    checkingCaptureJob->addTransition(m_kstarsinterface, SIGNAL(readCaptureJobCount()), settingUpSiril);
+    connect(m_kstarsinterface, &kstarsinterface::captureJobCount, this, &statemachine::setLoopMode); // Note odd one out passing jobCount
+
+    // Siril setup
+    connect(launchingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::startProgram);
 
 
+    // Connect error signals
     connect(m_confChecker, &confChecker::errorMessage, this, &statemachine::handleError);
     connect(m_kstarsinterface, &kstarsinterface::errorMessage, this, &statemachine::handleError);
     connect(m_sirilinterface, &sirilinterface::errorMessage, this, &statemachine::handleError);
+
+    machine->start();
 }
 
 void statemachine::handleError(QString errorMessage)
@@ -107,4 +119,13 @@ void statemachine::handleError(QString errorMessage)
     m_logger->out("Closing extension");
     m_kstarsinterface->captureStopAndReset();
     m_sirilinterface->sendSirilCommand("exit");
+}
+
+void statemachine::setLoopMode(int jobCount)
+{
+    if (jobCount) {
+        captureLoopMode = false;
+    } else {
+        captureLoopMode = true;
+    }
 }

@@ -18,15 +18,11 @@ public:
     void kstarsAccessing();
     void schedulerChecking();
     void captureChecking();
-    void captureJobChecking();
-
-    void captureJobSettingUp();
+    void captureGettingJobCount();
     void captureJobRunning();
     void captureStopAndReset();
 
     bool disconnectInterface();
-    CaptureState checkCaptureStatus();
-    SchedulerState checkSchedulerStatus();
 
     void setFITSfromFile(bool previewFromFile);
     void openFITSfile(const QString &filePath);
@@ -39,6 +35,8 @@ signals:
     void kstarsAccessible();
     void schedulerIdle();
     void captureIdle();
+    void readCaptureJobCount();
+    void captureJobCount(int jobCount);
     void errorMessage(QString errorDetail);
     void stopSession();
 
@@ -48,6 +46,7 @@ private:
 
     QString cameraName = "";
     QString cameraInterface = "";
+    int* capJobCount = 0;
 
 signals:
 };

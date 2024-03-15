@@ -9,6 +9,7 @@ kstarsinterface::kstarsinterface(QObject *parent)
     QDBusInterface *monInterface = new QDBusInterface(serviceName, pathEkos, EkosInterface, QDBusConnection::sessionBus(), this);
     if (monInterface->isValid()) {
         connect(monInterface, SIGNAL(pluginStatusChanged(int)), this, SLOT(receiverStatusChanged(int)));
+        capJobCount = new int;
     }
 }
 
@@ -84,15 +85,23 @@ void kstarsinterface::captureChecking()
 // Setup the Ekos Manager preview to take images from passed file rather than the Capture Module
 void kstarsinterface::setFITSfromFile(bool previewFromFile)
 {
-    QDBusInterface interfaceEkos(serviceName, pathEkos, EkosInterface);
-    QDBusMessage messageOpen = interfaceEkos.call("setFITSfromFile", previewFromFile);
+    QDBusInterface interface(serviceName, pathEkos, EkosInterface);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("setFITSfromFile", previewFromFile);
+    } else {
+        emit errorMessage("Could not set Ekos Preview mode");
+    }
 }
 
 // Pass a filename to the Ekos Manager preview
 void kstarsinterface::openFITSfile(const QString &filePath)
 {
-    QDBusInterface interfaceEkos(serviceName, pathEkos, EkosInterface);
-    QDBusMessage messageOpen = interfaceEkos.call("previewFile", filePath);
+    QDBusInterface interface(serviceName, pathEkos, EkosInterface);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("previewFile", filePath);
+    } else {
+        emit errorMessage("Could not send Stack to Ekos");
+    }
 }
 
 // Handle Ekos status changes
@@ -103,8 +112,42 @@ void kstarsinterface::receiverStatusChanged(pluginState status)
     }
 }
 
+// Get the count of jobs in Capture
+void kstarsinterface::captureGettingJobCount()
+{
+    QDBusInterface interface(serviceName, pathCapture);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("getJobCount");
+        QList<QVariant> args = message.arguments();
+        if ((args.count() == 1) && args.at(0).toInt()) {
+            *capJobCount = args.at(0).toInt();
+        }
+        emit readCaptureJobCount();
+        emit captureJobCount(*capJobCount);
+    } else {
+        emit errorMessage("Could not get Capture job count");
+    }
+}
+
+// Tell Capture to start the job
+void kstarsinterface::captureJobRunning()
+{
+    QDBusInterface interface(serviceName, pathCapture);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("start");
+    } else {
+        emit errorMessage("Could not start the Capture job");
+    }
+}
+
+// Tell Capture to stop and reset preview window mode
 void kstarsinterface::captureStopAndReset()
 {
-    //stop capture command
+    QDBusInterface interface(serviceName, pathCapture);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("stop");
+    } else {
+        emit errorMessage("Could not stop the Capture job");
+    }
     setFITSfromFile(false);
 }

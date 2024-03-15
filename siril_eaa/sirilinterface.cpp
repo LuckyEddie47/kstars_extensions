@@ -8,32 +8,41 @@ sirilinterface::sirilinterface(QObject *parent)
     : QObject{parent}
 {}
 
-// Launch Siril
-void sirilinterface::startProgram(QString path)
+// Set the path to Siril (from configuration file checker)
+void sirilinterface::setSirilPath(QString path)
 {
-    QString wd = path.left(path.lastIndexOf("/"));
-    QStringList arguments;
-    arguments << "-p";
+    sirilPath = path;
+}
 
-    connect(&programProcess, &QProcess::started, this, [=] (){
-        emit programStarted();
-    });
-    connect(&programProcess, &QProcess::stateChanged, this, [this] (QProcess::ProcessState state){
-        if (state == QProcess::Running) {
-            QTimer::singleShot(1000, this, &sirilinterface::programRunning);
+// Launch Siril
+void sirilinterface::startProgram()
+{
+    if (sirilPath != "") {
+        QString wd = sirilPath.left(sirilPath.lastIndexOf("/"));
+        QStringList arguments;
+        arguments << "-p";
 
-        }
-    });
-    connect(&programProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
-            [=](int exitCode, QProcess::ExitStatus exitStatus) {
-                emit programFinished();
-            });
+        connect(&programProcess, &QProcess::started, this, [=] (){
+            emit programStarted();
+        });
+        connect(&programProcess, &QProcess::stateChanged, this, [this] (QProcess::ProcessState state){
+            if (state == QProcess::Running) {
+                QTimer::singleShot(1000, this, &sirilinterface::programRunning);
 
-    programProcess.setWorkingDirectory(wd);
+            }
+        });
+        connect(&programProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
+                [=](int exitCode, QProcess::ExitStatus exitStatus) {
+                    emit programFinished();
+                });
 
-    programProcess.setProcessChannelMode(QProcess::ForwardedChannels);
+        programProcess.setWorkingDirectory(wd);
+        programProcess.setProcessChannelMode(QProcess::ForwardedChannels);
+        programProcess.start(sirilPath, arguments);
 
-    programProcess.start(path, arguments);
+    } else {
+        emit errorMessage("SirilPath has not been set");
+    }
 }
 
 // Setup Siril pipes

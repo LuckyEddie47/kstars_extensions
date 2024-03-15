@@ -13,7 +13,8 @@ public:
     explicit sirilinterface(QObject *parent = nullptr);
 
 public slots:
-    void startProgram(QString path);
+    void setSirilPath(QString path);
+    void startProgram();
     void stopProgram();
     void programRunning();
     void sendSirilCommand(QString command);
@@ -38,6 +39,7 @@ private:
     QSocketNotifier* notifier;
     int fd;
     int flags;
+    QString sirilPath;
     QFile* messagePipe;
 };
 

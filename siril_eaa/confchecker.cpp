@@ -73,9 +73,9 @@ void confChecker::pathValidating()
     while (!confTS.atEnd()) {
         QString confLine = confTS.readLine();
         if (confLine.contains("siril_path=")) {
-            SirilPath = confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
+            sirilPath = confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
             QFile Siril;
-            Siril.setFileName(SirilPath);
+            Siril.setFileName(sirilPath);
             if (Siril.exists()) {
                 okayToProceed = true;
             }
@@ -83,7 +83,8 @@ void confChecker::pathValidating()
     }
     if (okayToProceed) {
         emit pathValid();
+        emit sirilPathIs(sirilPath);
     } else {
-        emit errorMessage(QString("siril_path %1 in configuration file does not exist").arg(SirilPath));
+        emit errorMessage(QString("siril_path %1 in configuration file does not exist").arg(sirilPath));
     }
 }

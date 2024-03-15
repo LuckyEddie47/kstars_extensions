@@ -22,11 +22,12 @@ signals:
     void confAccessible();
     void versionValid();
     void pathValid();
+    void sirilPathIs(QString path);
     void errorMessage(QString errorDetail);
 
 private:
     QString confFilePath = "";
-    QString SirilPath = "";
+    QString sirilPath = "";
     QFile confFile;
     QTextStream confTS;
 };
