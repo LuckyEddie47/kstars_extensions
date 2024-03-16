@@ -33,7 +33,9 @@ void statemachine::createMachine()
     QState *checkingKstars = new QState(checkingEkos);
     QState *checkingScheduler = new QState(checkingEkos);
     QState *checkingCapture = new QState(checkingEkos);
-    QState *checkingCaptureJob = new QState(checkingEkos);
+    QState *checkingCaptureNoJobs = new QState(checkingEkos);
+    QState *gettingCaptureFileFormat = new QState(checkingEkos);
+    QState *gettingCaptureFilePath = new QState(checkingEkos);
     QFinalState *ekosIsValid = new QFinalState(checkingEkos);
     checkingEkos->setInitialState(checkingDbus);
 
@@ -89,7 +91,7 @@ void statemachine::createMachine()
     connect(m_confChecker, &confChecker::sirilPathIs, m_sirilinterface, &sirilinterface::setSirilPath); // Note odd one out passing path
     checkingConf->addTransition(checkingConf, SIGNAL(finished()), checkingEkos);
 
-    // KStars status
+    // KStars
     connect(checkingDbus, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::dbusAccessing);
     checkingDbus->addTransition(m_kstarsinterface, SIGNAL(dbusAccessible()), checkingKstars);
     connect(checkingKstars, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::kstarsAccessing);
@@ -97,21 +99,22 @@ void statemachine::createMachine()
     connect(checkingScheduler, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::schedulerChecking);
     checkingScheduler->addTransition(m_kstarsinterface, SIGNAL(schedulerIdle()), checkingCapture);
     connect(checkingCapture, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureChecking);
-    checkingCapture->addTransition(m_kstarsinterface, SIGNAL(captureIdle()), checkingCaptureJob);
-    connect(checkingCaptureJob, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureGettingJobCount);
-    checkingCaptureJob->addTransition(m_kstarsinterface, SIGNAL(readCaptureJobCount()), settingUpSiril);
-    connect(m_kstarsinterface, &kstarsinterface::captureJobCount, this, &statemachine::setLoopMode); // Note odd one out passing jobCount
+    checkingCapture->addTransition(m_kstarsinterface, SIGNAL(captureIdle()), checkingCaptureNoJobs);
+    connect(checkingCaptureNoJobs, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureCheckingNoJobs);
+    checkingCaptureNoJobs->addTransition(m_kstarsinterface, SIGNAL(captureNoJobs()), gettingCaptureFileFormat);
+    connect(gettingCaptureFileFormat, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureGettingFileFormat);
+    gettingCaptureFileFormat->addTransition(m_kstarsinterface, SIGNAL(captureFormatOkay()), gettingCaptureFilePath);
+    connect(gettingCaptureFilePath, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureGettingFilePath);
+    gettingCaptureFilePath->addTransition(m_kstarsinterface, SIGNAL(readCapturePath()), settingUpSiril);
+    connect(m_kstarsinterface, &kstarsinterface::captureFilePath, m_sirilinterface, &sirilinterface::setWD); // Note odd one out passing path
 
-    // Siril setup
+    // Siril
     connect(launchingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::startSiril);
     launchingSiril->addTransition(m_sirilinterface, SIGNAL(sirilStarted()), connectingSiril);
     connect(connectingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::connectSiril);
     connectingSiril->addTransition(m_sirilinterface, SIGNAL(sirilConnected()), checkingSiril);
     connect(checkingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::checkSiril);
     checkingSiril->addTransition(m_sirilinterface, SIGNAL(sirilReady()), settingWDSiril);
-
-    // need sirilinterface::setwd from kstars
-
     connect(settingWDSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::setSirilWD);
     settingWDSiril->addTransition(m_sirilinterface, SIGNAL(sirilCdSuccess()), settingLSSiril);
     connect(settingLSSiril, & QAbstractState::entered, m_sirilinterface, &sirilinterface::setSirilLS);
@@ -131,13 +134,4 @@ void statemachine::handleError(QString errorMessage)
     m_logger->out("Closing extension");
     m_kstarsinterface->captureStopAndReset();
     m_sirilinterface->sendSirilCommand("exit");
-}
-
-void statemachine::setLoopMode(int jobCount)
-{
-    if (jobCount) {
-        captureLoopMode = false;
-    } else {
-        captureLoopMode = true;
-    }
 }

@@ -18,7 +18,9 @@ public:
     void kstarsAccessing();
     void schedulerChecking();
     void captureChecking();
-    void captureGettingJobCount();
+    void captureCheckingNoJobs();
+    void captureGettingFileFormat();
+    void captureGettingFilePath();
     void captureJobRunning();
     void captureStopAndReset();
 
@@ -35,8 +37,10 @@ signals:
     void kstarsAccessible();
     void schedulerIdle();
     void captureIdle();
-    void readCaptureJobCount();
-    void captureJobCount(int jobCount);
+    void captureNoJobs();
+    void captureFormatOkay();
+    void readCaptureFilePath();
+    void captureFilePath(QString filePath);
     void errorMessage(QString errorDetail);
     void stopSession();
 

@@ -113,7 +113,7 @@ void kstarsinterface::receiverStatusChanged(pluginState status)
 }
 
 // Get the count of jobs in Capture
-void kstarsinterface::captureGettingJobCount()
+void kstarsinterface::captureCheckingNoJobs()
 {
     QDBusInterface interface(serviceName, pathCapture);
     if (interface.isValid()) {
@@ -122,10 +122,56 @@ void kstarsinterface::captureGettingJobCount()
         if ((args.count() == 1) && args.at(0).toInt()) {
             *capJobCount = args.at(0).toInt();
         }
-        emit readCaptureJobCount();
-        emit captureJobCount(*capJobCount);
+        if (*capJobCount == 0) {
+            emit captureNoJobs();
+        } else {
+            emit errorMessage("Capture has jobs");
+        }
     } else {
         emit errorMessage("Could not get Capture job count");
+    }
+}
+
+// Get the file format string and check
+void kstarsinterface::captureGettingFileFormat()
+{
+    QDBusInterface interface(serviceName, pathCapture);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("getJobPlaceholderFormat");
+        QList<QVariant> args = message.arguments();
+        if (args.count() == 1) {
+            QString format = args.at(0).toString();
+            format.left(format.lastIndexOf("/"));
+            if (!format.contains("%D") && !format.contains("%C") && !format.contains("%P")) {
+                emit captureFormatOkay();
+            } else {
+                emit errorMessage("Placeholder format contains variable path tags");
+            }
+        } else {
+            emit errorMessage("Could not get placeholder format");
+        }
+    } else {
+        emit errorMessage("Could not get placeholder format");
+    }
+}
+
+// Get the capture job file path
+void kstarsinterface::captureGettingFilePath()
+{
+    QDBusInterface interface(serviceName, pathCapture);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("getJobPreviewFileName");
+        QList<QVariant> args = message.arguments();
+        if (args.count() == 1) {
+            QString path = args.at(0).toString();
+            path.left(path.lastIndexOf("/"));
+            emit captureFilePath(path);
+            emit readCaptureFilePath();
+        } else {
+            emit errorMessage("Could not get image filepath");
+        }
+    } else {
+        emit errorMessage("Could not get image filepath");
     }
 }
 
