@@ -16,6 +16,9 @@ public slots:
     void confAccessing();
     void versionValidating();
     void pathValidating();
+    void darkChecking();
+    void flatChecking();
+    void registrationChecking();
 
 signals:
     void confExists();
@@ -23,6 +26,13 @@ signals:
     void versionValid();
     void pathValid();
     void sirilPathIs(QString path);
+    void darkChecked();
+    void darkPathIs(QString path);
+    void flatChecked();
+    void flatPathIs(QString path);
+    void registrationChecked();
+    void registrationIs(QString registration);
+
     void errorMessage(QString errorDetail);
 
 private:

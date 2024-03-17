@@ -25,6 +25,9 @@ void statemachine::createMachine()
     QState *isConfAccessible = new QState(checkingConf);
     QState *isVersionValid = new QState(checkingConf);
     QState *isPathValid = new QState(checkingConf);
+    QState *isDarkPassed = new QState(checkingConf);
+    QState *isFlatPassed = new QState(checkingConf);
+    QState *isRegistationPassed = new QState(checkingConf);
     QFinalState *confIsValid = new QFinalState(checkingConf);
     checkingConf->setInitialState(doesConfExist);
 
@@ -86,7 +89,16 @@ void statemachine::createMachine()
     connect(isVersionValid, &QAbstractState::entered, m_confChecker, &confChecker::versionValidating);
     isVersionValid->addTransition(m_confChecker, SIGNAL(versionValid()), isPathValid);
     connect(isPathValid, &QAbstractState::entered, m_confChecker, &confChecker::pathValidating);
-    isPathValid->addTransition(m_confChecker, SIGNAL(pathValid()), confIsValid);
+    isPathValid->addTransition(m_confChecker, SIGNAL(pathValid()), isDarkPassed);
+    connect(isDarkPassed, &QAbstractState::entered, m_confChecker, &confChecker::darkChecking);
+    connect(m_confChecker, &confChecker::darkPathIs, m_sirilinterface, &sirilinterface::setDarkPath);
+    isDarkPassed->addTransition(m_confChecker, SIGNAL(darkChecked()), isFlatPassed);
+    connect(isFlatPassed, &QAbstractState::entered, m_confChecker, &confChecker::flatChecking);
+    connect(m_confChecker, &confChecker::flatPathIs, m_sirilinterface, &sirilinterface::setFlatPath);
+    isFlatPassed->addTransition(m_confChecker, SIGNAL(flatCheced()), isRegistationPassed);
+    connect(isRegistationPassed, &QAbstractState::entered, m_confChecker, &confChecker::registrationChecking);
+    connect(m_confChecker, &confChecker::registrationIs, m_sirilinterface, &sirilinterface::setRegistrationMode);
+    isRegistationPassed->addTransition(m_confChecker, SIGNAL(registrationChecked()), confIsValid);
     connect(m_confChecker, &confChecker::sirilPathIs, m_sirilinterface, &sirilinterface::setSirilPath); // Note odd one out passing path
     checkingConf->addTransition(checkingConf, SIGNAL(finished()), checkingEkos);
 

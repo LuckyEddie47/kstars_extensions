@@ -14,9 +14,13 @@ public:
 
 public slots:
     void setSirilPath(QString path);
+    void setWD(QString workingDir);
+    void setDarkPath(QString path);
+    void setFlatPath(QString path);
+    void setRegistrationMode(QString mode);
+
     void startSiril();
     void connectSiril();
-    void setWD(QString workingDir);
     void setSirilWD();
     void setSirilLS();
     void stopProgram();
@@ -49,6 +53,9 @@ private:
     int flags;
     QString sirilPath = "";
     QString workingDir = "";
+    QString darkPath = "";
+    QString flatPath = "";
+    QString registrationMode = "";
     QFile* messagePipe;
 };
 

@@ -20,6 +20,24 @@ void sirilinterface::setWD(QString path)
     workingDir = path;
 }
 
+// Set the path to a dark calibration frame
+void sirilinterface::setDarkPath(QString path)
+{
+    darkPath = path;
+}
+
+// Set the path to a flat calibration frame
+void sirilinterface::setFlatPath(QString path)
+{
+    flatPath = path;
+}
+
+// Set the registration mode
+void sirilinterface::setRegistrationMode(QString mode)
+{
+    registrationMode = mode;
+}
+
 // Launch Siril
 void sirilinterface::startSiril()
 {
@@ -107,7 +125,23 @@ void sirilinterface::setSirilWD()
 // Set Siril in LiveStacking mode
 void sirilinterface::setSirilLS()
 {
-    sendSirilCommand("start_ls");
+    QStringList args;
+    if (darkPath != "") {
+        args.append(QString(" -dark=%1").arg(darkPath));
+    }
+    if (flatPath != "") {
+        args.append(QString(" -flat=%1").arg(flatPath));
+    }
+    if (registrationMode == "rotate") {
+        args.append(" -rotate");
+    }
+    QString lscommand("start_ls");
+    if (args.count() > 0 ) {
+        foreach (QString arg, args) {
+            lscommand.append(arg);
+        }
+    }
+    sendSirilCommand(lscommand);
 }
 
 // Close Siril
