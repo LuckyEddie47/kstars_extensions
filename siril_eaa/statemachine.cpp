@@ -105,7 +105,7 @@ void statemachine::createMachine()
     connect(gettingCaptureFileFormat, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureGettingFileFormat);
     gettingCaptureFileFormat->addTransition(m_kstarsinterface, SIGNAL(captureFormatOkay()), gettingCaptureFilePath);
     connect(gettingCaptureFilePath, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureGettingFilePath);
-    gettingCaptureFilePath->addTransition(m_kstarsinterface, SIGNAL(readCapturePath()), settingUpSiril);
+    gettingCaptureFilePath->addTransition(m_kstarsinterface, SIGNAL(readCaptureFilePath()), settingUpSiril);
     connect(m_kstarsinterface, &kstarsinterface::captureFilePath, m_sirilinterface, &sirilinterface::setWD); // Note odd one out passing path
 
     // Siril

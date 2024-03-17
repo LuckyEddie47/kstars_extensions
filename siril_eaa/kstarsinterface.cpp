@@ -9,7 +9,7 @@ kstarsinterface::kstarsinterface(QObject *parent)
     QDBusInterface *monInterface = new QDBusInterface(serviceName, pathEkos, EkosInterface, QDBusConnection::sessionBus(), this);
     if (monInterface->isValid()) {
         connect(monInterface, SIGNAL(pluginStatusChanged(int)), this, SLOT(receiverStatusChanged(int)));
-        capJobCount = new int;
+        capJobCount = new int(0);
     }
 }
 
@@ -74,6 +74,7 @@ void kstarsinterface::captureChecking()
         case CAPTURE_COMPLETE:
         case CAPTURE_ABORTED:
             emit captureIdle();
+            break;
         default:
             emit errorMessage("Capture module is in use");
         };
@@ -141,7 +142,7 @@ void kstarsinterface::captureGettingFileFormat()
         QList<QVariant> args = message.arguments();
         if (args.count() == 1) {
             QString format = args.at(0).toString();
-            format.left(format.lastIndexOf("/"));
+            format = format.left(format.lastIndexOf("/"));
             if (!format.contains("%D") && !format.contains("%C") && !format.contains("%P")) {
                 emit captureFormatOkay();
             } else {
@@ -164,7 +165,7 @@ void kstarsinterface::captureGettingFilePath()
         QList<QVariant> args = message.arguments();
         if (args.count() == 1) {
             QString path = args.at(0).toString();
-            path.left(path.lastIndexOf("/"));
+            path = path.left(path.lastIndexOf("/"));
             emit captureFilePath(path);
             emit readCaptureFilePath();
         } else {
