@@ -29,7 +29,9 @@ void sirilinterface::startSiril()
         arguments << "-p";
 
         connect(&programProcess, &QProcess::started, this, [=] (){
-            emit sirilStarted();
+            QTimer::singleShot(1000, this, [this] {
+                emit sirilStarted();
+            });
         });
         connect(&programProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
                 [=](int exitCode, QProcess::ExitStatus exitStatus) {
@@ -86,16 +88,10 @@ void sirilinterface::connectSiril()
     if (okayToProceed) {
         notifier = new QSocketNotifier(fd, QSocketNotifier::Read, this);
         connect(notifier, &QSocketNotifier::activated, this, &sirilinterface::readMessage);
-        emit sirilConnected();
+        QTimer::singleShot(1000, this, [this] {
+            emit sirilConnected();
+        });
     }
-}
-
-// Check Siril is ready and responding
-void sirilinterface::checkSiril()
-{
-    QTimer::singleShot(1000, this, [this] {
-        sendSirilCommand("ping");
-    });
 }
 
 // Set Sirils working directory

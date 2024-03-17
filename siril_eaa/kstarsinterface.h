@@ -30,7 +30,7 @@ public:
     void openFITSfile(const QString &filePath);
 
 public slots:
-    void receiverStatusChanged(pluginState status);
+    void receiverStatusChanged(int status);
 
 signals:
     void dbusAccessible();

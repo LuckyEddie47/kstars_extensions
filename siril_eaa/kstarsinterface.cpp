@@ -106,7 +106,7 @@ void kstarsinterface::openFITSfile(const QString &filePath)
 }
 
 // Handle Ekos status changes
-void kstarsinterface::receiverStatusChanged(pluginState status)
+void kstarsinterface::receiverStatusChanged(int status)
 {
     if (status == PLUGIN_STOP_REQUESTED) {
         emit stopSession();
@@ -142,7 +142,7 @@ void kstarsinterface::captureGettingFileFormat()
         QList<QVariant> args = message.arguments();
         if (args.count() == 1) {
             QString format = args.at(0).toString();
-            format = format.left(format.lastIndexOf("/"));
+            format.left(format.lastIndexOf("/"));
             if (!format.contains("%D") && !format.contains("%C") && !format.contains("%P")) {
                 emit captureFormatOkay();
             } else {

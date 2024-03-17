@@ -16,7 +16,6 @@ public slots:
     void setSirilPath(QString path);
     void startSiril();
     void connectSiril();
-    void checkSiril();
     void setWD(QString workingDir);
     void setSirilWD();
     void setSirilLS();

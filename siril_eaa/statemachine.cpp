@@ -41,7 +41,6 @@ void statemachine::createMachine()
 
     QState *settingUpSiril = new QState();
     QState *launchingSiril = new QState(settingUpSiril);
-    QState *checkingSiril = new QState(settingUpSiril);
     QState *connectingSiril = new QState(settingUpSiril);
     QState *settingWDSiril = new QState(settingUpSiril);
     QState *settingLSSiril = new QState(settingUpSiril);
@@ -112,9 +111,7 @@ void statemachine::createMachine()
     connect(launchingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::startSiril);
     launchingSiril->addTransition(m_sirilinterface, SIGNAL(sirilStarted()), connectingSiril);
     connect(connectingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::connectSiril);
-    connectingSiril->addTransition(m_sirilinterface, SIGNAL(sirilConnected()), checkingSiril);
-    connect(checkingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::checkSiril);
-    checkingSiril->addTransition(m_sirilinterface, SIGNAL(sirilReady()), settingWDSiril);
+    connectingSiril->addTransition(m_sirilinterface, SIGNAL(sirilReady()), settingWDSiril);
     connect(settingWDSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::setSirilWD);
     settingWDSiril->addTransition(m_sirilinterface, SIGNAL(sirilCdSuccess()), settingLSSiril);
     connect(settingLSSiril, & QAbstractState::entered, m_sirilinterface, &sirilinterface::setSirilLS);
