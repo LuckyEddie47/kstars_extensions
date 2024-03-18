@@ -56,7 +56,8 @@ private:
     QString darkPath = "";
     QString flatPath = "";
     QString registrationMode = "";
-    QFile* messagePipe;
+    //QFile* messagePipe;
+    int messagePipe;
 };
 
 #endif // SIRILINTERFACE_H

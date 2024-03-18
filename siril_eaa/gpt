@@ -1,0 +1,72 @@
+#include <QCoreApplication>
+#include <QSocketNotifier>
+#include <QDebug>
+#include <fcntl.h> // for open()
+#include <unistd.h> // for close()
+
+class NamedPipeReader : public QObject
+{
+    Q_OBJECT
+
+public:
+    NamedPipeReader(QObject *parent = nullptr) : QObject(parent)
+    {
+        // Open the named pipe for reading
+        pipeFile = ::open("/tmp/siril_command.out", O_RDONLY | O_NONBLOCK);
+        if (pipeFile == -1)
+        {
+            qDebug() << "Failed to open named pipe.";
+            return;
+        }
+
+        // Create a QSocketNotifier to monitor the file descriptor for readability
+        notifier = new QSocketNotifier(pipeFile, QSocketNotifier::Read, this);
+        connect(notifier, &QSocketNotifier::activated, this, &NamedPipeReader::readPipe);
+    }
+
+public slots:
+    void readPipe(int /* socket */) // Unused parameter 'socket'
+    {
+        QByteArray data;
+        char buffer[4096];
+        ssize_t bytesRead;
+
+        // Read data from named pipe
+        while ((bytesRead = ::read(pipeFile, buffer, sizeof(buffer))) > 0)
+        {
+            data.append(buffer, bytesRead);
+        }
+
+        if (!data.isEmpty())
+        {
+            qDebug() << "Received data from pipe:" << data;
+        }
+    }
+
+    void cleanup()
+    {
+        if (pipeFile != -1)
+        {
+            ::close(pipeFile);
+        }
+    }
+
+private:
+    int pipeFile;
+    QSocketNotifier *notifier;
+};
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication a(argc, argv);
+
+    NamedPipeReader reader;
+
+    // Cleanup when the application exits
+    QObject::connect(&a, &QCoreApplication::aboutToQuit, &reader, &NamedPipeReader::cleanup);
+
+    return a.exec();
+}
+
+#include "main.moc"
+

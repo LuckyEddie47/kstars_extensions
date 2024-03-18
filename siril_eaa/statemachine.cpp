@@ -76,7 +76,7 @@ void statemachine::createMachine()
     machine->addState(settingUpSiril);
     machine->addState(runningLS);
     machine->addState(stopping);
-    machine->addState(stopped);
+//    machine->addState(stopped);
     machine->addState(error);
     machine->setInitialState(checkingConf);
 
@@ -95,7 +95,7 @@ void statemachine::createMachine()
     isDarkPassed->addTransition(m_confChecker, SIGNAL(darkChecked()), isFlatPassed);
     connect(isFlatPassed, &QAbstractState::entered, m_confChecker, &confChecker::flatChecking);
     connect(m_confChecker, &confChecker::flatPathIs, m_sirilinterface, &sirilinterface::setFlatPath);
-    isFlatPassed->addTransition(m_confChecker, SIGNAL(flatCheced()), isRegistationPassed);
+    isFlatPassed->addTransition(m_confChecker, SIGNAL(flatChecked()), isRegistationPassed);
     connect(isRegistationPassed, &QAbstractState::entered, m_confChecker, &confChecker::registrationChecking);
     connect(m_confChecker, &confChecker::registrationIs, m_sirilinterface, &sirilinterface::setRegistrationMode);
     isRegistationPassed->addTransition(m_confChecker, SIGNAL(registrationChecked()), confIsValid);
