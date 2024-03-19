@@ -25,7 +25,9 @@ public slots:
     void setSirilLS();
     void stopProgram();
 //    void programRunning();
-    void sendSirilCommand(QString command);
+    void sendSirilCommand(QString command, int repeatPeriod, QString commandResponse);
+    void setCommandReturn(QString returnMessage);
+    void checkCommandReturn(QString returnMessage);
     //    QString livestackImage(QString filename);
 
 signals:
@@ -58,6 +60,8 @@ private:
     QString registrationMode = "";
     //QFile* messagePipe;
     int messagePipe;
+    QString commandReturn = "";
+    bool returnReceived = false;
 };
 
 #endif // SIRILINTERFACE_H

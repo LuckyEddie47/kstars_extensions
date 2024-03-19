@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <QDebug>
 #include <QTimer>
+#include <QThread>
 
 sirilinterface::sirilinterface(QObject *parent)
     : QObject{parent}
@@ -119,7 +120,7 @@ void sirilinterface::connectSiril()
     messagePipe = ::open(sirilMessages.toLatin1(), O_RDONLY | O_NONBLOCK);
 
 if (messagePipe != -1) {
-        notifier = new QSocketNotifier(fd, QSocketNotifier::Read, this);
+        notifier = new QSocketNotifier(messagePipe, QSocketNotifier::Read, this);
         connect(notifier, &QSocketNotifier::activated, this, &sirilinterface::readMessage);
         QTimer::singleShot(1000, this, [this] {
             emit sirilConnected();
@@ -131,7 +132,7 @@ if (messagePipe != -1) {
 void sirilinterface::setSirilWD()
 {
     if (workingDir != "") {
-        sendSirilCommand(QString("cd ").append(workingDir));
+        sendSirilCommand(QString("cd ").append(workingDir), 1000, "status: success cd");
     } else {
         emit errorMessage("Working directory has not been set");
     }
@@ -156,7 +157,7 @@ void sirilinterface::setSirilLS()
             lscommand.append(arg);
         }
     }
-    sendSirilCommand(lscommand);
+    sendSirilCommand(lscommand, 1000, "status: success start_ls");
 }
 
 // Close Siril
@@ -190,7 +191,7 @@ void sirilinterface::readMessage()
     char buffer[4096];
     QByteArray messageBA;
     ssize_t bytesRead;
-    while ((bytesRead = ::read(fd, buffer, sizeof(buffer))) > 0) {
+    while ((bytesRead = ::read(messagePipe, buffer, sizeof(buffer))) > 0) {
         messageBA.append(buffer, bytesRead);
     }
 
@@ -211,19 +212,44 @@ void sirilinterface::readMessage()
         }
 
         emit sirilMessage (QString(messageBA));
+        checkCommandReturn(QString(messageBA));
     }
 }
 
 // Send command to Siril
-void sirilinterface::sendSirilCommand(QString command)
+void sirilinterface::sendSirilCommand(QString command, int repeatPeriod, QString commandResponse)
 {
-    QTimer::singleShot(1000, this, [this, &command] {
-        QFile commandPipe(sirilCommands);
-        if (commandPipe.open(QIODevice::WriteOnly)) {
-            commandPipe.setTextModeEnabled(true);
-            QTextStream commandTS(&commandPipe);
-            commandTS << command << Qt::endl;
-            commandPipe.close();
-        }
-    });
+    // Due to Siril's somewhat flakey command pipe handle (as of V1.2.1)
+    // commands are sent repeatedly at the passed repeatPeriod until a repsonse
+    // of the passed commandResponse is received on the message pipe
+    returnReceived = false;
+    commandReturn = commandResponse;
+    while (!returnReceived){
+        QThread::msleep(repeatPeriod);
+//        QTimer::singleShot(repeatPeriod, this, [this, &command] {
+            QFile commandPipe(sirilCommands);
+            if (commandPipe.open(QIODevice::WriteOnly)) {
+                commandPipe.setTextModeEnabled(true);
+                QTextStream commandTS(&commandPipe);
+                commandTS << command << Qt::endl;
+                commandPipe.close();
+            }
+//        });
+    }
+
+    // Reset return test ready for next command
+    returnReceived = false;
+    commandReturn = "";
+}
+
+void sirilinterface::setCommandReturn(QString returnMessage)
+{
+    commandReturn = returnMessage;
+}
+
+void sirilinterface::checkCommandReturn(QString returnMessage)
+{
+    if (returnMessage.contains(commandReturn)) {
+        returnReceived = true;
+    }
 }

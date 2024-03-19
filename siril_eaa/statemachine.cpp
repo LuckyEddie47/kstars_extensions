@@ -142,5 +142,5 @@ void statemachine::handleError(QString errorMessage)
     m_logger->out(errorMessage);
     m_logger->out("Closing extension");
     m_kstarsinterface->captureStopAndReset();
-    m_sirilinterface->sendSirilCommand("exit");
+    m_sirilinterface->sendSirilCommand("exit", 1000, "mkaing sure no child is left behind");
 }
