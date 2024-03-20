@@ -39,6 +39,7 @@ else()
     else()
         add_executable(kstars_backup
             ${PROJECT_SOURCES}
+            archiver.h archiver.cpp
         )
     endif()
 endif()
