@@ -3,7 +3,7 @@
 archiver::archiver(const QString &filename, QObject *parent)
     : QObject{parent}
 {
-    m_archive = new K7Zip(filename);
+    m_archive = new QuaZip(filename);
 }
 
 QStringList archiver::read()
