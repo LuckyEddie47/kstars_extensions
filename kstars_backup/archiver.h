@@ -2,7 +2,7 @@
 #define ARCHIVER_H
 
 #include <QObject>
-#include <quazip.h>
+#include <QProcess>
 
 class archiver : public QObject
 {
@@ -16,7 +16,7 @@ public:
 signals:
 
 private:
-    QuaZip* m_archive;
+    QProcess* m_archive;
 };
 
 #endif // ARCHIVER_H

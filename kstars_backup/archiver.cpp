@@ -3,7 +3,7 @@
 archiver::archiver(const QString &filename, QObject *parent)
     : QObject{parent}
 {
-    m_archive = new QuaZip(filename);
+    m_archive = new QProcess();
 }
 
 QStringList archiver::read()
@@ -13,9 +13,12 @@ QStringList archiver::read()
 
 void archiver::write(const QStringList &files)
 {
-    m_archive->open(QuaZip::mdCreate);
-    QuaZipFile m_file(m_archive);
-    m_file << QFile("/home/ed/");
+    QString outFile("/tmp/test.tar.gz");
+    QString prog = "tar";
+    QStringList args;
+    args << "--create" << "--gzip" << "--file" << outFile << files;
+    m_archive->setProcessChannelMode(QProcess::ForwardedChannels);
+    m_archive->start(prog, args);
 }
 
 void archiver::extract()
