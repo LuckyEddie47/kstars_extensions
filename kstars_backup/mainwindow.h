@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "archiver.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -19,5 +21,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    archiver* m_archiver;
 };
 #endif // MAINWINDOW_H
