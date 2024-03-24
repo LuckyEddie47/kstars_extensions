@@ -2,15 +2,23 @@
 
 #include <QDateTime>
 
-archiver::archiver(const QString &filepath, QObject *parent)
-    : archivePath{filepath}, QObject{parent}
+archiver::archiver(QObject *parent)
+    : QObject{parent}
 {
     m_archive = new QProcess();
 }
 
 QStringList archiver::read()
 {
-    return QStringList() << "a" << "b";
+    QString inFile = archivePath;
+    QString prog = "tar";
+    QStringList args;
+    args << "--list" << "gunzip" << "--file" << inFile;
+    connect (m_archive, &QProcess::readyReadStandardOutput, this, [=] {
+        QString returnText = m_archive->readAllStandardOutput();
+        result = returnText.split("\n");
+    });
+    return result;
 }
 
 void archiver::write(const QStringList &files)
@@ -38,4 +46,9 @@ QString archiver::createArchiveName()
     return QString("KStars backup V").append(kstarsVersion).append(" ")
                       .append(hostName).append(" ").append(osVersion).append(" ")
                       .append(architecture).append(" ").append(now).append(".tar.gz");
+}
+
+void archiver::setArchivePath(const QString filepath)
+{
+    archivePath = filepath;
 }

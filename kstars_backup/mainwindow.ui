@@ -157,7 +157,7 @@
        <item>
         <widget class="QLabel" name="pathL">
          <property name="text">
-          <string>/tmp</string>
+          <string>/home</string>
          </property>
         </widget>
        </item>

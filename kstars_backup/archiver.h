@@ -8,9 +8,9 @@ class archiver : public QObject
 {
     Q_OBJECT
 public:
-    explicit archiver(const QString &filepath, QObject *parent = nullptr);
+    explicit archiver(QObject *parent = nullptr);
     QString createArchiveName();
-    void setArchivePath();
+    void setArchivePath(const QString filepath);
     QStringList read();
     void write(const QStringList &files);
     void extract();
@@ -21,6 +21,7 @@ private:
     QProcess* m_archive;
  //   QString archiveName = "";
     QString archivePath = "";
+    QStringList result;
 };
 
 #endif // ARCHIVER_H
