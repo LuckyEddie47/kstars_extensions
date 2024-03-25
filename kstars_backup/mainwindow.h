@@ -24,6 +24,7 @@ private:
     Ui::MainWindow *ui;
     archiver* m_archiver;
     QStringListModel* m_model;
+    QStringList* chosenPaths;
 
     void setNewPath(const QString &path);
 
@@ -31,9 +32,9 @@ private:
         MODE_BACKUP,
         MODE_RESTORE
     } modeType;
-
     modeType mode = MODE_BACKUP;
 
+    QString lastDir = "/tmp";
 
 };
 #endif // MAINWINDOW_H
