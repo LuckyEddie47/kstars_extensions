@@ -23,6 +23,9 @@ public:
 private:
     Ui::MainWindow *ui;
     archiver* m_archiver;
+    QStringListModel* m_model;
+
+    void setNewPath(const QString &path);
 
     typedef enum modeType {
         MODE_BACKUP,
@@ -31,6 +34,6 @@ private:
 
     modeType mode = MODE_BACKUP;
 
-    QStringListModel* m_model;
+
 };
 #endif // MAINWINDOW_H

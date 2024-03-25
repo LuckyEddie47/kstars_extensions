@@ -7,12 +7,14 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    m_archiver = new archiver(this);
+    m_model = new QStringListModel(this);
+
     ui->setupUi(this);
     ui->addB->setIcon(QIcon::fromTheme("list-add"));
     ui->removeB->setIcon(QIcon::fromTheme("list-remove"));
-
-    m_archiver = new archiver(this);
-    m_model = new QStringListModel(this);
+    ui->listView->setModel(m_model);
+    setNewPath("/tmp");
 
     connect(ui->goB, &QPushButton::clicked, this, [this] {
         if (mode == MODE_BACKUP) {
@@ -25,12 +27,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->modeB, &QPushButton::clicked, this, [this] {
         if (mode == MODE_BACKUP) {
             mode = MODE_RESTORE;
-            ui->modeB->setText("Restore");
+            ui->modeB->setText(tr("Restore"));
+            ui->goB->setText(tr("Restore from Backup"));
+            ui->addB->setEnabled(false);
+            ui->removeB->setEnabled(false);
         } else if (mode == MODE_RESTORE) {
             mode = MODE_BACKUP;
-            ui->modeB->setText("Backup");
+            ui->modeB->setText(tr("Backup"));
+            ui->goB->setText(tr("Create Backup"));
+            ui->addB->setEnabled(true);
+            ui->removeB->setEnabled(true);
         }
-        ui->pathL->setText("/home");
+        setNewPath("/tmp");
     });
 
     connect(ui->browseB, &QPushButton::clicked, this, [this] {
@@ -42,19 +50,29 @@ MainWindow::MainWindow(QWidget *parent)
             m_dialog.setFileMode(QFileDialog::ExistingFile);
             m_dialog.setNameFilter(QString("*.tar.gz"));
         }
-        m_dialog.setDirectory(ui->pathL->text().left(ui->pathL->text().lastIndexOf("/")));
-        m_dialog.exec();
 
-        connect(&m_dialog, &QFileDialog::fileSelected, this, [=](const QString &file) {
-            ui->pathL->setText(file);
-            m_archiver->setArchivePath(file);
-            if (mode == MODE_RESTORE) {
-                m_model->setStringList(m_archiver->read());
-                ui->listView->setModel(m_model);
-            }
-        });
-//        ui->pathL->setText(m_dialog.selectedFiles().at(0));
+        QString m_dir = ui->pathL->text();
+        if (m_dir.count("/") > 1 && m_dir.endsWith(".tar.gz")  && mode == MODE_RESTORE) {
+            m_dir = m_dir.left((m_dir.lastIndexOf("/")));
+        }
+        m_dialog.setDirectory(m_dir);
+        if (m_dialog.exec()) {
+            setNewPath(m_dialog.selectedFiles().at(0));
+        }
     });
+
+    connect(m_archiver, &archiver::readSets, this, [this] (QStringList sets) {
+        m_model->setStringList(sets);
+    });
+}
+
+void MainWindow::setNewPath(const QString &path)
+{
+    ui->pathL->setText(path);
+    m_archiver->setArchivePath(path);
+    if (mode == MODE_RESTORE && path.endsWith(".tar.gz")) {
+        m_archiver->read();
+    }
 }
 
 MainWindow::~MainWindow()

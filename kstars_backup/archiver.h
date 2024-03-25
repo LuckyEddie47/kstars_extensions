@@ -11,17 +11,21 @@ public:
     explicit archiver(QObject *parent = nullptr);
     QString createArchiveName();
     void setArchivePath(const QString filepath);
-    QStringList read();
+    void read();
     void write(const QStringList &files);
     void extract();
 
 signals:
+    void readSets(QStringList readSets);
 
 private:
-    QProcess* m_archive;
- //   QString archiveName = "";
+    QProcess* m_writer;
+    QProcess* m_reader;
+    QProcess* m_extractor;
+
     QString archivePath = "";
-    QStringList result;
+    QStringList outputLines;
+    QStringList sets;
 };
 
 #endif // ARCHIVER_H
