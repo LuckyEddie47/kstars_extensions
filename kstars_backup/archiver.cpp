@@ -7,6 +7,7 @@ archiver::archiver(QObject *parent)
 {
     m_writer = new QProcess(this);
     m_reader = new QProcess(this);
+    m_sizer = new QProcess(this);
     m_extractor = new QProcess(this);
 }
 
@@ -47,9 +48,48 @@ void archiver::read()
     connect(m_reader, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
             [=](int exitCode, QProcess::ExitStatus exitStatus) {
         emit readSets(sets);
+        getSizes();
     });
 
     m_reader->start(prog, args);
+}
+
+void archiver::getSizes()
+{
+    QString inFile = archivePath;
+    QString prog = "tar";
+    QStringList args;
+    args << "--list" << "--verbose" << "--file" << inFile;
+    m_sizer->setProcessChannelMode(QProcess::MergedChannels);
+    connect(m_sizer, &QProcess::readyReadStandardOutput, this, [=] {
+        QString returnText = m_sizer->readAllStandardOutput();
+        if (returnText != "") {
+            outputLines = returnText.split("\n", Qt::SkipEmptyParts);
+            QStringList sizes;
+            foreach (QString line, outputLines) {
+                QStringList splits = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+                sizes << splits.at(2);
+            }
+            foreach (QString size, sizes) {
+                sizeLines << size;
+            }
+        }
+    });
+
+    connect(m_sizer, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
+            [=](int exitCode, QProcess::ExitStatus exitStatus) {
+                totalSize();
+            });
+    m_sizer->start(prog, args);
+}
+
+void archiver::totalSize()
+{
+    total = 0;
+    foreach (QString size , sizeLines) {
+        total += size.toULong();
+    }
+    emit archiveSize(total);
 }
 
 void archiver::write(const QStringList &files)

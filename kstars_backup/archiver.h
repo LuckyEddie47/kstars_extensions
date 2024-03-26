@@ -14,18 +14,24 @@ public:
     void read();
     void write(const QStringList &files);
     void extract();
+    void getSizes();
+    void totalSize();
 
 signals:
     void readSets(QStringList readSets);
+    void archiveSize(ulong size);
 
 private:
     QProcess* m_writer;
     QProcess* m_reader;
+    QProcess* m_sizer;
     QProcess* m_extractor;
 
     QString archivePath = "";
     QStringList outputLines;
     QStringList sets;
+    QStringList sizeLines;
+    ulong total = 0;
 };
 
 #endif // ARCHIVER_H
