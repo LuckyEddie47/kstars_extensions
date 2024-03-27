@@ -8,6 +8,7 @@ archiver::archiver(QObject *parent)
     m_writer = new QProcess(this);
     m_reader = new QProcess(this);
     m_sizer = new QProcess(this);
+    m_free = new QProcess(this);
     m_extractor = new QProcess(this);
 }
 
@@ -25,9 +26,10 @@ void archiver::read()
             outputLines = returnText.split("\n", Qt::SkipEmptyParts);
             QStringList returnLines;
             if (sets.count() == 0) {
-                sets << outputLines.at(0);
+                sets << QString(outputLines.at(0)).prepend("/");
             }
             foreach (QString line, outputLines) {
+                line = line.prepend("/");
                 bool found = false;
                 foreach (QString set, sets) {
                     if (line.startsWith(set)) {
@@ -80,6 +82,7 @@ void archiver::getSizes()
             [=](int exitCode, QProcess::ExitStatus exitStatus) {
                 totalSize();
             });
+
     m_sizer->start(prog, args);
 }
 
@@ -92,6 +95,27 @@ void archiver::totalSize()
     emit archiveSize(total);
 }
 
+void archiver::getDestinationSpace(const QString &path)
+{
+    QString prog = "df";
+    QStringList args;
+    args << path;
+    m_free->setProcessChannelMode(QProcess::MergedChannels);
+    connect(m_free, &QProcess::readyReadStandardOutput, this, [=] {
+        QString returnText = m_free->readAllStandardOutput();
+        if (returnText != "") {
+            outputLines = returnText.split("\n", Qt::SkipEmptyParts);
+            if (outputLines.count() == 2) {
+                QStringList splits = outputLines.at(1).split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+                QString freeSpace = splits.at(3);
+                emit destinationSpace(freeSpace.toULong());
+            }
+        }
+    });
+
+    m_free->start(prog, args);
+}
+
 void archiver::write(const QStringList &files)
 {
     QString outFile = archivePath.append("/").append(createArchiveName());
@@ -99,6 +123,7 @@ void archiver::write(const QStringList &files)
     QStringList args;
     args << "--create" << "--gzip" << "--file" << outFile << files;
     m_writer->setProcessChannelMode(QProcess::ForwardedChannels);
+
     m_writer->start(prog, args);
 }
 
@@ -119,7 +144,7 @@ QString archiver::createArchiveName()
                       .append(architecture).append(" ").append(now).append(".tar.gz");
 }
 
-void archiver::setArchivePath(const QString filepath)
+void archiver::setArchivePath(const QString &filepath)
 {
     archivePath = filepath;
 }

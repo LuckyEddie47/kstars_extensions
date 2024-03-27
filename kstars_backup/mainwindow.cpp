@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QLocale>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,11 +12,14 @@ MainWindow::MainWindow(QWidget *parent)
     m_model = new QStringListModel(this);
     chosenPaths = new QStringList;
 
+    // Setup UI
     ui->setupUi(this);
     ui->addB->setIcon(QIcon::fromTheme("list-add"));
     ui->removeB->setIcon(QIcon::fromTheme("list-remove"));
     ui->listView->setModel(m_model);
-    ui->goB->setEnabled(false)    ;
+    ui->goB->setEnabled(false);
+    ui->progressBar->setVisible(false);
+    ui->statusL->setText(tr("Idle"));
     setNewPath("/tmp");
 
     connect(ui->modeB, &QPushButton::clicked, this, [this] {
@@ -24,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
             ui->modeB->setText(tr("Restore"));
             ui->addB->setEnabled(false);
             ui->removeB->setEnabled(false);
-            ui->goB->setText(tr("Restore from Bakcup"));
+            ui->goB->setText(tr("Restore from Backup"));
         } else if (mode == MODE_RESTORE) {
             mode = MODE_BACKUP;
             ui->modeB->setText(tr("Backup"));
@@ -97,9 +101,23 @@ MainWindow::MainWindow(QWidget *parent)
         ui->browseB->setEnabled(true);
         if (m_model->rowCount() > 0) {
             ui->goB->setEnabled(true);
+            ui->statusL->setText(tr("Getting size"));
         } else {
             ui->goB->setEnabled(false);
         }
+    });
+
+    connect(m_archiver, &archiver::archiveSize, this, [this] (ulong size) {
+        QLocale m_locale = this->locale();
+        QString displaySize = m_locale.formattedDataSize(size);
+        ui->statusL->setText(tr("Size: %1").arg(displaySize));
+        m_archiver->getDestinationSpace(m_model->stringList().at(0));
+    });
+
+    connect(m_archiver, &archiver::destinationSpace, this, [this] (ulong space) {
+        QLocale m_locale = this->locale();
+        QString displaySpace = m_locale.formattedDataSize(space);
+        ui->statusL->setText(ui->statusL->text().append(tr(" Free space: %1").arg(displaySpace)));
     });
 
     connect(ui->goB, &QPushButton::clicked, this, [this] {
@@ -117,6 +135,7 @@ void MainWindow::setNewPath(const QString &path)
     ui->pathL->setText(path);
     m_archiver->setArchivePath(path);
     if (mode == MODE_RESTORE && path.endsWith(".tar.gz")) {
+        ui->statusL->setText(tr("Reading archive"));
         m_archiver->read();
     }
 }
