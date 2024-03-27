@@ -39,6 +39,8 @@ else()
         add_executable(kstars_backup
             ${PROJECT_SOURCES}
             archiver.h archiver.cpp
+            confchecker.cpp confchecker.h
+            kstarsVersion.h
         )
     endif()
 endif()

@@ -137,7 +137,7 @@ void archiver::getSourceSize(const QStringList &paths)
         }
     });
 
-    m_free->start(prog, args);
+    m_used->start(prog, args);
 }
 
 void archiver::write(const QStringList &files)

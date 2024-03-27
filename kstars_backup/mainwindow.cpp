@@ -43,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent)
             ui->goB->setEnabled(false);
         }
         setNewPath("/tmp");
+        ui->statusL->setText(tr("Idle"));
+        ui->usedL->setText("");
+        ui->freeL->setText("");
     });
 
     connect(ui->addB, &QPushButton::clicked, this, [this] {
@@ -56,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
         if (m_model->rowCount() > 0) {
             ui->goB->setEnabled(true);
+            m_archiver->getSourceSize(m_model->stringList());
         } else {
             ui->goB->setEnabled(false);
         }
@@ -66,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
         m_model->setStringList(*chosenPaths);
         if (m_model->rowCount() > 0) {
             ui->goB->setEnabled(true);
+
         } else {
             ui->goB->setEnabled(false);
         }
@@ -110,19 +115,27 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_archiver, &archiver::archiveSize, this, [this] (ulong size) {
         QLocale m_locale = this->locale();
         QString displaySize = m_locale.formattedDataSize(size);
-        ui->statusL->setText(tr("Size: %1").arg(displaySize));
+        ui->usedL->setText(tr("Archive: %1").arg(displaySize));
         m_archiver->getDestinationSpace(m_model->stringList().at(0));
     });
 
     connect(m_archiver, &archiver::destinationSpace, this, [this] (ulong space) {
         QLocale m_locale = this->locale();
         QString displaySpace = m_locale.formattedDataSize(space);
-        ui->statusL->setText(ui->statusL->text().append(tr(" Free space: %1").arg(displaySpace)));
+        ui->freeL->setText(tr("Space: %1").arg(displaySpace));
+        ui->statusL->setText(tr("Idle"));
+    });
+
+    connect(m_archiver, &archiver::sourceSize, this, [this] (ulong used) {
+        QLocale m_locale = this->locale();
+        QString displayUsed = m_locale.formattedDataSize(used);
+        ui->usedL->setText(tr("Source(s): %1").arg(displayUsed));
+        ui->statusL->setText(tr("Idle"));
     });
 
     connect(ui->goB, &QPushButton::clicked, this, [this] {
         if (mode == MODE_BACKUP) {
-            m_archiver->write(QStringList("/home/ed/.local/share/kstars"));
+            m_archiver->write(m_model->stringList());
         } else if (mode ==MODE_RESTORE) {
             m_archiver->extract();
         }
@@ -137,6 +150,8 @@ void MainWindow::setNewPath(const QString &path)
     if (mode == MODE_RESTORE && path.endsWith(".tar.gz")) {
         ui->statusL->setText(tr("Reading archive"));
         m_archiver->read();
+    } else if (mode == MODE_BACKUP) {
+        m_archiver->getDestinationSpace(path);
     }
 }
 
