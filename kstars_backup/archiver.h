@@ -17,17 +17,20 @@ public:
     void getSizes();
     void totalSize();
     void getDestinationSpace(const QString &path);
+    void getSourceSize(const QStringList &paths);
 
 signals:
     void readSets(QStringList readSets);
     void archiveSize(ulong size);
     void destinationSpace(ulong size);
+    void sourceSize(ulong size);
 
 private:
     QProcess* m_writer;
     QProcess* m_reader;
     QProcess* m_sizer;
     QProcess* m_free;
+    QProcess* m_used;
     QProcess* m_extractor;
 
     QString archivePath = "";
