@@ -4,8 +4,9 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow w;
+    QApplication app(argc, argv);
+    app.setApplicationName("Backup");
+    MainWindow w(QString("%1%2%3").arg(app.applicationDirPath(), "/", app.applicationName()));
     w.show();
-    return a.exec();
+    return app.exec();
 }

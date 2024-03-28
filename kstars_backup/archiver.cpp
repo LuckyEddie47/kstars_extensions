@@ -5,6 +5,7 @@
 #include "archiver.h"
 
 #include <QDateTime>
+#include <QRegularExpression>
 
 archiver::archiver(QObject *parent)
     : QObject{parent}
@@ -74,7 +75,7 @@ void archiver::getSizes()
             outputLines = returnText.split("\n", Qt::SkipEmptyParts);
             QStringList sizes;
             foreach (QString line, outputLines) {
-                QStringList splits = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+                QStringList splits = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
                 sizes << splits.at(2);
             }
             foreach (QString size, sizes) {
@@ -111,7 +112,7 @@ void archiver::getDestinationSpace(const QString &path)
         if (returnText != "") {
             outputLines = returnText.split("\n", Qt::SkipEmptyParts);
             if (outputLines.count() == 2) {
-                QStringList splits = outputLines.at(1).split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+                QStringList splits = outputLines.at(1).split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
                 QString freeSpace = splits.at(3);
                 emit destinationSpace(freeSpace.toULong());
             }
@@ -131,7 +132,7 @@ void archiver::getSourceSize(const QStringList &paths)
         QString returnText = m_used->readAllStandardOutput();
         if (returnText != "") {
             outputLines = returnText.split("\n", Qt::SkipEmptyParts);
-            QStringList splits = outputLines.at(outputLines.count() - 1).split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+            QStringList splits = outputLines.at(outputLines.count() - 1).split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
             QString usedSpace = splits.at(0);
             emit sourceSize(usedSpace.toULong());
         }

@@ -23,6 +23,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(kstars_backup
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        archiver.cpp archiver.h confchecker.cpp confchecker.h kstarsVersion.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET kstars_backup APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

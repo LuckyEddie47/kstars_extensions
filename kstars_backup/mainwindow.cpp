@@ -4,10 +4,11 @@
 #include <QFileDialog>
 #include <QLocale>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(const QString &appFilePath, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    m_confChecker = new confChecker(appFilePath, this);
     m_archiver = new archiver(this);
     m_model = new QStringListModel(this);
     chosenPaths = new QStringList;

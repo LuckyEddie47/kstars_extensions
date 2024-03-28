@@ -5,6 +5,7 @@
 #include <QStringListModel>
 
 #include "archiver.h"
+#include "confchecker.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,11 +18,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(const QString &appFilePath, QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+    confChecker* m_confChecker;
     archiver* m_archiver;
     QStringListModel* m_model;
     QStringList* chosenPaths;
