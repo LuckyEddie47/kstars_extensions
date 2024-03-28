@@ -68,81 +68,16 @@ void confChecker::versionValidating()
     }
 }
 
-// Check that the configuration file has a valid Siril path
+// Read any paths from the configuration file
 void confChecker::pathValidating()
 {
     bool okayToProceed = false;
     confTS.seek(0);
     while (!confTS.atEnd()) {
         QString confLine = confTS.readLine();
-        if (confLine.contains("siril_path=")) {
-            sirilPath = confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
-            QFile Siril;
-            Siril.setFileName(sirilPath);
-            if (Siril.exists()) {
-                okayToProceed = true;
-            }
+        if (confLine.contains("path=")) {
+            paths << confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
         }
     }
-    if (okayToProceed) {
-        emit pathValid();
-        emit sirilPathIs(sirilPath);
-    } else {
-        emit errorMessage(QString("siril_path %1 in configuration file does not exist").arg(sirilPath));
-    }
-}
-
-// Check if the configuration file has a dark path
-void confChecker::darkChecking()
-{
-    QString darkPath = "";
-    confTS.seek(0);
-    while (!confTS.atEnd()) {
-        QString confLine = confTS.readLine();
-        if (confLine.contains("dark_path=")) {
-            QString testPath = confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
-            QFile dark;
-            dark.setFileName(testPath);
-            if (dark.exists()) {
-                darkPath = testPath;
-            }
-        }
-    }
-        emit darkPathIs(darkPath);
-        emit darkChecked();
-}
-
-// Check if the configuration file has a flat path
-void confChecker::flatChecking()
-{
-    QString flatPath = "";
-    confTS.seek(0);
-    while (!confTS.atEnd()) {
-        QString confLine = confTS.readLine();
-        if (confLine.contains("flat_path=")) {
-            QString testPath = confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
-            QFile flat;
-            flat.setFileName(testPath);
-            if (flat.exists()) {
-                flatPath = testPath;
-            }
-        }
-    }
-    emit flatPathIs(flatPath);
-    emit flatChecked();
-}
-
-// Check if the configuration file has a registration option
-void confChecker::registrationChecking()
-{
-    QString registrationMode = "";
-    confTS.seek(0);
-    while (!confTS.atEnd()) {
-        QString confLine = confTS.readLine();
-        if (confLine.contains("registration_mode=")) {
-            registrationMode = confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
-        }
-    }
-    emit registrationIs(registrationMode);
-    emit registrationChecked();
+        emit pathsFound(paths);
 }

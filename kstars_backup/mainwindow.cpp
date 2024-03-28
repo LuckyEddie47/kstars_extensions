@@ -142,6 +142,10 @@ MainWindow::MainWindow(const QString &appFilePath, QWidget *parent)
         }
     });
 
+    connect(m_confChecker, &confChecker::pathsFound, this, [this] (const QStringList &paths) {
+        m_model->setStringList(paths);
+    });
+
 }
 
 void MainWindow::setNewPath(const QString &path)
