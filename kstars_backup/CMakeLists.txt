@@ -72,3 +72,9 @@ install(TARGETS kstars_backup
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(kstars_backup)
 endif()
+
+add_custom_target(copy-test-makefile ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Backup.conf)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Backup.conf
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Backup.conf
+                                                    ${CMAKE_CURRENT_BINARY_DIR}/Backup.conf
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Backup.conf)

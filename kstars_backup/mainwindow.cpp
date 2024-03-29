@@ -71,7 +71,7 @@ MainWindow::MainWindow(const QString &appFilePath, QWidget *parent)
         m_model->setStringList(*chosenPaths);
         if (m_model->rowCount() > 0) {
             ui->goB->setEnabled(true);
-
+            m_archiver->getSourceSize(m_model->stringList());
         } else {
             ui->goB->setEnabled(false);
         }
@@ -143,8 +143,21 @@ MainWindow::MainWindow(const QString &appFilePath, QWidget *parent)
     });
 
     connect(m_confChecker, &confChecker::pathsFound, this, [this] (const QStringList &paths) {
-        m_model->setStringList(paths);
+        *chosenPaths = paths;
+        m_model->setStringList(*chosenPaths);
+        if (m_model->rowCount() > 0) {
+            ui->goB->setEnabled(true);
+            m_archiver->getSourceSize(m_model->stringList());
+        } else {
+            ui->goB->setEnabled(false);
+        }
     });
+
+    connect(m_confChecker, &confChecker::errorMessage, this, [this] (const QString errorDetail) {
+        ui->statusL->setText(errorDetail);
+    });
+
+    m_confChecker->start();
 
 }
 
