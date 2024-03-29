@@ -18,7 +18,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(const QString &appFilePath, QWidget *parent = nullptr);
+    MainWindow(const QString &appFilePath, const QString &ks_version = "", QWidget *parent = nullptr);
     ~MainWindow();
 
 private:

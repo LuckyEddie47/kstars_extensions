@@ -7,9 +7,11 @@
 #include <QDateTime>
 #include <QRegularExpression>
 
-archiver::archiver(QObject *parent)
+archiver::archiver(const QString &ks_version, QObject *parent)
     : QObject{parent}
 {
+    kstars_version = ks_version;
+
     m_writer = new QProcess(this);
     m_reader = new QProcess(this);
     m_sizer = new QProcess(this);
@@ -162,11 +164,14 @@ QString archiver::createArchiveName()
     QString hostName = QSysInfo::machineHostName();
     QString osVersion = QSysInfo::productVersion();
     QString architecture = QSysInfo::currentCpuArchitecture();
-    QString kstarsVersion = "";
     QString now = QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss");
-    return QString("KStars backup V").append(kstarsVersion).append(" ")
-                      .append(hostName).append(" ").append(osVersion).append(" ")
-                      .append(architecture).append(" ").append(now).append(".tar.gz");
+    QString outputName = "KStars backup ";
+    if (kstars_version != "") {
+        outputName.append("V").append(kstars_version).append(" ");
+    }
+    outputName.append(hostName).append(" ").append(osVersion).append(" ")
+              .append(architecture).append(" ").append(now).append(".tar.gz");
+    return outputName;
 }
 
 void archiver::setArchivePath(const QString &filepath)

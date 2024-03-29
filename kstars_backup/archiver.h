@@ -8,7 +8,7 @@ class archiver : public QObject
 {
     Q_OBJECT
 public:
-    explicit archiver(QObject *parent = nullptr);
+    explicit archiver(const QString &ks_version, QObject *parent = nullptr);
     QString createArchiveName();
     void setArchivePath(const QString &filepath);
     void read();
@@ -39,6 +39,7 @@ private:
     QStringList sizeLines;
     ulong total = 0;
     ulong space = 0;
+    QString kstars_version = "";
 };
 
 #endif // ARCHIVER_H
