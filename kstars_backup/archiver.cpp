@@ -113,8 +113,8 @@ void archiver::getDestinationSpace(const QString &path)
             outputLines = returnText.split("\n", Qt::SkipEmptyParts);
             if (outputLines.count() == 2) {
                 QStringList splits = outputLines.at(1).split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
-                QString freeSpace = splits.at(3);
-                emit destinationSpace(freeSpace.toULong());
+                ulong freeSpace = ((splits.at(3).toULong()) * 1024);
+                emit destinationSpace(freeSpace);
             }
         }
     });
@@ -133,8 +133,8 @@ void archiver::getSourceSize(const QStringList &paths)
         if (returnText != "") {
             outputLines = returnText.split("\n", Qt::SkipEmptyParts);
             QStringList splits = outputLines.at(outputLines.count() - 1).split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
-            QString usedSpace = splits.at(0);
-            emit sourceSize(usedSpace.toULong());
+            ulong usedSpace = ((splits.at(0).toULong()) * 1024);
+            emit sourceSize(usedSpace);
         }
     });
 
