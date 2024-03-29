@@ -74,12 +74,22 @@ void confChecker::versionValidating()
 // Read any paths from the configuration file
 void confChecker::pathValidating()
 {
-    bool okayToProceed = false;
+    QString home = "";
+    if (confFilePath.startsWith("/home/")) {
+        home = confFilePath;
+        while (home.count("/") > 2) {
+            home = home.left(home.lastIndexOf("/"));
+        }
+    }
     confTS.seek(0);
     while (!confTS.atEnd()) {
         QString confLine = confTS.readLine();
         if (confLine.contains("path=")) {
-            paths << confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
+            confLine = confLine.right(confLine.length() - (confLine.indexOf("=")) - 1);
+            if (confLine.startsWith("~")) {
+                confLine.replace("~", home);
+            }
+            paths << confLine;
         }
     }
         emit pathsFound(paths);
