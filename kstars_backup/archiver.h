@@ -24,6 +24,7 @@ signals:
     void archiveSize(ulong size);
     void destinationSpace(ulong size);
     void sourceSize(ulong size);
+    void done();
 
 private:
     QProcess* m_writer;

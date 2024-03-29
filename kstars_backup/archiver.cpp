@@ -150,13 +150,16 @@ void archiver::write(const QStringList &files)
     QStringList args;
     args << "-c" << "-z" << "-f" << outFile << files;
     m_writer->setProcessChannelMode(QProcess::ForwardedChannels);
+    connect(m_writer, &QProcess::finished, this, [this] {
+        emit done();
+    });
 
     m_writer->start(prog, args);
 }
 
 void archiver::extract()
 {
-
+    emit done();
 }
 
 QString archiver::createArchiveName()

@@ -134,10 +134,18 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         ui->statusL->setText(tr("Idle"));
     });
 
+    connect(m_archiver, &archiver::done, this, [this] {
+        ui->statusL->setText(tr("Idle"));
+        ui->goB->setEnabled(true);
+    });
+
     connect(ui->goB, &QPushButton::clicked, this, [this] {
+        ui->goB->setEnabled(false);
         if (mode == MODE_BACKUP) {
+            ui->statusL->setText(tr("Archiving..."));
             m_archiver->write(m_model->stringList());
         } else if (mode ==MODE_RESTORE) {
+            ui->statusL->setText("Restoring...");
             m_archiver->extract();
         }
     });
