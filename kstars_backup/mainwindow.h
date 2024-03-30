@@ -37,6 +37,7 @@ private:
     modeType mode = MODE_BACKUP;
 
     QString lastDir = "/tmp";
+    ulong archiveSize, spaceNeeded, spaceAvailable;
 
 };
 #endif // MAINWINDOW_H

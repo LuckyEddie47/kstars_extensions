@@ -18,6 +18,7 @@ archiver::archiver(const QString &ks_version, QObject *parent)
     m_free = new QProcess(this);
     m_used = new QProcess(this);
     m_extractor = new QProcess(this);
+    m_compressed = new QProcess(this);
 }
 
 void archiver::read()
@@ -143,12 +144,12 @@ void archiver::getSourceSize(const QStringList &paths)
     m_used->start(prog, args);
 }
 
-void archiver::write(const QStringList &files)
+void archiver::write(const QStringList &paths)
 {
     QString outFile = archivePath.append("/").append(createArchiveName());
     QString prog = "tar";
     QStringList args;
-    args << "-c" << "-z" << "-f" << outFile << files;
+    args << "-c" << "-z" << "-f" << outFile << paths;
     m_writer->setProcessChannelMode(QProcess::ForwardedChannels);
     connect(m_writer, &QProcess::finished, this, [this] {
         emit done();
@@ -159,7 +160,15 @@ void archiver::write(const QStringList &files)
 
 void archiver::extract()
 {
-    emit done();
+    QString prog = "tar";
+    QStringList args;
+    args << "-x" << "-z" << "-f" << archivePath;
+    m_extractor->setProcessChannelMode(QProcess::ForwardedChannels);
+    connect(m_extractor, &QProcess::finished, this, [this] {
+        emit done();
+    });
+
+    m_extractor->start(prog, args);
 }
 
 QString archiver::createArchiveName()
@@ -181,3 +190,4 @@ void archiver::setArchivePath(const QString &filepath)
 {
     archivePath = filepath;
 }
+

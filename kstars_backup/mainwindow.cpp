@@ -3,6 +3,7 @@
 
 #include <QFileDialog>
 #include <QLocale>
+#include <QMessageBox>
 
 MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QWidget *parent)
     : QMainWindow(parent)
@@ -114,6 +115,7 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
     });
 
     connect(m_archiver, &archiver::archiveSize, this, [this] (ulong size) {
+        archiveSize = size;
         QLocale m_locale = this->locale();
         QString displaySize = m_locale.formattedDataSize(size);
         ui->usedL->setText(tr("Archive: %1").arg(displaySize));
@@ -121,10 +123,15 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
     });
 
     connect(m_archiver, &archiver::destinationSpace, this, [this] (ulong space) {
+        spaceAvailable = space;
         QLocale m_locale = this->locale();
         QString displaySpace = m_locale.formattedDataSize(space);
         ui->freeL->setText(tr("Space: %1").arg(displaySpace));
         ui->statusL->setText(tr("Idle"));
+        if (archiveSize > spaceAvailable) {
+            ui->goB->setEnabled(false);
+            ui->statusL->setText(tr("Insufficient space"));
+        }
     });
 
     connect(m_archiver, &archiver::sourceSize, this, [this] (ulong used) {
@@ -145,8 +152,35 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
             ui->statusL->setText(tr("Archiving..."));
             m_archiver->write(m_model->stringList());
         } else if (mode ==MODE_RESTORE) {
-            ui->statusL->setText("Restoring...");
-            m_archiver->extract();
+            if (archiveSize > spaceAvailable) {
+                QMessageBox m_msgbox1(this);
+                m_msgbox1.setText(tr("It is recommended to create a new backup before restoring, "
+                                     "however there is insufficient space available."
+                                     "Continue without a new backup?"));
+                m_msgbox1.setStandardButtons(QMessageBox::Yes);
+                m_msgbox1.addButton((QMessageBox::No));
+                if (m_msgbox1.exec() == QMessageBox::Yes) {
+                    ui->statusL->setText("Restoring...");
+                    m_archiver->extract();
+                }
+            } else {
+                QMessageBox m_msgbox2(this);
+                m_msgbox2.setText(tr("It is recommended to create a new backup before restoring."
+                                     "Create a new backup?"));
+                m_msgbox2.setStandardButtons(QMessageBox::Yes);
+                m_msgbox2.addButton((QMessageBox::No));
+                if (m_msgbox2.exec() == QMessageBox::Yes) {
+                    ui->statusL->setText(tr("Archiving..."));
+                    m_archiver->write(m_model->stringList());
+                    connect(m_archiver, &archiver::done, this, [this] {
+                        ui->statusL->setText(tr("Restoring..."));
+                        m_archiver->extract();
+                    });
+                } else {
+                    ui->statusL->setText(tr("Restoring..."));
+                    m_archiver->extract();
+                }
+            }
         }
     });
 

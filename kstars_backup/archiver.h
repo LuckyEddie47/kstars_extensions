@@ -12,7 +12,7 @@ public:
     QString createArchiveName();
     void setArchivePath(const QString &filepath);
     void read();
-    void write(const QStringList &files);
+    void write(const QStringList &paths);
     void extract();
     void getSizes();
     void totalSize();
@@ -33,6 +33,7 @@ private:
     QProcess* m_free;
     QProcess* m_used;
     QProcess* m_extractor;
+    QProcess* m_compressed;
 
     QString archivePath = "";
     QStringList outputLines;
