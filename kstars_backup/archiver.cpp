@@ -26,7 +26,7 @@ void archiver::read()
     QString inFile = archivePath;
     QString prog = "tar";
     QStringList args;
-    args << "-t" << "-z" << "-f" << inFile;
+    args << "-t" << "-z" << "-P" << "-f" << inFile;
     m_reader->setProcessChannelMode(QProcess::MergedChannels);
 
     connect(m_reader, &QProcess::readyReadStandardOutput, this, [=] {
@@ -35,10 +35,10 @@ void archiver::read()
             outputLines = returnText.split("\n", Qt::SkipEmptyParts);
             QStringList returnLines;
             if (sets.count() == 0) {
-                sets << QString(outputLines.at(0)).prepend("/");
+                sets << QString(outputLines.at(0));
             }
             foreach (QString line, outputLines) {
-                line = line.prepend("/");
+//                line = line.prepend("/");
                 bool found = false;
                 foreach (QString set, sets) {
                     if (line.startsWith(set)) {
@@ -144,12 +144,18 @@ void archiver::getSourceSize(const QStringList &paths)
     m_used->start(prog, args);
 }
 
-void archiver::write(const QStringList &paths)
+void archiver::write(const QStringList &paths, bool newBeforeRestore)
 {
-    QString outFile = archivePath.append("/").append(createArchiveName());
+    QString outFile;
+    if (newBeforeRestore) {
+        outFile = archivePath.left(archivePath.lastIndexOf("/"));
+        outFile = outFile.append("/").append(createArchiveName());
+    } else {
+        outFile = archivePath.append("/").append(createArchiveName());
+    }
     QString prog = "tar";
     QStringList args;
-    args << "-c" << "-z" << "-f" << outFile << paths;
+    args << "-c" << "-z" << "-P" << "-f" << outFile << paths;
     m_writer->setProcessChannelMode(QProcess::ForwardedChannels);
     connect(m_writer, &QProcess::finished, this, [this] {
         emit done();
@@ -162,7 +168,7 @@ void archiver::extract()
 {
     QString prog = "tar";
     QStringList args;
-    args << "-x" << "-z" << "-f" << archivePath;
+    args << "-x" << "-z" << "-P" << "-f" << archivePath;
     m_extractor->setProcessChannelMode(QProcess::ForwardedChannels);
     connect(m_extractor, &QProcess::finished, this, [this] {
         emit done();

@@ -151,31 +151,31 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         if (mode == MODE_BACKUP) {
             ui->statusL->setText(tr("Archiving..."));
             m_archiver->write(m_model->stringList());
-        } else if (mode ==MODE_RESTORE) {
+        } else if (mode == MODE_RESTORE) {
             if (archiveSize > spaceAvailable) {
                 QMessageBox m_msgbox1(this);
                 m_msgbox1.setText(tr("It is recommended to create a new backup before restoring, "
-                                     "however there is insufficient space available."
+                                     "however there is insufficient space available.\n"
                                      "Continue without a new backup?"));
-                m_msgbox1.setStandardButtons(QMessageBox::Yes);
-                m_msgbox1.addButton((QMessageBox::No));
+                m_msgbox1.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+//                m_msgbox1.addButton((QMessageBox::No));
                 if (m_msgbox1.exec() == QMessageBox::Yes) {
                     ui->statusL->setText("Restoring...");
                     m_archiver->extract();
                 }
             } else {
                 QMessageBox m_msgbox2(this);
-                m_msgbox2.setText(tr("It is recommended to create a new backup before restoring."
+                m_msgbox2.setText(tr("It is recommended to create a new backup before restoring.\n"
                                      "Create a new backup?"));
-                m_msgbox2.setStandardButtons(QMessageBox::Yes);
-                m_msgbox2.addButton((QMessageBox::No));
+                m_msgbox2.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+//                m_msgbox2.addButton((QMessageBox::No));
                 if (m_msgbox2.exec() == QMessageBox::Yes) {
                     ui->statusL->setText(tr("Archiving..."));
-                    m_archiver->write(m_model->stringList());
+                    m_archiver->write(m_model->stringList(), true);
                     connect(m_archiver, &archiver::done, this, [this] {
                         ui->statusL->setText(tr("Restoring..."));
                         m_archiver->extract();
-                    });
+                        }, Qt::SingleShotConnection);
                 } else {
                     ui->statusL->setText(tr("Restoring..."));
                     m_archiver->extract();

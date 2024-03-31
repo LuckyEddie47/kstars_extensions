@@ -12,7 +12,7 @@ public:
     QString createArchiveName();
     void setArchivePath(const QString &filepath);
     void read();
-    void write(const QStringList &paths);
+    void write(const QStringList &paths, bool newBeforeRestore = false);
     void extract();
     void getSizes();
     void totalSize();
