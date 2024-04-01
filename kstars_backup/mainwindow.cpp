@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QLocale>
 #include <QMessageBox>
+#include <QTimer>
 
 MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QWidget *parent)
     : QMainWindow(parent)
@@ -153,31 +154,36 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
             m_archiver->write(m_model->stringList());
         } else if (mode == MODE_RESTORE) {
             if (archiveSize > spaceAvailable) {
-                QMessageBox m_msgbox1(this);
-                m_msgbox1.setText(tr("It is recommended to create a new backup before restoring, "
-                                     "however there is insufficient space available.\n"
-                                     "Continue without a new backup?"));
-                m_msgbox1.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-//                m_msgbox1.addButton((QMessageBox::No));
+                QMessageBox m_msgbox1(QMessageBox::Question,
+                                      tr("No room for backup"),
+                                      tr("It is recommended to create a new backup before restoring, "
+                                      "however there is insufficient space available.\n"
+                                      "Continue without a new backup?"),
+                                      QMessageBox::Yes | QMessageBox::No,
+                                      this);
+                m_msgbox1.setDefaultButton(QMessageBox::No);
                 if (m_msgbox1.exec() == QMessageBox::Yes) {
-                    ui->statusL->setText("Restoring...");
+                    ui->statusL->setText(tr("Restoring."));
                     m_archiver->extract();
                 }
             } else {
-                QMessageBox m_msgbox2(this);
-                m_msgbox2.setText(tr("It is recommended to create a new backup before restoring.\n"
-                                     "Create a new backup?"));
-                m_msgbox2.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-//                m_msgbox2.addButton((QMessageBox::No));
-                if (m_msgbox2.exec() == QMessageBox::Yes) {
-                    ui->statusL->setText(tr("Archiving..."));
+                QMessageBox m_msgbox2(QMessageBox::Question,
+                                      tr("Backup before restoring?"),
+                                      tr("It is recommended to create a new backup before restoring.\n"
+                                     "Create a new backup?"),
+                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                                      this);
+                m_msgbox2.setDefaultButton(QMessageBox::Yes);
+                int ret = m_msgbox2.exec();
+                if (ret == QMessageBox::Yes) {
+                    ui->statusL->setText(tr("Archiving."));
                     m_archiver->write(m_model->stringList(), true);
                     connect(m_archiver, &archiver::done, this, [this] {
-                        ui->statusL->setText(tr("Restoring..."));
+                        ui->statusL->setText(tr("Restoring."));
                         m_archiver->extract();
                         }, Qt::SingleShotConnection);
-                } else {
-                    ui->statusL->setText(tr("Restoring..."));
+                } else if (ret == QMessageBox::No) {
+                    ui->statusL->setText(tr("Restoring."));
                     m_archiver->extract();
                 }
             }
@@ -199,8 +205,19 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         ui->statusL->setText(errorDetail);
     });
 
-    m_confChecker->start();
+    QTimer *m_timer =new QTimer(this);
+    connect(m_timer, &QTimer::timeout, this, [this] {
+        if (ui->statusL->text().endsWith("...")) {
+            ui->statusL->setText(ui->statusL->text().left(ui->statusL->text().length() - 2));
+        } else if (ui->statusL->text().endsWith("..")) {
+            ui->statusL->setText(ui->statusL->text().append("."));
+        } else if (ui->statusL->text().endsWith(".")) {
+            ui->statusL->setText(ui->statusL->text().append("."));
+        }
+    });
+    m_timer->start(2000);
 
+    m_confChecker->start();
 }
 
 void MainWindow::setNewPath(const QString &path)
