@@ -12,6 +12,7 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
 {
     m_confChecker = new confChecker(appFilePath, this);
     m_archiver = new archiver(ks_version, this);
+    m_kstarsinterface = new kstarsinterface(this);
     m_model = new QStringListModel(this);
     chosenPaths = new QStringList;
 
@@ -205,6 +206,14 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         ui->statusL->setText(errorDetail);
     });
 
+    connect(m_kstarsinterface, &kstarsinterface::errorMessage, this, [this] (const QString errorDetail) {
+        ui->statusL->setText(errorDetail);
+    });
+
+    connect(m_kstarsinterface, &kstarsinterface::captureIdle, this, [this] {
+        m_confChecker->start();
+    });
+
     QTimer *m_timer =new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, [this] {
         if (ui->statusL->text().endsWith("...")) {
@@ -217,7 +226,7 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
     });
     m_timer->start(2000);
 
-    m_confChecker->start();
+    m_kstarsinterface->dbusAccessing();
 }
 
 void MainWindow::setNewPath(const QString &path)
@@ -230,6 +239,11 @@ void MainWindow::setNewPath(const QString &path)
     } else if (mode == MODE_BACKUP) {
         m_archiver->getDestinationSpace(path);
     }
+}
+
+void MainWindow::checkKStars()
+{
+
 }
 
 MainWindow::~MainWindow()

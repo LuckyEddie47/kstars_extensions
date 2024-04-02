@@ -6,6 +6,7 @@
 
 #include "archiver.h"
 #include "confchecker.h"
+#include "kstarsinterface.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,10 +26,12 @@ private:
     Ui::MainWindow *ui;
     confChecker* m_confChecker;
     archiver* m_archiver;
+    kstarsinterface* m_kstarsinterface;
     QStringListModel* m_model;
     QStringList* chosenPaths;
 
     void setNewPath(const QString &path);
+    void checkKStars();
 
     typedef enum modeType {
         MODE_BACKUP,

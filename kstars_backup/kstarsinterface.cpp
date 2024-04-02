@@ -17,7 +17,7 @@ kstarsinterface::kstarsinterface(QObject *parent)
 void kstarsinterface::dbusAccessing()
 {
     if (QDBusConnection::sessionBus().isConnected()) {
-        emit dbusAccessible();
+        kstarsAccessing();
     } else {
         emit errorMessage("Can not connect to DBus session interface, is the DBus deamon running?");
     }
@@ -28,7 +28,7 @@ void kstarsinterface::kstarsAccessing()
 {
     QDBusInterface interface(serviceName, "/", ksInterface, bus, this);
     if (interface.isValid()) {
-        emit kstarsAccessible();
+        schedulerChecking();
     } else {
         emit errorMessage("Can not connect to KStars DBus interface, is KStars running?");
     }
@@ -48,7 +48,7 @@ void kstarsinterface::schedulerChecking()
         case SCHEDULER_IDLE:
         case SCHEDULER_PAUSED:
         case SCHEDULER_ABORTED:
-            emit schedulerIdle();
+            captureChecking();
             break;
         default:
             emit errorMessage("Scheduler is in use");
