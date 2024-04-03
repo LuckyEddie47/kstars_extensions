@@ -29,3 +29,15 @@ install(TARGETS FC_launcher
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+add_custom_target(copy-conf ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/FC_launcher.conf)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/FC_launcher.conf
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/FC_launcher.conf
+                                                    ${CMAKE_CURRENT_BINARY_DIR}/FC_launcher.conf
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/FC_launcher.conf)
+
+add_custom_target(copy-icon ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/FC_launcher.png)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/FC_launcher.png
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/FC_launcher.png
+                                                    ${CMAKE_CURRENT_BINARY_DIR}/FC_launcher.png
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/FC_launcher.png)
