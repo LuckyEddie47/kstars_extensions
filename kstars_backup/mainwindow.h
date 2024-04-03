@@ -22,6 +22,9 @@ public:
     MainWindow(const QString &appFilePath, const QString &ks_version = "", QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void quit();
+
 private:
     Ui::MainWindow *ui;
     confChecker* m_confChecker;

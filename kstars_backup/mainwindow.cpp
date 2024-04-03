@@ -226,7 +226,20 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
     });
     m_timer->start(2000);
 
-    m_kstarsinterface->dbusAccessing();
+    QMessageBox m_msgbox3(QMessageBox::Question,
+                          tr("Close KStars?"),
+                          tr("To prevent files being used during the backup/restore "
+                             "process it is necessary to close KStars.\n"
+                             "Okay to proceed?"),
+                          QMessageBox::Yes | QMessageBox::No,
+                          this);
+    m_msgbox3.setDefaultButton(QMessageBox::No);
+    if (m_msgbox3.exec() == QMessageBox::Yes) {
+        m_kstarsinterface->dbusAccessing();
+    } else {
+        emit quit();
+    }
+
 }
 
 void MainWindow::setNewPath(const QString &path)
