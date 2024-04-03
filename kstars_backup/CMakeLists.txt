@@ -20,7 +20,7 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(kstars_backup
+    qt_add_executable(KS_backup
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         archiver.cpp archiver.h confchecker.cpp confchecker.h kstarsVersion.h
@@ -39,7 +39,7 @@ else()
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(kstars_backup
+        add_executable(KS_backup
             ${PROJECT_SOURCES}
             archiver.h archiver.cpp
             confchecker.cpp confchecker.h
@@ -48,16 +48,16 @@ else()
     endif()
 endif()
 
-target_link_libraries(kstars_backup PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
+target_link_libraries(KS_backup PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
                                             Qt${QT_VERSION_MAJOR}::DBus)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.kstars_backup)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.KS_backup)
 endif()
-set_target_properties(kstars_backup PROPERTIES
+set_target_properties(KS_backup PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -66,18 +66,24 @@ set_target_properties(kstars_backup PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS kstars_backup
+install(TARGETS KS_backup
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(kstars_backup)
+    qt_finalize_executable(KS_backup)
 endif()
 
-add_custom_target(copy-test-makefile ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Backup.conf)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Backup.conf
-                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Backup.conf
-                                                    ${CMAKE_CURRENT_BINARY_DIR}/Backup.conf
-                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Backup.conf)
+add_custom_target(copy-conf ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/KS_backup.conf)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/KS_backup.conf
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/KS_backup.conf
+                                                    ${CMAKE_CURRENT_BINARY_DIR}/KS_backup.conf
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/KS_backup.conf)
+
+add_custom_target(copy-icon ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/KS_backup.png)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/KS_backup.png
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/KS_backup.png
+                                                    ${CMAKE_CURRENT_BINARY_DIR}/KS_backup.png
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/KS_backup.png)
