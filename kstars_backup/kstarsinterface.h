@@ -19,6 +19,7 @@ public:
     void schedulerChecking();
     void captureChecking();
     void stopKStars();
+    void restartKStars();
     bool disconnectInterface();
 
 public slots:
@@ -34,11 +35,11 @@ signals:
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();
-    QDBusInterface *monInterface;
 
     QString cameraName = "";
     QString cameraInterface = "";
     int* capJobCount = 0;
+    bool haveShutdownKStars = false;
 
 signals:
 };

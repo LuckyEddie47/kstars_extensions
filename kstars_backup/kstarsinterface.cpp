@@ -2,15 +2,12 @@
 #include "kstarsDBusConf.h"
 
 #include <QtDBus>
+#include <QProcess>
+#include <QTimer>
 
 kstarsinterface::kstarsinterface(QObject *parent)
 {
-    // Create a long term DBus Interface to monitor status signals
-    QDBusInterface *monInterface = new QDBusInterface(serviceName, pathEkos, EkosInterface, QDBusConnection::sessionBus(), this);
-    if (monInterface->isValid()) {
-        connect(monInterface, SIGNAL(pluginStatusChanged(int)), this, SLOT(receiverStatusChanged(int)));
-        capJobCount = new int(0);
-    }
+
 }
 
 // Ephemeral test for usable DBus
@@ -107,10 +104,39 @@ void kstarsinterface::stopKStars()
         if ((args.count() == 1) && args.at(0).toBool()) {
             if (args.at(0).toBool() == true) {
                 emit stoppedKS();
+                haveShutdownKStars = true;
             } else {
                 emit errorMessage("Could not stop KStars");
             }
         }
     }
 
+}
+
+// Restart KStars on app.aboutToQuit
+// Note: we can't use QTimer::singleshot for the delays here as the event queue
+// is no longer accepting new calls
+void kstarsinterface::restartKStars()
+{
+    if (haveShutdownKStars) {
+        QProcess m_kstars;
+        QString prog = "kstars";
+        QStringList args;
+
+        // Start KStars
+        m_kstars.startDetached(prog, args);
+
+        // Open Ekos
+        QThread::sleep(3);
+        QDBusInterface showEkInterface(serviceName, showEkPath, qActionInterface);
+        if (showEkInterface.isValid()) {
+            QDBusMessage message = showEkInterface.call("trigger");
+        }
+        // Start INDI
+        QThread::sleep(1);
+        QDBusInterface ekInterface(serviceName, pathEkos, EkosInterface);
+        if (ekInterface.isValid()) {
+            QDBusMessage message = ekInterface.call("start");
+        }
+    }
 }

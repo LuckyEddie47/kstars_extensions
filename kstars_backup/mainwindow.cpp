@@ -22,7 +22,6 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
     ui->removeB->setIcon(QIcon::fromTheme("list-remove"));
     ui->listView->setModel(m_model);
     ui->goB->setEnabled(false);
-    ui->progressBar->setVisible(false);
     ui->statusL->setText(tr("Idle"));
     setNewPath("/tmp");
 
@@ -128,6 +127,7 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         spaceAvailable = space;
         QLocale m_locale = this->locale();
         QString displaySpace = m_locale.formattedDataSize(space);
+        ui->freeL->setVisible(true);
         ui->freeL->setText(tr("Space: %1").arg(displaySpace));
         ui->statusL->setText(tr("Idle"));
         if (archiveSize > spaceAvailable) {
@@ -203,11 +203,11 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
     });
 
     connect(m_confChecker, &confChecker::errorMessage, this, [this] (const QString errorDetail) {
-        ui->statusL->setText(errorDetail);
+        ui->logPTE->appendPlainText(errorDetail);
     });
 
     connect(m_kstarsinterface, &kstarsinterface::errorMessage, this, [this] (const QString errorDetail) {
-        ui->statusL->setText(errorDetail);
+        ui->logPTE->appendPlainText(errorDetail);
     });
 
     QTimer *m_timer =new QTimer(this);
@@ -241,9 +241,9 @@ void MainWindow::setNewPath(const QString &path)
     }
 }
 
-void MainWindow::checkKStars()
+void MainWindow::halt()
 {
-
+    m_kstarsinterface->restartKStars();
 }
 
 MainWindow::~MainWindow()

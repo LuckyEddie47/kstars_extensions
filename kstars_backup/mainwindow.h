@@ -22,6 +22,7 @@ public:
     MainWindow(const QString &appFilePath, const QString &ks_version = "", QWidget *parent = nullptr);
     ~MainWindow();
     void begin();
+    void halt();
 
 signals:
     void quit();
@@ -35,7 +36,6 @@ private:
     QStringList* chosenPaths;
 
     void setNewPath(const QString &path);
-    void checkKStars();
 
     typedef enum modeType {
         MODE_BACKUP,

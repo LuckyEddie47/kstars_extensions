@@ -27,5 +27,7 @@ int main(int argc, char *argv[])
         QMetaObject::invokeMethod(&app, "quit", Qt::QueuedConnection);
     }
 
+    QObject::connect(&app, &QApplication::aboutToQuit, &w, &MainWindow::halt);
+
     return app.exec();
 }
