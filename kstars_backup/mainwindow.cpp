@@ -202,13 +202,8 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         }
     });
 
-    connect(m_confChecker, &confChecker::errorMessage, this, [this] (const QString errorDetail) {
-        ui->logPTE->appendPlainText(errorDetail);
-    });
-
-    connect(m_kstarsinterface, &kstarsinterface::errorMessage, this, [this] (const QString errorDetail) {
-        ui->logPTE->appendPlainText(errorDetail);
-    });
+    connect(m_confChecker, &confChecker::errorMessage, this, &MainWindow::handleError);
+    connect(m_kstarsinterface, &kstarsinterface::errorMessage, this, &MainWindow::handleError);
 
     QTimer *m_timer =new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, [this] {
@@ -225,7 +220,7 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
 
 void MainWindow::begin()
 {
-    m_kstarsinterface->dbusAccessing();
+    m_kstarsinterface->checkDBus();
     m_confChecker->start();
 }
 
@@ -239,6 +234,16 @@ void MainWindow::setNewPath(const QString &path)
     } else if (mode == MODE_BACKUP) {
         m_archiver->getDestinationSpace(path);
     }
+}
+
+void MainWindow::handleError(const QString &errorDetail)
+{
+    ui->logPTE->appendPlainText(QString("Error: ").append(errorDetail));
+}
+
+void MainWindow::addLog(const QString &logMessage)
+{
+    ui->logPTE->appendPlainText(logMessage);
 }
 
 void MainWindow::halt()

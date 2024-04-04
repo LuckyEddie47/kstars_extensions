@@ -3,8 +3,6 @@
 #ifndef KSTARSINTERFACE_H
 #define KSTARSINTERFACE_H
 
-#include "ekosStatus.h"
-
 #include <QObject>
 #include <QtDBus>
 
@@ -14,13 +12,12 @@ class kstarsinterface : public QObject
 public:
     explicit kstarsinterface(QObject *parent = nullptr);
 
-    void dbusAccessing();
-    void kstarsAccessing();
-    void schedulerChecking();
-    void captureChecking();
+    void checkDBus();
+    void checkKStars();
+    void checkScheduler();
+    void checkCapture();
     void stopKStars();
     void restartKStars();
-    bool disconnectInterface();
 
 public slots:
 

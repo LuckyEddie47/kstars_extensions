@@ -23,6 +23,8 @@ public:
     ~MainWindow();
     void begin();
     void halt();
+    void handleError(const QString &errorDetail);
+    void addLog(const QString &logMessage);
 
 signals:
     void quit();

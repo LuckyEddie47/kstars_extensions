@@ -13,15 +13,11 @@ public:
 
 public slots:
     void start();
-//    void confExisting();
     void confAccessing();
     void versionValidating();
     void pathValidating();
 
 signals:
-//    void confExists();
-//    void confAccessible();
-//    void versionValid();
     void pathsFound(const QStringList &paths);
 
     void errorMessage(const QString errorDetail);

@@ -38,7 +38,6 @@ void archiver::read()
                 sets << QString(outputLines.at(0));
             }
             foreach (QString line, outputLines) {
-//                line = line.prepend("/");
                 bool found = false;
                 foreach (QString set, sets) {
                     if (line.startsWith(set)) {

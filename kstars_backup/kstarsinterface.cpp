@@ -1,5 +1,6 @@
 #include "kstarsinterface.h"
 #include "kstarsDBusConf.h"
+#include "ekosStatus.h"
 
 #include <QtDBus>
 #include <QProcess>
@@ -11,28 +12,28 @@ kstarsinterface::kstarsinterface(QObject *parent)
 }
 
 // Ephemeral test for usable DBus
-void kstarsinterface::dbusAccessing()
+void kstarsinterface::checkDBus()
 {
     if (QDBusConnection::sessionBus().isConnected()) {
-        kstarsAccessing();
+        checkKStars();
     } else {
         emit errorMessage("Can not connect to DBus session interface, is the DBus deamon running?");
     }
 }
 
 // Ephemeral test for running KStars
-void kstarsinterface::kstarsAccessing()
+void kstarsinterface::checkKStars()
 {
     QDBusInterface interface(serviceName, "/", ksInterface, bus, this);
     if (interface.isValid()) {
-        schedulerChecking();
+        checkScheduler();
     } else {
         emit errorMessage("Can not connect to KStars DBus interface, is KStars running?");
     }
 }
 
 // Ephemeral test for idle Ekos Scheduler
-void kstarsinterface::schedulerChecking()
+void kstarsinterface::checkScheduler()
 {
     SchedulerState m_state = SCHEDULER_UNKNOWN;
     QDBusInterface interface(serviceName, pathScheduler);
@@ -45,7 +46,7 @@ void kstarsinterface::schedulerChecking()
         case SCHEDULER_IDLE:
         case SCHEDULER_PAUSED:
         case SCHEDULER_ABORTED:
-            captureChecking();
+            checkCapture();
             break;
         default:
             emit errorMessage("Scheduler is in use");
@@ -56,7 +57,7 @@ void kstarsinterface::schedulerChecking()
 }
 
 // Ephemeral test for idle Ekos Capture Module
-void kstarsinterface::captureChecking()
+void kstarsinterface::checkCapture()
 {
     CaptureState m_state = CAPTURE_UNKNOWN;
     QDBusInterface interface(serviceName, pathCapture);
