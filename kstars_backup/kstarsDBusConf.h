@@ -14,5 +14,9 @@ QString pathScheduler = "/KStars/Ekos/Scheduler";
 QString pathINDIgeneric = "/KStars/INDI/GenericDevice";
 QString introspectable = "org.freedesktop.DBus.Introspectable";
 QString INDIgeneric = "org.kde.kstars.INDI.GenericDevice";
+QString pathKStars = "/KStars";
+QString ksmwInterface = "org.kde.KMainWindow";
+QString showEkPath = "/kstars/MainWindow_1/actions/show_ekos";
+QString qActionInterface = "org.qtproject.Qt.QAction";
 
 #endif // KSTARSDBUSCONF_H

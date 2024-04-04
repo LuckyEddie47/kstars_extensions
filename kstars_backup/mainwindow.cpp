@@ -210,10 +210,6 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         ui->statusL->setText(errorDetail);
     });
 
-    connect(m_kstarsinterface, &kstarsinterface::captureIdle, this, [this] {
-        m_confChecker->start();
-    });
-
     QTimer *m_timer =new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, [this] {
         if (ui->statusL->text().endsWith("...")) {
@@ -225,21 +221,12 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         }
     });
     m_timer->start(2000);
+}
 
-    QMessageBox m_msgbox3(QMessageBox::Question,
-                          tr("Close KStars?"),
-                          tr("To prevent files being used during the backup/restore "
-                             "process it is necessary to close KStars.\n"
-                             "Okay to proceed?"),
-                          QMessageBox::Yes | QMessageBox::No,
-                          this);
-    m_msgbox3.setDefaultButton(QMessageBox::No);
-    if (m_msgbox3.exec() == QMessageBox::Yes) {
-        m_kstarsinterface->dbusAccessing();
-    } else {
-        emit quit();
-    }
-
+void MainWindow::begin()
+{
+    m_kstarsinterface->dbusAccessing();
+    m_confChecker->start();
 }
 
 void MainWindow::setNewPath(const QString &path)

@@ -21,6 +21,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(const QString &appFilePath, const QString &ks_version = "", QWidget *parent = nullptr);
     ~MainWindow();
+    void begin();
 
 signals:
     void quit();

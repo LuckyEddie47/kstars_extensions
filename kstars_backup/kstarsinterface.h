@@ -18,10 +18,10 @@ public:
     void kstarsAccessing();
     void schedulerChecking();
     void captureChecking();
+    void stopKStars();
     bool disconnectInterface();
 
 public slots:
-    void receiverStatusChanged(int status);
 
 signals:
     void dbusAccessible();
@@ -30,6 +30,7 @@ signals:
     void captureIdle();
     void errorMessage(QString errorDetail);
     void stopSession();
+    void stoppedKS();
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();

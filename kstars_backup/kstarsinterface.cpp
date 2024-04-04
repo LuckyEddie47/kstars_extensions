@@ -73,7 +73,7 @@ void kstarsinterface::captureChecking()
         case CAPTURE_IDLE:
         case CAPTURE_COMPLETE:
         case CAPTURE_ABORTED:
-            emit captureIdle();
+            stopKStars();
             break;
         default:
             emit errorMessage("Capture module is in use");
@@ -83,10 +83,34 @@ void kstarsinterface::captureChecking()
     }
 }
 
-// Handle Ekos status changes
-void kstarsinterface::receiverStatusChanged(int status)
+// Shutdown KStars
+void kstarsinterface::stopKStars()
 {
-    if (status == PLUGIN_STOP_REQUESTED) {
-        emit stopSession();
+    // Disconnect INDI, stop Ekos
+    QDBusInterface ekInterface(serviceName, pathEkos, EkosInterface);
+    if (ekInterface.isValid()) {
+        QDBusMessage message = ekInterface.call("disconnectDevices");
+        QDBusMessage message2 = ekInterface.call("stop");
     }
+
+    // Close Ekos
+    QDBusInterface showEkInterface(serviceName, showEkPath, qActionInterface);
+    if (showEkInterface.isValid()) {
+        QDBusMessage message = showEkInterface.call("trigger");
+    }
+
+    // Quit KStars
+    QDBusInterface interface(serviceName, pathKStars, ksmwInterface);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("activateAction", "quit");
+        QList<QVariant> args = message.arguments();
+        if ((args.count() == 1) && args.at(0).toBool()) {
+            if (args.at(0).toBool() == true) {
+                emit stoppedKS();
+            } else {
+                emit errorMessage("Could not stop KStars");
+            }
+        }
+    }
+
 }
