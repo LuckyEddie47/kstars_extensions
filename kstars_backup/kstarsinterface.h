@@ -11,7 +11,6 @@ class kstarsinterface : public QObject
     Q_OBJECT
 public:
     explicit kstarsinterface(QObject *parent = nullptr);
-
     void checkDBus();
     void checkKStars();
     void checkScheduler();
@@ -32,13 +31,7 @@ signals:
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();
-
-    QString cameraName = "";
-    QString cameraInterface = "";
-    int* capJobCount = 0;
     bool haveShutdownKStars = false;
-
-signals:
 };
 
 #endif // KSTARSINTERFACE_H
