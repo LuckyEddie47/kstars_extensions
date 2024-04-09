@@ -5,7 +5,7 @@ logger::logger(QObject *parent)
     : QObject{parent}
 {}
 
-void logger::out(QString output)
+void logger::out(const QString &output)
 {
     qDebug().noquote() << output;
 }

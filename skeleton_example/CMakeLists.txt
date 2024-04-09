@@ -19,7 +19,7 @@ add_executable(example
   kstarsDBusConf.h
   ekosStatus.h
   process.h process.cpp
-  bombout.h
+  confchecker.cpp confchecker.h
 
 )
 target_link_libraries(example Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus)

@@ -1,110 +1,78 @@
 #include "kstarsinterface.h"
 #include "kstarsDBusConf.h"
 
-#include <QtDBus>
+//#include <QtDBus>
 
 kstarsinterface::kstarsinterface(QObject *parent)
 {
-    // Create a long term DBus Interface to monitor status signals
+    // Create a long term DBus Interface to monitor status signals from KStars
     QDBusInterface *monInterface = new QDBusInterface(serviceName, pathEkos, EkosInterface, QDBusConnection::sessionBus(), this);
     if (monInterface->isValid()) {
-        connect(monInterface, SIGNAL(pluginStatusChanged(int)), this, SLOT(receiverStatusChanged(int)));
+
+        // Accessing DBus directly means that the attributes of methods and properties can not be discovered at compile time,
+        // so we have to use the older syntax for QOject::connect
+ //       monInterface->connection().connect(QString(), QString(), EkosInterface, "extensionStatusChanged", this, SLOT(receiverStatusChanged(bool)));
+
+        connect(monInterface, SIGNAL(extensionStatusChanged(bool)), this, SLOT(receiverStatusChanged(bool)));
+//        connect(monInterface, SIGNAL(extensionStatusChanged(bool)), this, [this] {
+//            receiverStatusChanged(true);
+//        });
     }
+
+//    bus.registerObject("/", this);
+//    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(QDBusMessage)));
+
 }
 
-// Ephemeral test for usable DBus
-bool kstarsinterface::checkDBus()
+bool kstarsinterface::kstarsStateIsValid()
 {
-    if (QDBusConnection::sessionBus().isConnected()) return true;
-    else return false;
-}
+    bool isValid = false;
 
-// Ephemeral test for running KStars
-bool kstarsinterface::checkKStarsService()
-{
-    QDBusInterface interface(serviceName, "/", ksInterface, bus, this);
-    if (interface.isValid()) return true;
-    else return false;
-}
-
-// Ephemeral test for idle Ekos Scheduler
-SchedulerState kstarsinterface::checkSchedulerStatus()
-{
-    SchedulerState m_state = SCHEDULER_UNKNOWN;
-    QDBusInterface interface(serviceName, pathScheduler);
-    if (interface.isValid()) {
-        m_state = static_cast<SchedulerState>(interface.property("status").toInt());
-    }
-    return m_state;
-}
-
-// Ephemeral test for idle Ekos Capture Module
-CaptureState kstarsinterface::checkCaptureStatus()
-{
-    CaptureState m_state = CAPTURE_UNKNOWN;
-    QDBusInterface interface(serviceName, pathCapture);
-    if (interface.isValid()) {
-        m_state = static_cast<CaptureState>(interface.property("status").toInt());
-    }
-    return m_state;
-}
-
-// Get the current Ekos Capture Module camera name
-void kstarsinterface::getCamera()
-{
-    QDBusInterface interface(serviceName, pathCapture);
-    if (interface.isValid()) {
-        cameraName = static_cast<QString>(interface.property("camera").toString());
-    }
-}
-
-// Disconnect the INDI driver for the camera named in the Ekos Capture Module
-bool kstarsinterface::disconnectCamera()
-{
-    bool result = false;
-
-    getCamera();
-
-    QDBusInterface interface(serviceName, pathINDIgeneric, introspectable);
-    QDBusMessage message = interface.call("Introspect");
-    QList<QVariant> args = message.arguments();
-    QStringList messageParts = args[0].toString().split("\n");
-    QStringList nodes;
-    foreach (QString part, messageParts) {
-        if (part.contains("node name")) {
-            int lchop = (part.indexOf('"') + 1);
-            int rchop = part.lastIndexOf('"');
-            rchop -= lchop;
-            nodes.append(part.mid(lchop, rchop));
+    if (bus.isConnected()) {
+        QDBusInterface m_ksInterface(serviceName, "/", ksInterface, bus, this);
+        if (m_ksInterface.isValid()) {
+            isValid = true;
+        } else {
+            emit errorMessage("Can't access KStars over DBus.");
         }
+    } else {
+        emit errorMessage("Can't access DBus sessionBus");
     }
-    foreach (QString node, nodes) {
-        QString devPath = pathINDIgeneric;
-        devPath.append("/").append(node);
-        QDBusInterface interfaceDev(serviceName, devPath);
-        QString nodeName = static_cast<QString>(interfaceDev.property("name").toString());
-        if (nodeName == cameraName) {
-            cameraInterface = interfaceDev.path();
-            QDBusMessage messageDisconnect = interfaceDev.call("Disconnect");
-            result = true;
-            break;
-        }
-    }
-    return result;
+
+    return isValid;
 }
 
-// Reconnect the previously disconnected camera INDI driver
-void kstarsinterface::reconnectCamera() {
-    if (cameraName != "") {
-        QDBusInterface interfaceCam(serviceName, cameraInterface);
-        QDBusMessage messageResconnect = interfaceCam.call("Connect");
+// Handle Ekos status changes
+void kstarsinterface::receiverStatusChanged(bool status)
+{
+    Q_UNUSED(status);
+    // For this example we're only looking for an instruction to stop
+    QDBusInterface interface(serviceName, pathEkos, EkosInterface);
+    if (interface.isValid()) {
+        QDBusMessage m_message = interface.call("extensionStatus");
+      QList<QVariant> args = m_message.arguments();
+        if ((args.count() == 1) && args.at(0).toInt()) {
+            if (EXTENSION_STOP_REQUESTED == args.at(0).toInt())
+            {
+                emit exitRequested();
+            }
+        }
     }
 }
 
 // Handle Ekos status changes
-void kstarsinterface::receiverStatusChanged(pluginState status)
-{
-    if (status == PLUGIN_STOP_REQUESTED) {
-        emit stopSession();
-    }
-}
+//void kstarsinterface::receiverStatusChanged()
+//{
+//    // For this example we're only looking for an instruction to stop
+//    QDBusInterface interface(serviceName, pathEkos, EkosInterface);
+//    if (interface.isValid()) {
+//        QDBusMessage message = interface.call("extensionStatus");
+//        QList<QVariant> args = message.arguments();
+//        if ((args.count() == 1) && args.at(0).toInt()) {
+//            if (EXTENSION_STOP_REQUESTED == args.at(0).toInt())
+//            {
+//                emit exitRequested();
+//            }
+//        }
+//    }
+//}
