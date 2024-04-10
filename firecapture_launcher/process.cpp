@@ -32,5 +32,5 @@ void process::startProgram(QString path)
 // Close FireCapture
 void process::stopProgram()
 {
-    programProcess.close();
+    programProcess.terminate();
 }

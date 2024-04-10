@@ -21,15 +21,14 @@ public:
     bool disconnectCamera();
     void reconnectCamera();
 
-public slots:
-    void receiverStatusChanged(pluginState status);
-
 signals:
-    void stopSession();
+    void exitRequested();
+
+private slots:
+    void receiverStatusChanged(bool status);
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();
-    QDBusInterface *monInterface;
     void getCamera();
 
     QString cameraName = "";

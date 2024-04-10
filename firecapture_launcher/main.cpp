@@ -10,7 +10,7 @@
 #include "bombout.h"
 
 // This is the earlies versin of KStars that this plugin targets
-#define MIN_KSTARS_VERSION "3.7.0"
+#define MIN_KSTARS_VERSION "3.7.1"
 
 int main(int argc, char *argv[])
 {
@@ -155,18 +155,18 @@ int main(int argc, char *argv[])
        };
    }
 
-   QObject::connect(&m_kstarsinterface, &kstarsinterface::stopSession, &m_process, &process::stopProgram);
+   QObject::connect(&m_kstarsinterface, &kstarsinterface::exitRequested, &m_process, &process::stopProgram);
 
    // Setup FireCapture, connect to status and when closed
    // reconnect the camera INDI driver
    if (okayToProceed) {
 
-       QObject::connect(&m_process, &process::programStarted, [&m_log] () {
+       QObject::connect(&m_process, &process::programStarted, &app, [&m_log] () {
            m_log.out("FireCapture started");
        });
 
-       QObject::connect(&m_process, &process::programFinished, [&m_kstarsinterface, &m_log, &app] () {
-           m_log.out("FireCapture closed, reconnecting camera");
+       QObject::connect(&m_process, &process::programFinished, &app, [&m_kstarsinterface, &m_log, &app] () {
+           m_log.out("Reconnecting camera");
            m_kstarsinterface.reconnectCamera();
            m_log.out("All done");
            bombout();
