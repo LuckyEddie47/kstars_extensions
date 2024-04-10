@@ -1,19 +1,5 @@
-Configuration file for the FireCapture Launcher extension for KStars
---------------------------------------------------------------------
-
-The next line is mandatory and must not be altered.
-
-----------------------------
-minimum_kstars_version=3.7.1
-----------------------------
-
-The next line defines where to find FireCapture on your system.
-This should be adjusted as required.
-
------------------------------------------------
-firecapture_path=/opt/FireCapture_v2.7/start.sh
------------------------------------------------
-
+﻿# KStars extensions
+## firecapture launcher
 Extension summary
 -----------------
 The purpose of this extension is to ease the workflow of using KStars/Ekos
