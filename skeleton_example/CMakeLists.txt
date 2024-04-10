@@ -35,9 +35,3 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/example.conf
                    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/example.conf
                                                     ${CMAKE_CURRENT_BINARY_DIR}/example.conf
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/example.conf)
-
-add_custom_target(copy-icon ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/example.png)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/example.png
-                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/example.png
-                                                    ${CMAKE_CURRENT_BINARY_DIR}/example.png
-                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/example.png)
