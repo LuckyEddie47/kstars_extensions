@@ -9,7 +9,6 @@
 #ifndef KSTARSINTERFACE_H
 #define KSTARSINTERFACE_H
 
-#include "ekosStatus.h"
 #include <QtDBus>
 
 class kstarsinterface : public QObject
@@ -20,17 +19,16 @@ public:
 
 public slots:
     bool kstarsStateIsValid();
-    void receiverStatusChanged(bool status);
 
 signals:
     void errorMessage(const QString errorDetail);
     void exitRequested();
 
+private slots:
+    void receiverStatusChanged(bool status);
+
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();
-    QDBusInterface *monInterface;
-//    void receiverStatusChanged(bool status);
-//    void receiverStatusChanged();
 };
 
 #endif // KSTARSINTERFACE_H
