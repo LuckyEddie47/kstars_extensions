@@ -1,5 +1,5 @@
 ﻿# KStars extensions
-## firecapture launcher
+## firecapture_launcher
 Extension summary
 -----------------
 The purpose of this extension is to ease the workflow of using KStars/Ekos
