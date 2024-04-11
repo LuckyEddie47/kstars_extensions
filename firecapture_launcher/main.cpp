@@ -78,16 +78,16 @@ int main(int argc, char *argv[])
                         if (FC.exists()) {
                             okayToProceed = true;
                         } else {
-                            qDebug() << (QString("Conf file %1 contains path '%2' which does not exist")
+                            m_log.out(QString("Conf file %1 contains path '%2' which does not exist")
                                              .arg(confFileName, FCpath));
                             bombout();
                         }
                     }
                 }
-            } else qDebug() << QString(".conf file %1 does not contain a valid minimum_kstars_version string").append(confFileName);
-        } else qDebug() << QString("Can't access .conf file %1").arg(confFileName);
-    } else qDebug() << QString(".conf file %1 disappeared").arg(confFileName);
-    if (okayToProceed) qDebug() << QString("Configuration file is okay");
+            } else m_log.out(QString(".conf file %1 does not contain a valid minimum_kstars_version string").append(confFileName));
+        } else m_log.out(QString("Can't access .conf file %1").arg(confFileName));
+    } else m_log.out(QString(".conf file %1 disappeared").arg(confFileName));
+    if (okayToProceed) m_log.out(QString("Configuration file is okay"));
     else bombout();
 
 
@@ -172,8 +172,13 @@ int main(int argc, char *argv[])
            bombout();
        });
 
-       m_log.out("Starting FireCapture");
-       m_process.startProgram(FCpath);
+       if (m_process.startScriptUpToDate(FCpath)) {
+           m_log.out("Starting FireCapture");
+           m_process.startProgram(FCpath);
+       } else {
+           m_log.out("FireCapture start script does not support --no-confirm and can not be patched");
+           bombout();
+       }
    }
 
    return app.exec();

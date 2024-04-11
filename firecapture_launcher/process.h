@@ -11,7 +11,8 @@ class process : public QObject
     Q_OBJECT
 public:
     explicit process(QObject *parent = nullptr);
-    void startProgram(QString path);
+    bool startScriptUpToDate(const QString &path);
+    void startProgram(const QString &path);
     void stopProgram();
 
 signals:
