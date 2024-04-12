@@ -7,9 +7,7 @@
 #include <QTimer>
 
 kstarsinterface::kstarsinterface(QObject *parent)
-{
-
-}
+{}
 
 // Ephemeral test for usable DBus
 void kstarsinterface::checkDBus()
@@ -17,7 +15,7 @@ void kstarsinterface::checkDBus()
     if (QDBusConnection::sessionBus().isConnected()) {
         checkKStars();
     } else {
-        emit errorMessage("Can not connect to DBus session interface, is the DBus deamon running?");
+        emit errorMessage(tr("Can not connect to DBus session interface, is the DBus deamon running?"));
     }
 }
 
@@ -28,7 +26,7 @@ void kstarsinterface::checkKStars()
     if (interface.isValid()) {
         checkScheduler();
     } else {
-        emit errorMessage("Can not connect to KStars DBus interface, is KStars running?");
+        emit errorMessage(tr("Can not connect to KStars DBus interface, is KStars running?"));
     }
 }
 
@@ -41,7 +39,7 @@ void kstarsinterface::checkScheduler()
         m_state = static_cast<SchedulerState>(interface.property("status").toInt());
         switch (m_state) {
         case SCHEDULER_UNKNOWN:
-            emit errorMessage("Could not determine the state of the Scheduler");
+            emit errorMessage(tr("Could not determine the state of the Scheduler"));
             break;
         case SCHEDULER_IDLE:
         case SCHEDULER_PAUSED:
@@ -49,10 +47,10 @@ void kstarsinterface::checkScheduler()
             checkCapture();
             break;
         default:
-            emit errorMessage("Scheduler is in use");
+            emit errorMessage(tr("Scheduler is in use"));
         };
     } else {
-        emit errorMessage("Could not determine the state of the Scheduler");
+        emit errorMessage(tr("Could not determine the state of the Scheduler"));
     }
 }
 
@@ -66,7 +64,7 @@ void kstarsinterface::checkCapture()
         switch (m_state)
         {
         case CAPTURE_UNKNOWN:
-            emit errorMessage("Could not determine the state of the Capture module");
+            emit errorMessage(tr("Could not determine the state of the Capture module"));
             break;
         case CAPTURE_IDLE:
         case CAPTURE_COMPLETE:
@@ -74,10 +72,10 @@ void kstarsinterface::checkCapture()
             stopKStars();
             break;
         default:
-            emit errorMessage("Capture module is in use");
+            emit errorMessage(tr("Capture module is in use"));
         };
     } else {
-        emit errorMessage("Could not determine the state of the Capture module");
+        emit errorMessage(tr("Could not determine the state of the Capture module"));
     }
 }
 
@@ -107,11 +105,10 @@ void kstarsinterface::stopKStars()
                 emit stoppedKS();
                 haveShutdownKStars = true;
             } else {
-                emit errorMessage("Could not stop KStars");
+                emit errorMessage(tr("Could not stop KStars"));
             }
         }
     }
-
 }
 
 // Restart KStars on app.aboutToQuit

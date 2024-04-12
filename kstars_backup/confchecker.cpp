@@ -13,7 +13,7 @@ void confChecker::start()
     if (confFile.exists()) {
         confAccessing();
     } else {
-        emit errorMessage(QString("Configuration file %1 does not exist").arg(confFilePath));
+        emit errorMessage(tr("Configuration file %1 does not exist").arg(confFilePath));
     }
 }
 
@@ -23,7 +23,7 @@ void confChecker::confAccessing()
     if (confFile.open(QIODevice::ReadOnly) && confFile.isReadable()) {
         versionValidating();
     } else {
-        emit errorMessage(QString("Configuration file %1 is not accessible").arg(confFilePath));
+        emit errorMessage(tr("Configuration file %1 is not accessible").arg(confFilePath));
     }
 }
 
@@ -64,7 +64,7 @@ void confChecker::versionValidating()
     if (okayToProceed) {
         pathValidating();
     } else {
-        emit errorMessage("KStars version incompatible");
+        emit errorMessage(tr("KStars version incompatible"));
     }
 }
 

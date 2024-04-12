@@ -33,7 +33,6 @@ void archiver::read()
         QString returnText = m_reader->readAllStandardOutput();
         if (returnText != "") {
             outputLines = returnText.split("\n", Qt::SkipEmptyParts);
-            QStringList returnLines;
             if (sets.count() == 0) {
                 sets << QString(outputLines.at(0));
             }
