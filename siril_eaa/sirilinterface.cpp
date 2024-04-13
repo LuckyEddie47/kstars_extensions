@@ -167,9 +167,9 @@ void sirilinterface::readMessage()
 {
     char buffer[4096];
     QByteArray messageBA;
-    ssize_t bytesRead;
+//    ssize_t bytesRead;
     while (messagePipe->read(buffer, sizeof(buffer)) > 0) {
-        messageBA.append(buffer, bytesRead);
+        messageBA.append(buffer); //, bytesRead);
     }
     if (!messageBA.isEmpty()) {
         if (messageBA.contains("\n")) {

@@ -140,7 +140,7 @@ void statemachine::createMachine()
 void statemachine::handleError(QString errorMessage)
 {
     m_logger->out(errorMessage);
-    m_logger->out("Closing extension");
     m_kstarsinterface->captureStopAndReset();
     m_sirilinterface->sendSirilCommand("exit");
+    bombout();
 }
