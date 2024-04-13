@@ -35,3 +35,15 @@ install(TARGETS Siril_EAA
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+add_custom_target(copy-conf ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Siril_EAA.conf)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Siril_EAA.conf
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Siril_EAA.conf
+                                                    ${CMAKE_CURRENT_BINARY_DIR}/Siril_EAA.conf
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Siril_EAA.conf)
+
+add_custom_target(copy-icon ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Siril_EAA.png)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Siril_EAA.png
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Siril_EAA.png
+                                                    ${CMAKE_CURRENT_BINARY_DIR}/Siril_EAA.png
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Siril_EAA.png)

@@ -1,16 +1,19 @@
 #include "kstarsinterface.h"
 #include "kstarsDBusConf.h"
+#include "ekosStatus.h"
 
 #include <QtDBus>
 
 kstarsinterface::kstarsinterface(QObject *parent)
 {
-    // Create a long term DBus Interface to monitor status signals
-    QDBusInterface *monInterface = new QDBusInterface(serviceName, pathEkos, EkosInterface, QDBusConnection::sessionBus(), this);
-    if (monInterface->isValid()) {
-        connect(monInterface, SIGNAL(pluginStatusChanged(int)), this, SLOT(receiverStatusChanged(int)));
-        capJobCount = new int(0);
-    }
+    /* Watch for the extensionStatusChanged DBus signal,
+     * this is emitted when the extension start/stop button is clicked in Ekos.
+     * Note that the DBus message attributes can not be discovered until runtime,
+     * therefore we have to use the 'old' string connect syntax and can not call
+     * a lambda.
+     */
+    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(bool)));
+    capJobCount = new int(0);
 }
 
 // Ephemeral test for usable DBus
@@ -105,11 +108,16 @@ void kstarsinterface::openFITSfile(const QString &filePath)
     }
 }
 
-// Handle Ekos status changes
-void kstarsinterface::receiverStatusChanged(int status)
+void kstarsinterface::receiverStatusChanged(bool status)
 {
-    if (status == PLUGIN_STOP_REQUESTED) {
-        emit stopSession();
+    Q_UNUSED(status);
+    // We're only looking for an instruction to stop
+    QDBusInterface interface(serviceName, pathEkos);
+    if (interface.isValid()) {
+        extensionState m_state = static_cast<extensionState>(interface.property("extensionStatus").toInt());
+        if (m_state == EXTENSION_STOP_REQUESTED) {
+            emit stopSession();
+        }
     }
 }
 

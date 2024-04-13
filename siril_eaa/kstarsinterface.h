@@ -3,8 +3,6 @@
 #ifndef KSTARSINTERFACE_H
 #define KSTARSINTERFACE_H
 
-#include "ekosStatus.h"
-
 #include <QObject>
 #include <QtDBus>
 
@@ -30,7 +28,7 @@ public:
     void openFITSfile(const QString &filePath);
 
 public slots:
-    void receiverStatusChanged(int status);
+    void receiverStatusChanged(bool status);
 
 signals:
     void dbusAccessible();

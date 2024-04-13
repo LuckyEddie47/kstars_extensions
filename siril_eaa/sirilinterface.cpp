@@ -80,47 +80,43 @@ void sirilinterface::startSiril()
 // Setup Siril read pipe
 void sirilinterface::connectSiril()
 {
-//    bool okayToProceed = false;
-//
-//    messagePipe = new QFile(sirilMessages);
-//    if (messagePipe->exists()) {
-//        okayToProceed = true;
-//    } else {
-//        emit errorMessage(QString("Input file: %1 does not exist").arg(sirilMessages));
-//        okayToProceed = false;
-//    }
-//
-//    if (okayToProceed) {
-//        if (!messagePipe->open(QFile::ReadOnly | QFile::Unbuffered)) {
-//            emit errorMessage(QString("Can not open message pipe %1").arg(sirilMessages));
-//            okayToProceed = false;
-//        }
-//    }
-//
-//    if (okayToProceed) {
-//        fd = messagePipe->handle();
-//
-//        flags = fcntl(fd, F_GETFL, 0);
-//        if (flags == -1) {
-//            emit errorMessage("Can not access message pipe flags");
-//            okayToProceed = false;
-//        }
-//    }
-//
-//    if (okayToProceed) {
-//        flags = fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-//        if (flags == -1) {
-//            emit errorMessage("Can not set message pipe flags");
-//            okayToProceed = false;
-//        }
-//    }
-//
-//    if (okayToProceed) {
+    bool okayToProceed = false;
 
-    messagePipe = ::open(sirilMessages.toLatin1(), O_RDONLY | O_NONBLOCK);
+    messagePipe = new QFile(sirilMessages);
+    if (messagePipe->exists()) {
+        okayToProceed = true;
+    } else {
+        emit errorMessage(QString("Input file: %1 does not exist").arg(sirilMessages));
+        okayToProceed = false;
+    }
 
-if (messagePipe != -1) {
-        notifier = new QSocketNotifier(messagePipe, QSocketNotifier::Read, this);
+    if (okayToProceed) {
+        if (!messagePipe->open(QFile::ReadOnly | QFile::Unbuffered)) {
+            emit errorMessage(QString("Can not open message pipe %1").arg(sirilMessages));
+            okayToProceed = false;
+        }
+    }
+
+    if (okayToProceed) {
+        fd = messagePipe->handle();
+
+        flags = fcntl(fd, F_GETFL, 0);
+        if (flags == -1) {
+            emit errorMessage("Can not access message pipe flags");
+            okayToProceed = false;
+        }
+    }
+
+    if (okayToProceed) {
+        flags = fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+        if (flags == -1) {
+            emit errorMessage("Can not set message pipe flags");
+            okayToProceed = false;
+        }
+    }
+
+    if (okayToProceed) {
+        notifier = new QSocketNotifier(fd, QSocketNotifier::Read, this);
         connect(notifier, &QSocketNotifier::activated, this, &sirilinterface::readMessage);
         QTimer::singleShot(1000, this, [this] {
             emit sirilConnected();
@@ -132,7 +128,7 @@ if (messagePipe != -1) {
 void sirilinterface::setSirilWD()
 {
     if (workingDir != "") {
-        sendSirilCommand(QString("cd ").append(workingDir), 1000, "status: success cd");
+        sendSirilCommand(QString("cd ").append(workingDir));
     } else {
         emit errorMessage("Working directory has not been set");
     }
@@ -157,7 +153,7 @@ void sirilinterface::setSirilLS()
             lscommand.append(arg);
         }
     }
-    sendSirilCommand(lscommand, 1000, "status: success start_ls");
+    sendSirilCommand(lscommand);
 }
 
 // Close Siril
@@ -169,40 +165,16 @@ void sirilinterface::stopProgram()
 // Read message from Siril
 void sirilinterface::readMessage()
 {
-//    QTextStream messageTS(messagePipe);
-//    QString message;
-//    do {
-//        message = messageTS.readLine();
-//    } while (!messageTS.atEnd());
-//    if (message.contains("\n")) {
-//        message.truncate(message.lastIndexOf("\n"));
-//    }
-//
-//    if (message == "ready") {
-//        emit sirilReady();
-//    } else if (message.contains("status: success cd")) {
-//        emit sirilCdSuccess();
-//    } else if (message.contains("status: sucess start_ls")) {
-//        emit sirilLsStarted();
-//    }
-//
-//    emit sirilMessage(message);
-
     char buffer[4096];
     QByteArray messageBA;
     ssize_t bytesRead;
-    while ((bytesRead = ::read(messagePipe, buffer, sizeof(buffer))) > 0) {
+    while (messagePipe->read(buffer, sizeof(buffer)) > 0) {
         messageBA.append(buffer, bytesRead);
     }
-
-//messagePipe->read(buffer, sizeof(buffer)) > 0) {
-//        messageBA.append(buffer);
-//    }
     if (!messageBA.isEmpty()) {
         if (messageBA.contains("\n")) {
             messageBA.truncate(messageBA.lastIndexOf("\n"));
         }
-
         if (QString(messageBA) == "ready") {
             emit sirilReady();
         } else if (QString(messageBA).contains("status: success cd")) {
@@ -212,44 +184,19 @@ void sirilinterface::readMessage()
         }
 
         emit sirilMessage (QString(messageBA));
-        checkCommandReturn(QString(messageBA));
     }
 }
 
 // Send command to Siril
-void sirilinterface::sendSirilCommand(QString command, int repeatPeriod, QString commandResponse)
+void sirilinterface::sendSirilCommand(QString command)
 {
-    // Due to Siril's somewhat flakey command pipe handle (as of V1.2.1)
-    // commands are sent repeatedly at the passed repeatPeriod until a repsonse
-    // of the passed commandResponse is received on the message pipe
-    returnReceived = false;
-    commandReturn = commandResponse;
-    while (!returnReceived){
-        QThread::msleep(repeatPeriod);
-//        QTimer::singleShot(repeatPeriod, this, [this, &command] {
-            QFile commandPipe(sirilCommands);
-            if (commandPipe.open(QIODevice::WriteOnly)) {
-                commandPipe.setTextModeEnabled(true);
-                QTextStream commandTS(&commandPipe);
-                commandTS << command << Qt::endl;
-                commandPipe.close();
-            }
-//        });
-    }
-
-    // Reset return test ready for next command
-    returnReceived = false;
-    commandReturn = "";
-}
-
-void sirilinterface::setCommandReturn(QString returnMessage)
-{
-    commandReturn = returnMessage;
-}
-
-void sirilinterface::checkCommandReturn(QString returnMessage)
-{
-    if (returnMessage.contains(commandReturn)) {
-        returnReceived = true;
+    QFile commandPipe(sirilCommands);
+    if (commandPipe.open(QIODevice::WriteOnly)) {
+        commandPipe.setTextModeEnabled(true);
+        QTextStream commandTS(&commandPipe);
+        commandTS << command << Qt::endl;
+        commandPipe.close();
     }
 }
+
+

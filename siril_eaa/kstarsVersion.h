@@ -2,6 +2,6 @@
 #define KSTARSVERSION_H
 
 // This is the earlies versin of KStars that this plugin targets
-#define MIN_KSTARS_VERSION "3.7.0"
+#define MIN_KSTARS_VERSION "3.7.1"
 
 #endif // KSTARSVERSION_H

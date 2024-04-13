@@ -24,11 +24,7 @@ public slots:
     void setSirilWD();
     void setSirilLS();
     void stopProgram();
-//    void programRunning();
-    void sendSirilCommand(QString command, int repeatPeriod, QString commandResponse);
-    void setCommandReturn(QString returnMessage);
-    void checkCommandReturn(QString returnMessage);
-    //    QString livestackImage(QString filename);
+    void sendSirilCommand(QString command);
 
 signals:
     void sirilFinished();
@@ -38,7 +34,6 @@ signals:
     void sirilCdSuccess();
     void sirilLsStarted();
     void sirilMessage(QString message);
-//    void processError(QString error);
 
     void errorMessage(QString errorDetail);
 
@@ -58,8 +53,7 @@ private:
     QString darkPath = "";
     QString flatPath = "";
     QString registrationMode = "";
-    //QFile* messagePipe;
-    int messagePipe;
+    QFile* messagePipe;
     QString commandReturn = "";
     bool returnReceived = false;
 };
