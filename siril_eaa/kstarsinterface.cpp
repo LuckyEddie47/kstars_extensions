@@ -13,6 +13,7 @@ kstarsinterface::kstarsinterface(QObject *parent)
      * a lambda.
      */
     bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(bool)));
+    bus.connect(serviceName, QString(), captureInterface, "captureComplete", this, SLOT (handleCapturedImage(QDBusMessage)));
     capJobCount = new int(0);
 }
 
@@ -205,4 +206,13 @@ void kstarsinterface::captureStopAndReset()
         emit errorMessage("Could not stop the Capture job");
     }
     setFITSfromFile(false);
+}
+
+void kstarsinterface::handleCapturedImage(QDBusMessage message)
+{
+    const QDBusArgument &dbusArg = message.arguments().at(0).value<QDBusArgument>();
+    QMap<QString, QVariant> map;
+    dbusArg >> map;
+    qDebug() << map;
+    emit captureImageTaken(map.value("filename").toString());
 }

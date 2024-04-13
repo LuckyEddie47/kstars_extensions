@@ -27,8 +27,9 @@ public:
     void setFITSfromFile(bool previewFromFile);
     void openFITSfile(const QString &filePath);
 
-public slots:
+private slots:
     void receiverStatusChanged(bool status);
+    void handleCapturedImage(QDBusMessage message);
 
 signals:
     void dbusAccessible();
@@ -39,6 +40,7 @@ signals:
     void captureFormatOkay();
     void readCaptureFilePath();
     void captureFilePath(QString filePath);
+    void captureImageTaken(const QString &filePath);
     void errorMessage(QString errorDetail);
     void stopSession();
 

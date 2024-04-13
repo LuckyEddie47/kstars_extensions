@@ -25,6 +25,7 @@ public slots:
     void setSirilLS();
     void stopProgram();
     void sendSirilCommand(QString command);
+    void sendImage(const QString &filePath);
 
 signals:
     void sirilFinished();

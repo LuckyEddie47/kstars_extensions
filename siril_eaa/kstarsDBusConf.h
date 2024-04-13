@@ -8,6 +8,7 @@
 QString serviceName = "org.kde.kstars";
 QString ksInterface = "org.kde.kstars.KStars";
 QString EkosInterface = "org.kde.kstars.Ekos";
+QString captureInterface= "org.kde.kstars.Ekos.Capture";
 QString pathCapture = "/KStars/Ekos/Capture";
 QString pathEkos = "/KStars/Ekos";
 QString pathScheduler = "/KStars/Ekos/Scheduler";

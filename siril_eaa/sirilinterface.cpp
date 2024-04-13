@@ -199,4 +199,7 @@ void sirilinterface::sendSirilCommand(QString command)
     }
 }
 
+void sirilinterface::sendImage(const QString &filePath)
+{
 
+}

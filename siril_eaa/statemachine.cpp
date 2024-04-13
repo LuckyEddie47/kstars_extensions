@@ -39,7 +39,7 @@ void statemachine::createMachine()
     QState *checkingCaptureNoJobs = new QState(checkingEkos);
     QState *gettingCaptureFileFormat = new QState(checkingEkos);
     QState *gettingCaptureFilePath = new QState(checkingEkos);
-    QFinalState *ekosIsValid = new QFinalState(checkingEkos);
+//    QFinalState *ekosIsValid = new QFinalState(checkingEkos);
     checkingEkos->setInitialState(checkingDbus);
 
     QState *settingUpSiril = new QState();
@@ -47,7 +47,7 @@ void statemachine::createMachine()
     QState *connectingSiril = new QState(settingUpSiril);
     QState *settingWDSiril = new QState(settingUpSiril);
     QState *settingLSSiril = new QState(settingUpSiril);
-    QFinalState *sirilSetup = new QFinalState(settingUpSiril);
+//    QFinalState *sirilSetup = new QFinalState(settingUpSiril);
     settingUpSiril->setInitialState(launchingSiril);
 
     QState *runningLS = new QState();
@@ -56,7 +56,7 @@ void statemachine::createMachine()
     QState *receivingFrame = new QState(runningLS);
     QState *stackingFrame = new QState(runningLS);
     QState *receivingStack = new QState(runningLS);
-    QFinalState *livestackingEnd = new QFinalState(runningLS);
+//    QFinalState *livestackingEnd = new QFinalState(runningLS);
     runningLS->setInitialState(settingEkosJob);
 
     QState *stopping = new QState();
@@ -81,6 +81,7 @@ void statemachine::createMachine()
     machine->setInitialState(checkingConf);
 
     // Define state transistions
+
     // Configuration file
     connect(doesConfExist, &QAbstractState::entered, m_confChecker, &confChecker::confExisting);
     doesConfExist->addTransition(m_confChecker, SIGNAL(confExists()), isConfAccessible);
@@ -102,7 +103,7 @@ void statemachine::createMachine()
     connect(m_confChecker, &confChecker::sirilPathIs, m_sirilinterface, &sirilinterface::setSirilPath); // Note odd one out passing path
     checkingConf->addTransition(checkingConf, SIGNAL(finished()), checkingEkos);
 
-    // KStars
+    // KStars check and configure
     connect(checkingDbus, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::dbusAccessing);
     checkingDbus->addTransition(m_kstarsinterface, SIGNAL(dbusAccessible()), checkingKstars);
     connect(checkingKstars, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::kstarsAccessing);
@@ -119,7 +120,7 @@ void statemachine::createMachine()
     gettingCaptureFilePath->addTransition(m_kstarsinterface, SIGNAL(readCaptureFilePath()), settingUpSiril);
     connect(m_kstarsinterface, &kstarsinterface::captureFilePath, m_sirilinterface, &sirilinterface::setWD); // Note odd one out passing path
 
-    // Siril
+    // Siril launch and configure
     connect(launchingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::startSiril);
     launchingSiril->addTransition(m_sirilinterface, SIGNAL(sirilStarted()), connectingSiril);
     connect(connectingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::connectSiril);
@@ -128,6 +129,9 @@ void statemachine::createMachine()
     settingWDSiril->addTransition(m_sirilinterface, SIGNAL(sirilCdSuccess()), settingLSSiril);
     connect(settingLSSiril, & QAbstractState::entered, m_sirilinterface, &sirilinterface::setSirilLS);
     settingLSSiril->addTransition(m_sirilinterface, SIGNAL(sirilLsStarted()), runningLS);
+
+    connect(runningLS, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureJobRunning);
+    runningLS->addTransition(m_kstarsinterface, SIGNAL(captureImageTaken()), stackingFrame);
 
     // Connect error signals
     connect(m_confChecker, &confChecker::errorMessage, this, &statemachine::handleError);
