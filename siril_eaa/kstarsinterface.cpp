@@ -168,6 +168,8 @@ void kstarsinterface::captureGettingFileFormat()
 // Get the capture job file path
 void kstarsinterface::captureGettingFilePath()
 {
+    check existance of dir and if not create
+
     QDBusInterface interface(serviceName, pathCapture);
     if (interface.isValid()) {
         QDBusMessage message = interface.call("getJobPreviewFileName");

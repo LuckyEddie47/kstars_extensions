@@ -201,5 +201,5 @@ void sirilinterface::sendSirilCommand(QString command)
 
 void sirilinterface::sendImage(const QString &filePath)
 {
-
+    sendSirilCommand(QString("livestack %1").arg(filePath));
 }

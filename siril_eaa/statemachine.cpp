@@ -131,7 +131,8 @@ void statemachine::createMachine()
     settingLSSiril->addTransition(m_sirilinterface, SIGNAL(sirilLsStarted()), runningLS);
 
     connect(runningLS, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureJobRunning);
-    runningLS->addTransition(m_kstarsinterface, SIGNAL(captureImageTaken()), stackingFrame);
+    runningLS->addTransition(m_kstarsinterface, SIGNAL(captureImageTaken(const QString)), stackingFrame);
+    connect(m_kstarsinterface, &kstarsinterface::captureImageTaken, m_sirilinterface, &sirilinterface::sendImage);
 
     // Connect error signals
     connect(m_confChecker, &confChecker::errorMessage, this, &statemachine::handleError);
