@@ -12,7 +12,7 @@ kstarsinterface::kstarsinterface(QObject *parent)
      * therefore we have to use the 'old' string connect syntax and can not call
      * a lambda.
      */
-    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(bool)));
+    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(QDBusMessage)));
 }
 
 // Ephemeral test for usable DBus
@@ -105,13 +105,13 @@ void kstarsinterface::reconnectCamera() {
 }
 
 /* Handle Ekos request to stop extension
- * Note the bool parameter exists only to match the signature of the DBus
+ * Note the QDBusMessage parameter exists only to match the signature of the DBus
  * extensionStatusChanged signal, otherwise the connection doesn't work
  */
 
-void kstarsinterface::receiverStatusChanged(bool status)
+void kstarsinterface::receiverStatusChanged(QDBusMessage message)
 {
-    Q_UNUSED(status);
+    Q_UNUSED(message);
     // For this example we're only looking for an instruction to stop
     QDBusInterface interface(serviceName, pathEkos);
     if (interface.isValid()) {
