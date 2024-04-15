@@ -35,6 +35,7 @@ public slots:
     void sendImageToSiril();
 
 signals:
+    void sirilClosed();
     void sirilFinished();
     void sirilStarted();
     void sirilConnected();

@@ -28,7 +28,8 @@ public:
     void openFITSfile(const QString &filePath);
 
 private slots:
-    void receiverStatusChanged(bool status);
+//    void receiverStatusChanged(bool status);
+    void receiverStatusChanged(QDBusMessage message);
     void handleCapturedImage(QDBusMessage message);
 
 signals:
@@ -49,14 +50,11 @@ signals:
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();
-    QDBusInterface *monInterface;
 
     QString cameraName = "";
     QString cameraInterface = "";
     int* capJobCount = 0;
     QString jobPath = "";
-
-signals:
 };
 
 #endif // KSTARSINTERFACE_H

@@ -13,7 +13,8 @@ kstarsinterface::kstarsinterface(QObject *parent)
      * therefore we have to use the 'old' string connect syntax and can not call
      * a lambda.
      */
-    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(bool)));
+//    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(bool)));
+    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(QDBusMessage)));
     bus.connect(serviceName, QString(), captureInterface, "captureComplete", this, SLOT (handleCapturedImage(QDBusMessage)));
     capJobCount = new int(0);
 }
@@ -94,7 +95,7 @@ void kstarsinterface::setFITSfromFile(bool previewFromFile)
     QDBusInterface interface(serviceName, pathEkos, EkosInterface);
     if (interface.isValid()) {
         QDBusMessage message = interface.call("setFITSfromFile", previewFromFile);
-    } else {
+    } else if(previewFromFile) {
         emit errorMessage("Could not set Ekos Preview mode");
     }
 }
@@ -110,9 +111,10 @@ void kstarsinterface::openFITSfile(const QString &filePath)
     }
 }
 
-void kstarsinterface::receiverStatusChanged(bool status)
+//void kstarsinterface::receiverStatusChanged(bool status)
+void kstarsinterface::receiverStatusChanged(QDBusMessage message)
 {
-    Q_UNUSED(status);
+    Q_UNUSED(message);
     // We're only looking for an instruction to stop
     QDBusInterface interface(serviceName, pathEkos);
     if (interface.isValid()) {
@@ -207,8 +209,6 @@ void kstarsinterface::captureStopAndReset()
     QDBusInterface interface(serviceName, pathCapture);
     if (interface.isValid()) {
         QDBusMessage message = interface.call("stop");
-    } else {
-        emit errorMessage("Could not stop the Capture job");
     }
     setFITSfromFile(false);
 }

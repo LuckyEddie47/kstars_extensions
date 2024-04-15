@@ -4,6 +4,7 @@
 #include "bombout.h"
 
 #include <QFinalState>
+#include <QTimer>
 
 statemachine::statemachine(QString appFilePath, QObject *parent)
     : QObject{parent}
@@ -59,14 +60,14 @@ void statemachine::createMachine()
 //    QFinalState *livestackingEnd = new QFinalState(runningLS);
     runningLS->setInitialState(settingEkosJob);
 
-    QState *stopping = new QState();
-    QState *stoppingEkosJob = new QState(stopping);
-    QState *resettingEkos = new QState(stopping);
-    QState *closingSiril = new QState(stopping);
-    QFinalState *stopped = new QFinalState(stopping);
-    stopping->setInitialState(stoppingEkosJob);
+//    QState *stopping = new QState();
+//    QState *stoppingEkosJob = new QState(stopping);
+//    QState *resettingEkos = new QState(stopping);
+//    QState *closingSiril = new QState(stopping);
+//    QFinalState *stopped = new QFinalState(stopping);
+//    stopping->setInitialState(stoppingEkosJob);
 
-    QState *error = new QState();
+//    QState *error = new QState();
 
     QFinalState *finish = new QFinalState();
 
@@ -75,9 +76,9 @@ void statemachine::createMachine()
     machine->addState(checkingEkos);
     machine->addState(settingUpSiril);
     machine->addState(runningLS);
-    machine->addState(stopping);
+//    machine->addState(stopping);
 //    machine->addState(stopped);
-    machine->addState(error);
+//    machine->addState(error);
     machine->setInitialState(checkingConf);
 
     // Define state transistions
@@ -145,6 +146,10 @@ void statemachine::createMachine()
     connect(m_kstarsinterface, &kstarsinterface::errorMessage, this, &statemachine::handleError);
     connect(m_sirilinterface, &sirilinterface::errorMessage, this, &statemachine::handleError);
 
+    connect(m_kstarsinterface, &kstarsinterface::stopSession, this, [this] {
+        handleError(QString(tr("Exit requested")));
+    });
+
     machine->start();
 }
 
@@ -153,5 +158,13 @@ void statemachine::handleError(QString errorMessage)
     m_logger->out(errorMessage);
     m_kstarsinterface->captureStopAndReset();
     m_sirilinterface->sendSirilCommand("exit");
-    bombout();
+
+    /* We give Siril a little time to exit gracefully and then
+     * close the extension. Unable to monitor for Siril closure
+     * as the message pipe is closed as part of its exit
+     */
+    QTimer::singleShot(500, [this] {
+        m_sirilinterface->stopProgram();
+        bombout();
+    });
 }
