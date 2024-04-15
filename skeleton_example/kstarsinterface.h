@@ -25,7 +25,7 @@ signals:
     void exitRequested();
 
 private slots:
-    void receiverStatusChanged(bool status);
+    void receiverStatusChanged(QDBusMessage message);
 
 private:
     QDBusConnection bus = QDBusConnection::sessionBus();
