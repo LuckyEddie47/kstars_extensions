@@ -54,6 +54,7 @@ private:
     QString cameraName = "";
     QString cameraInterface = "";
     int* capJobCount = 0;
+    QString jobPath = "";
 
 signals:
 };

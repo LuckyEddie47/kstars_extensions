@@ -182,7 +182,8 @@ void sirilinterface::readMessage()
         } else if (QString(messageBA).contains("status: success start_ls")) {
             emit sirilLsStarted();
         } else if ((QString(messageBA).contains("log: Waiting for second image")) ||
-                   (QString(messageBA).contains("log: Sequence processing partially succeeded"))) {
+                   (QString(messageBA).contains("log: Sequence processing partially succeeded")) ||
+                   (QString(messageBA).contains("log: Stacked image"))) {
             emit sirilStackReady();
         }
 

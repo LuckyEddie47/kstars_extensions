@@ -179,6 +179,7 @@ void kstarsinterface::captureGettingFilePath()
             QDir m_dir(path);
             // If the dir already exists does nothing, otherwise creates with parents
             m_dir.mkpath(".");
+            jobPath = path;
             emit captureFilePath(path);
             emit readCaptureFilePath();
         } else {
@@ -229,6 +230,6 @@ void kstarsinterface::captureSetttingDisplayExternal()
 
 void kstarsinterface::sendStacktoEkos()
 {
-    openFITSfile(SirilStackName);
+    openFITSfile(QString("%1%2%3").arg(jobPath, "/", SirilStackName));
     emit readyForNext();
 }

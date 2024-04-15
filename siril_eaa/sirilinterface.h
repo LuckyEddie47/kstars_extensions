@@ -10,7 +10,7 @@
  * live stacked output - likely to change in the future
  */
 
-const QString SirilStackName = "live_stack_0001.fit";
+const QString SirilStackName = "live_stack_00001.fit";
 
 class sirilinterface : public QObject
 {
