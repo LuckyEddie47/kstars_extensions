@@ -1,9 +1,5 @@
 #include <QCoreApplication>
 #include <QObject>
-#include <QFile>
-#include <QTextStream>
-#include <QtDBus>
-#include <QTimer>
 
 #include "statemachine.h"
 

@@ -1,6 +1,4 @@
 #include "statemachine.h"
-
-#include "statemachine.h"
 #include "bombout.h"
 
 #include <QFinalState>
@@ -40,7 +38,6 @@ void statemachine::createMachine()
     QState *checkingCaptureNoJobs = new QState(checkingEkos);
     QState *gettingCaptureFileFormat = new QState(checkingEkos);
     QState *gettingCaptureFilePath = new QState(checkingEkos);
-//    QFinalState *ekosIsValid = new QFinalState(checkingEkos);
     checkingEkos->setInitialState(checkingDbus);
 
     QState *settingUpSiril = new QState();
@@ -48,26 +45,14 @@ void statemachine::createMachine()
     QState *connectingSiril = new QState(settingUpSiril);
     QState *settingWDSiril = new QState(settingUpSiril);
     QState *settingLSSiril = new QState(settingUpSiril);
-//    QFinalState *sirilSetup = new QFinalState(settingUpSiril);
     settingUpSiril->setInitialState(launchingSiril);
 
     QState *runningLS = new QState();
     QState *settingEkosJob = new QState(runningLS);
     QState *runningEkosJob = new QState(runningLS);
-//    QState *receivingFrame = new QState(runningLS);
     QState *stackingFrame = new QState(runningLS);
     QState *receivingStack = new QState(runningLS);
-//    QFinalState *livestackingEnd = new QFinalState(runningLS);
     runningLS->setInitialState(settingEkosJob);
-
-//    QState *stopping = new QState();
-//    QState *stoppingEkosJob = new QState(stopping);
-//    QState *resettingEkos = new QState(stopping);
-//    QState *closingSiril = new QState(stopping);
-//    QFinalState *stopped = new QFinalState(stopping);
-//    stopping->setInitialState(stoppingEkosJob);
-
-//    QState *error = new QState();
 
     QFinalState *finish = new QFinalState();
 
@@ -76,9 +61,6 @@ void statemachine::createMachine()
     machine->addState(checkingEkos);
     machine->addState(settingUpSiril);
     machine->addState(runningLS);
-//    machine->addState(stopping);
-//    machine->addState(stopped);
-//    machine->addState(error);
     machine->setInitialState(checkingConf);
 
     // Define state transistions
@@ -163,7 +145,7 @@ void statemachine::handleError(QString errorMessage)
      * close the extension. Unable to monitor for Siril closure
      * as the message pipe is closed as part of its exit
      */
-    QTimer::singleShot(500, [this] {
+    QTimer::singleShot(500, this, [this] {
         m_sirilinterface->stopProgram();
         bombout();
     });

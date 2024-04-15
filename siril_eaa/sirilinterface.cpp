@@ -1,7 +1,6 @@
 #include "sirilinterface.h"
 
 #include "fcntl.h"
-#include <unistd.h>
 #include <QDebug>
 #include <QTimer>
 #include <QThread>

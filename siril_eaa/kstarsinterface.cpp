@@ -13,10 +13,8 @@ kstarsinterface::kstarsinterface(QObject *parent)
      * therefore we have to use the 'old' string connect syntax and can not call
      * a lambda.
      */
-//    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(bool)));
     bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(QDBusMessage)));
     bus.connect(serviceName, QString(), captureInterface, "captureComplete", this, SLOT (handleCapturedImage(QDBusMessage)));
-    capJobCount = new int(0);
 }
 
 // Ephemeral test for usable DBus
@@ -133,12 +131,13 @@ void kstarsinterface::captureCheckingNoJobs()
         QDBusMessage message = interface.call("getJobCount");
         QList<QVariant> args = message.arguments();
         if ((args.count() == 1) && args.at(0).toInt()) {
-            *capJobCount = args.at(0).toInt();
-        }
-        if (*capJobCount == 0) {
-            emit captureNoJobs();
+            if (args.at(0).toInt() == 0) {
+                emit captureNoJobs();
+            } else {
+                emit errorMessage("Capture has jobs");
+            }
         } else {
-            emit errorMessage("Capture has jobs");
+            emit errorMessage("Could not get Capture job count");
         }
     } else {
         emit errorMessage("Could not get Capture job count");
