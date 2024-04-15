@@ -53,7 +53,7 @@ void statemachine::createMachine()
     QState *runningLS = new QState();
     QState *settingEkosJob = new QState(runningLS);
     QState *runningEkosJob = new QState(runningLS);
-    QState *receivingFrame = new QState(runningLS);
+//    QState *receivingFrame = new QState(runningLS);
     QState *stackingFrame = new QState(runningLS);
     QState *receivingStack = new QState(runningLS);
 //    QFinalState *livestackingEnd = new QFinalState(runningLS);
@@ -90,17 +90,17 @@ void statemachine::createMachine()
     connect(isVersionValid, &QAbstractState::entered, m_confChecker, &confChecker::versionValidating);
     isVersionValid->addTransition(m_confChecker, SIGNAL(versionValid()), isPathValid);
     connect(isPathValid, &QAbstractState::entered, m_confChecker, &confChecker::pathValidating);
+    connect(m_confChecker, &confChecker::sirilPathIs, m_sirilinterface, &sirilinterface::setSirilPath); // Note odd one out passing Siril path
     isPathValid->addTransition(m_confChecker, SIGNAL(pathValid()), isDarkPassed);
     connect(isDarkPassed, &QAbstractState::entered, m_confChecker, &confChecker::darkChecking);
-    connect(m_confChecker, &confChecker::darkPathIs, m_sirilinterface, &sirilinterface::setDarkPath);
+    connect(m_confChecker, &confChecker::darkPathIs, m_sirilinterface, &sirilinterface::setDarkPath); // Note odd one out passing dark path
     isDarkPassed->addTransition(m_confChecker, SIGNAL(darkChecked()), isFlatPassed);
     connect(isFlatPassed, &QAbstractState::entered, m_confChecker, &confChecker::flatChecking);
-    connect(m_confChecker, &confChecker::flatPathIs, m_sirilinterface, &sirilinterface::setFlatPath);
+    connect(m_confChecker, &confChecker::flatPathIs, m_sirilinterface, &sirilinterface::setFlatPath); // Note odd one out passing flat path
     isFlatPassed->addTransition(m_confChecker, SIGNAL(flatChecked()), isRegistationPassed);
     connect(isRegistationPassed, &QAbstractState::entered, m_confChecker, &confChecker::registrationChecking);
-    connect(m_confChecker, &confChecker::registrationIs, m_sirilinterface, &sirilinterface::setRegistrationMode);
+    connect(m_confChecker, &confChecker::registrationIs, m_sirilinterface, &sirilinterface::setRegistrationMode);  // Note odd one out passing registration mode
     isRegistationPassed->addTransition(m_confChecker, SIGNAL(registrationChecked()), confIsValid);
-    connect(m_confChecker, &confChecker::sirilPathIs, m_sirilinterface, &sirilinterface::setSirilPath); // Note odd one out passing path
     checkingConf->addTransition(checkingConf, SIGNAL(finished()), checkingEkos);
 
     // KStars check and configure
@@ -118,7 +118,7 @@ void statemachine::createMachine()
     gettingCaptureFileFormat->addTransition(m_kstarsinterface, SIGNAL(captureFormatOkay()), gettingCaptureFilePath);
     connect(gettingCaptureFilePath, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureGettingFilePath);
     gettingCaptureFilePath->addTransition(m_kstarsinterface, SIGNAL(readCaptureFilePath()), settingUpSiril);
-    connect(m_kstarsinterface, &kstarsinterface::captureFilePath, m_sirilinterface, &sirilinterface::setWD); // Note odd one out passing path
+    connect(m_kstarsinterface, &kstarsinterface::captureFilePath, m_sirilinterface, &sirilinterface::setWD); // Note odd one out passing working dir
 
     // Siril launch and configure
     connect(launchingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::startSiril);
@@ -130,9 +130,15 @@ void statemachine::createMachine()
     connect(settingLSSiril, & QAbstractState::entered, m_sirilinterface, &sirilinterface::setSirilLS);
     settingLSSiril->addTransition(m_sirilinterface, SIGNAL(sirilLsStarted()), runningLS);
 
-    connect(runningLS, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureJobRunning);
-    runningLS->addTransition(m_kstarsinterface, SIGNAL(captureImageTaken(const QString)), stackingFrame);
-    connect(m_kstarsinterface, &kstarsinterface::captureImageTaken, m_sirilinterface, &sirilinterface::sendImage);
+    connect(settingEkosJob, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureSetttingDisplayExternal);
+    settingEkosJob->addTransition(m_kstarsinterface, SIGNAL(captureDisplaySet()), runningEkosJob);
+    connect(runningEkosJob, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::captureJobRunning);
+    runningLS->addTransition(m_kstarsinterface, SIGNAL(captureImageTaken()), stackingFrame);
+    connect(m_kstarsinterface, &kstarsinterface::newCaptureImage, m_sirilinterface, &sirilinterface::newImageFromKStars); // Note odd one out passing filePath
+    connect(stackingFrame, &QAbstractState::entered, m_sirilinterface, &sirilinterface::sendImageToSiril);
+    stackingFrame->addTransition(m_sirilinterface, SIGNAL(sirilStackReady()), receivingStack);
+    connect(receivingStack, &QAbstractState::entered, m_kstarsinterface, &kstarsinterface::sendStacktoEkos);
+    receivingStack->addTransition(m_kstarsinterface, SIGNAL(readyForNext()), runningEkosJob);
 
     // Connect error signals
     connect(m_confChecker, &confChecker::errorMessage, this, &statemachine::handleError);

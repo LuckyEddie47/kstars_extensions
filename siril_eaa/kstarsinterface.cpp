@@ -1,6 +1,7 @@
 #include "kstarsinterface.h"
 #include "kstarsDBusConf.h"
 #include "ekosStatus.h"
+#include "sirilinterface.h"
 
 #include <QtDBus>
 
@@ -168,8 +169,6 @@ void kstarsinterface::captureGettingFileFormat()
 // Get the capture job file path
 void kstarsinterface::captureGettingFilePath()
 {
-    check existance of dir and if not create
-
     QDBusInterface interface(serviceName, pathCapture);
     if (interface.isValid()) {
         QDBusMessage message = interface.call("getJobPreviewFileName");
@@ -177,6 +176,9 @@ void kstarsinterface::captureGettingFilePath()
         if (args.count() == 1) {
             QString path = args.at(0).toString();
             path = path.left(path.lastIndexOf("/"));
+            QDir m_dir(path);
+            // If the dir already exists does nothing, otherwise creates with parents
+            m_dir.mkpath(".");
             emit captureFilePath(path);
             emit readCaptureFilePath();
         } else {
@@ -215,6 +217,18 @@ void kstarsinterface::handleCapturedImage(QDBusMessage message)
     const QDBusArgument &dbusArg = message.arguments().at(0).value<QDBusArgument>();
     QMap<QString, QVariant> map;
     dbusArg >> map;
-    qDebug() << map;
-    emit captureImageTaken(map.value("filename").toString());
+    emit newCaptureImage(map.value("filename").toString());
+    emit captureImageTaken();
+}
+
+void kstarsinterface::captureSetttingDisplayExternal()
+{
+    setFITSfromFile(true);
+    emit captureDisplaySet();
+}
+
+void kstarsinterface::sendStacktoEkos()
+{
+    openFITSfile(SirilStackName);
+    emit readyForNext();
 }

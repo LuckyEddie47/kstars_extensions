@@ -58,8 +58,9 @@ void sirilinterface::startSiril()
         QStringList arguments;
         arguments << "-p";
 
+        // Need a 3 second delay for first run of Siril to create command pipes
         connect(&programProcess, &QProcess::started, this, [=] (){
-            QTimer::singleShot(1000, this, [this] {
+            QTimer::singleShot(3000, this, [this] {
                 emit sirilStarted();
             });
         });
@@ -167,9 +168,8 @@ void sirilinterface::readMessage()
 {
     char buffer[4096];
     QByteArray messageBA;
-//    ssize_t bytesRead;
     while (messagePipe->read(buffer, sizeof(buffer)) > 0) {
-        messageBA.append(buffer); //, bytesRead);
+        messageBA.append(buffer);
     }
     if (!messageBA.isEmpty()) {
         if (messageBA.contains("\n")) {
@@ -181,6 +181,9 @@ void sirilinterface::readMessage()
             emit sirilCdSuccess();
         } else if (QString(messageBA).contains("status: success start_ls")) {
             emit sirilLsStarted();
+        } else if ((QString(messageBA).contains("log: Waiting for second image")) ||
+                   (QString(messageBA).contains("log: Sequence processing partially succeeded"))) {
+            emit sirilStackReady();
         }
 
         emit sirilMessage (QString(messageBA));
@@ -199,7 +202,14 @@ void sirilinterface::sendSirilCommand(QString command)
     }
 }
 
-void sirilinterface::sendImage(const QString &filePath)
+void sirilinterface::newImageFromKStars(const QString &filePath)
 {
-    sendSirilCommand(QString("livestack %1").arg(filePath));
+    newImagePath = filePath;
+}
+
+void sirilinterface::sendImageToSiril()
+{
+    if (newImagePath != "") {
+        sendSirilCommand(QString("livestack %1").arg(newImagePath));
+    }
 }

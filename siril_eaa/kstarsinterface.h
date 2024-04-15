@@ -19,11 +19,11 @@ public:
     void captureCheckingNoJobs();
     void captureGettingFileFormat();
     void captureGettingFilePath();
+    void captureSetttingDisplayExternal();
     void captureJobRunning();
+    void sendStacktoEkos();
     void captureStopAndReset();
-
     bool disconnectInterface();
-
     void setFITSfromFile(bool previewFromFile);
     void openFITSfile(const QString &filePath);
 
@@ -40,7 +40,10 @@ signals:
     void captureFormatOkay();
     void readCaptureFilePath();
     void captureFilePath(QString filePath);
-    void captureImageTaken(const QString &filePath);
+    void captureDisplaySet();
+    void newCaptureImage(const QString &filePath);
+    void captureImageTaken();
+    void readyForNext();
     void errorMessage(QString errorDetail);
     void stopSession();
 

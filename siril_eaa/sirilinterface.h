@@ -6,6 +6,12 @@
 #include <QSocketNotifier>
 #include <QFile>
 
+/* Currently Siril always uses a fixed file name for the
+ * live stacked output - likely to change in the future
+ */
+
+const QString SirilStackName = "live_stack_0001.fit";
+
 class sirilinterface : public QObject
 {
     Q_OBJECT
@@ -25,7 +31,8 @@ public slots:
     void setSirilLS();
     void stopProgram();
     void sendSirilCommand(QString command);
-    void sendImage(const QString &filePath);
+    void newImageFromKStars(const QString &filePath);
+    void sendImageToSiril();
 
 signals:
     void sirilFinished();
@@ -34,6 +41,7 @@ signals:
     void sirilReady();
     void sirilCdSuccess();
     void sirilLsStarted();
+    void sirilStackReady();
     void sirilMessage(QString message);
 
     void errorMessage(QString errorDetail);
@@ -57,6 +65,8 @@ private:
     QFile* messagePipe;
     QString commandReturn = "";
     bool returnReceived = false;
+    QString newImagePath = "";
+    bool firstImage = true;
 };
 
 #endif // SIRILINTERFACE_H
