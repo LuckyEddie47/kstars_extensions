@@ -13,6 +13,6 @@ When launched this extension will:
 3. Output a short message every 2 seconds.
 4. Monitor the extension stop button and if clicked, exit.
 
-This project is an demonstration of the simplest implementation of a KStars extension.
+This project is a demonstration of the simplest implementation of a KStars extension.
 Built with Qt.
 
