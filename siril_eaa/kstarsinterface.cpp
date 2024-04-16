@@ -130,7 +130,7 @@ void kstarsinterface::captureCheckingNoJobs()
     if (interface.isValid()) {
         QDBusMessage message = interface.call("getJobCount");
         QList<QVariant> args = message.arguments();
-        if ((args.count() == 1) && args.at(0).toInt()) {
+        if (args.count() == 1) { //&& args.at(0).toInt()) {
             if (args.at(0).toInt() == 0) {
                 emit captureNoJobs();
             } else {
@@ -191,6 +191,12 @@ void kstarsinterface::captureGettingFilePath()
     }
 }
 
+void kstarsinterface::captureSetttingDisplayExternal()
+{
+    setFITSfromFile(true);
+    emit captureDisplaySet();
+}
+
 // Tell Capture to start the job
 void kstarsinterface::captureJobRunning()
 {
@@ -202,16 +208,6 @@ void kstarsinterface::captureJobRunning()
     }
 }
 
-// Tell Capture to stop and reset preview window mode
-void kstarsinterface::captureStopAndReset()
-{
-    QDBusInterface interface(serviceName, pathCapture);
-    if (interface.isValid()) {
-        QDBusMessage message = interface.call("stop");
-    }
-    setFITSfromFile(false);
-}
-
 void kstarsinterface::handleCapturedImage(QDBusMessage message)
 {
     const QDBusArgument &dbusArg = message.arguments().at(0).value<QDBusArgument>();
@@ -221,14 +217,19 @@ void kstarsinterface::handleCapturedImage(QDBusMessage message)
     emit captureImageTaken();
 }
 
-void kstarsinterface::captureSetttingDisplayExternal()
-{
-    setFITSfromFile(true);
-    emit captureDisplaySet();
-}
-
 void kstarsinterface::sendStacktoEkos()
 {
     openFITSfile(QString("%1%2%3").arg(jobPath, "/", SirilStackName));
     emit readyForNext();
+}
+
+// Tell Capture to stop, clear the sequence queue of out preview job and reset the preview window mode
+void kstarsinterface::captureStopAndReset()
+{
+    QDBusInterface interface(serviceName, pathCapture);
+    if (interface.isValid()) {
+        QDBusMessage message = interface.call("stop");
+        QDBusMessage message2 = interface.call("clearSequenceQueue");
+    }
+    setFITSfromFile(false);
 }

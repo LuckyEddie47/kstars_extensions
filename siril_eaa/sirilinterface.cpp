@@ -15,6 +15,12 @@ void sirilinterface::setSirilPath(QString path)
     sirilPath = path;
 }
 
+// Get the working directory
+const QString sirilinterface::getWD()
+{
+    return workingDir;
+}
+
 // Set the working directory for Siril
 void sirilinterface::setWD(QString path)
 {
@@ -57,9 +63,9 @@ void sirilinterface::startSiril()
         QStringList arguments;
         arguments << "-p";
 
-        // Need a 3 second delay for first run of Siril to create command pipes
+        // Need a 5 second delay for first run of Siril to create command pipes
         connect(&programProcess, &QProcess::started, this, [=] (){
-            QTimer::singleShot(3000, this, [this] {
+            QTimer::singleShot(5000, this, [this] {
                 emit sirilStarted();
             });
         });

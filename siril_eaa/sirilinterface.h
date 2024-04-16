@@ -9,7 +9,6 @@
 /* Currently Siril always uses a fixed file name for the
  * live stacked output - likely to change in the future
  */
-
 const QString SirilStackName = "live_stack_00001.fit";
 
 class sirilinterface : public QObject
@@ -20,6 +19,7 @@ public:
 
 public slots:
     void setSirilPath(QString path);
+    const QString getWD();
     void setWD(QString workingDir);
     void setDarkPath(QString path);
     void setFlatPath(QString path);
@@ -64,10 +64,7 @@ private:
     QString flatPath = "";
     QString registrationMode = "";
     QFile* messagePipe;
-    QString commandReturn = "";
-    bool returnReceived = false;
     QString newImagePath = "";
-    bool firstImage = true;
 };
 
 #endif // SIRILINTERFACE_H

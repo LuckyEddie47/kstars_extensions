@@ -135,11 +135,23 @@ void statemachine::createMachine()
     machine->start();
 }
 
+// Error passing and shutdown
 void statemachine::handleError(QString errorMessage)
 {
     m_logger->out(errorMessage);
     m_kstarsinterface->captureStopAndReset();
     m_sirilinterface->sendSirilCommand("exit");
+
+    // Remove Siril temporary files
+    QDir m_dir(m_sirilinterface->getWD());
+    m_dir.setNameFilters(QStringList("live_stack_*.fit"));
+    QFileInfoList entries = m_dir.entryInfoList();
+    foreach (QFileInfo entry, entries) {
+        if (entry.isSymbolicLink()) {
+            QFile::remove(entry.absoluteFilePath());
+        }
+    }
+    QFile::remove(QString(m_sirilinterface->getWD()).append("%1%2").arg("/", "live_stack_.seq"));
 
     /* We give Siril a little time to exit gracefully and then
      * close the extension. Unable to monitor for Siril closure
