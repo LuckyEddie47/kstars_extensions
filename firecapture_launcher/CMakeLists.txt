@@ -20,6 +20,7 @@ add_executable(FC_launcher
   ekosStatus.h
   process.h process.cpp
   bombout.h
+  FC_launcher.conf FC_launcher.png README.md
 
 )
 target_link_libraries(FC_launcher Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus)

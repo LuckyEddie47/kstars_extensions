@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         archiver.cpp archiver.h confchecker.cpp confchecker.h kstarsVersion.h
         kstarsDBusConf.h kstarsinterface.cpp kstarsinterface.h
         ekosStatus.h
+        KS_backup.conf KS_backup.png README.md
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET kstars_backup APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -7,7 +7,7 @@ The purpose of this extension is to use the EAA live stacking abilities of Siril
 
 Configuration
 -------------
-The Siril_EAA.conf file is used to configure the extension for your system and requirements. The configuratin file contains the following lines for setting up your session:
+The Siril_EAA.conf file is used to configure the extension for your system and requirements. The configuration file contains the following lines for setting up your session:
 
 - siril_path=
 

@@ -20,6 +20,7 @@ add_executable(example
   ekosStatus.h
   process.h process.cpp
   confchecker.cpp confchecker.h
+  example.conf README.md
 
 )
 target_link_libraries(example Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus)
