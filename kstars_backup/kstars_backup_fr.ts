@@ -104,7 +104,8 @@
         <location filename="mainwindow.cpp" line="160"/>
         <source>It is recommended to create a new backup before restoring, however there is insufficient space available.
 Continue without a new backup?</source>
-        <translation>Il est recommandé de créer une nouvelle sauvegarde avant de restaurer, mais l&apos;espace est insuffisant. Continuer sans nouvelle sauvegarde?</translation>
+        <translation>Il est recommandé de créer une nouvelle sauvegarde avant de restaurer, mais l&apos;espace est insuffisant.
+Continuer sans nouvelle sauvegarde?</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="167"/>
@@ -122,7 +123,8 @@ Continue without a new backup?</source>
         <location filename="mainwindow.cpp" line="173"/>
         <source>It is recommended to create a new backup before restoring.
 Create a new backup?</source>
-        <translation>Il est recommandé de créer une nouvelle sauvegarde avant de restaurer. Créer une nouvelle sauvegarde?</translation>
+        <translation>Il est recommandé de créer une nouvelle sauvegarde avant de restaurer.
+Créer une nouvelle sauvegarde?</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="180"/>
@@ -138,25 +140,26 @@ Create a new backup?</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="main.cpp" line="24"/>
+        <location filename="main.cpp" line="23"/>
         <source>Close KStars?</source>
         <translation>Fermer KStars?</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="25"/>
+        <location filename="main.cpp" line="24"/>
         <source>To prevent files being used during the backup/restore process it is necessary to close KStars.
 Okay to proceed?</source>
-        <translation>Pour empêcher l&apos;utilisation des fichiers pendant le processus de sauvegarde/restauration, il est nécessaire de fermer KStars. D&apos;accord pour continuer?</translation>
+        <translation>Pour empêcher l&apos;utilisation des fichiers pendant le processus de sauvegarde/restauration, il est nécessaire de fermer KStars.
+D&apos;accord pour continuer?</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="28"/>
+        <location filename="main.cpp" line="27"/>
         <source>Yes</source>
         <translation>Oui</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="29"/>
+        <location filename="main.cpp" line="28"/>
         <source>No</source>
-        <translation type="unfinished">Non</translation>
+        <translation>Non</translation>
     </message>
 </context>
 <context>

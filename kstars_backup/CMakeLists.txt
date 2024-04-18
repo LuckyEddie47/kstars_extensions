@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus LinguistTools)
 
-qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr)
+qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr es)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -36,10 +36,10 @@ endif()
 
 qt_add_translations(KS_backup
                     INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
-                    TS_FILES kstars_backup_de.ts kstars_backup_fr.ts)
+                    TS_FILES kstars_backup_de.ts kstars_backup_fr.ts kstars_backup_es.ts)
 
 qt_add_lupdate(SOURCE_TARGETS KS_backup
-               TS_FILES kstars_backup_de.ts kstars_backup_fr.ts
+               TS_FILES kstars_backup_de.ts kstars_backup_fr.ts kstars_backup_es.ts
                PLURALS_TS_FILE kstars_backup_en.ts)
 
 target_link_libraries(KS_backup PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
