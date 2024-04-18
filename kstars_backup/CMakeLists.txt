@@ -10,44 +10,37 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus LinguistTools)
+
+qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        mainwindow.cpp mainwindow.h mainwindow.ui
+        archiver.cpp archiver.h
+        confchecker.cpp confchecker.h
+        kstarsinterface.cpp kstarsinterface.h
+        kstarsVersion.h
+        kstarsDBusConf.h
+        ekosStatus.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(KS_backup
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        archiver.cpp archiver.h confchecker.cpp confchecker.h kstarsVersion.h
-        kstarsDBusConf.h kstarsinterface.cpp kstarsinterface.h
-        ekosStatus.h
         KS_backup.conf KS_backup.png README.md
+
     )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET kstars_backup APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(kstars_backup SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(KS_backup
-            ${PROJECT_SOURCES}
-            archiver.h archiver.cpp
-            confchecker.cpp confchecker.h
-            kstarsVersion.h
-        )
-    endif()
 endif()
+
+qt_add_translations(KS_backup
+                    INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
+                    TS_FILES kstars_backup_de.ts kstars_backup_fr.ts)
+
+qt_add_lupdate(SOURCE_TARGETS KS_backup
+               TS_FILES kstars_backup_de.ts kstars_backup_fr.ts
+               PLURALS_TS_FILE kstars_backup_en.ts)
 
 target_link_libraries(KS_backup PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
                                             Qt${QT_VERSION_MAJOR}::DBus)
