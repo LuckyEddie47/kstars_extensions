@@ -104,5 +104,17 @@ void process::startProgram(const QString &path)
 // Close FireCapture
 void process::stopProgram()
 {
+    /* We have to kill the running instance
+     * because just closing the process leaves
+     * the Java VM running
+     */
+    QProcess killer;
+    QString killerProc("pkill");
+    QStringList killerArgs = QStringList() << "-f" << "de.wonderplanets.firecapture.gui.FireCapture";
+    killer.start(killerProc, killerArgs);
+    killer.waitForReadyRead(1000);
+    killer.terminate();
+    killer.waitForFinished(1000);
+    killer.kill();
     programProcess.terminate();
 }

@@ -16,9 +16,7 @@ When launched this extension will:
 5. Call the FireCapture start script.
 
 It will then monitor for either FireCapture to be closed by the user, or the Stop Plugin
-button in the Ekos Manager to be clicked*. It will then:
+button in the Ekos Manager to be clicked. It will then:
 
-6. Close FireCapture*
+6. Close FireCapture
 7. Reconnect the INDI camera driver that was previously disconnected.
-
-Note: Due to FireCapture running in a Java VM closing the extension from the Ekos Manager button will leave FireCapture running as an independent program. The camera will still be reconnected in INDI.
