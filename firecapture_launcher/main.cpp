@@ -15,6 +15,10 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
+    QTranslator m_translator;
+    if (m_translator.load(QLocale(), ":/i18n/FC_launcher")) {
+        app.installTranslator(&m_translator);
+    }
     app.setApplicationName("FC_launcher");
     QObject *parent;
 
@@ -78,25 +82,25 @@ int main(int argc, char *argv[])
                         if (FC.exists()) {
                             okayToProceed = true;
                         } else {
-                            m_log.out(QString("Conf file %1 contains path '%2' which does not exist")
+                            m_log.out(QObject::tr("Conf file %1 contains path '%2' which does not exist")
                                              .arg(confFileName, FCpath));
                             bombout();
                         }
                     }
                 }
-            } else m_log.out(QString(".conf file %1 does not contain a valid minimum_kstars_version string").append(confFileName));
-        } else m_log.out(QString("Can't access .conf file %1").arg(confFileName));
-    } else m_log.out(QString(".conf file %1 disappeared").arg(confFileName));
-    if (okayToProceed) m_log.out(QString("Configuration file is okay"));
+            } else m_log.out(QObject::tr(".conf file %1 does not contain a valid minimum_kstars_version string").arg(confFileName));
+        } else m_log.out(QObject::tr("Can't access .conf file %1").arg(confFileName));
+    } else m_log.out(QObject::tr(".conf file %1 disappeared").arg(confFileName));
+    if (okayToProceed) m_log.out(QObject::tr("Configuration file is okay"));
     else bombout();
 
 
     // Check that the DBus service is running
     if (okayToProceed) {
         if (m_kstarsinterface.checkDBus()) {
-            m_log.out("Connected to DBus session interface");
+            m_log.out(QObject::tr("Connected to DBus session interface"));
         } else {
-            m_log.out("Can not connect to DBus session interface, is the DBus deamon running?");
+            m_log.out(QObject::tr("Can not connect to DBus session interface, is the DBus deamon running?"));
             okayToProceed = false;
             bombout();
         }
@@ -105,9 +109,9 @@ int main(int argc, char *argv[])
     // Check that KStars is accessible on the DBus
     if (okayToProceed) {
         if (m_kstarsinterface.checkKStarsService()) {
-            m_log.out("Connected to KStars DBus interface");
+            m_log.out(QObject::tr("Connected to KStars DBus interface"));
         } else {
-            m_log.out("Can not connect to KStars DBus interface, is KStars running?");
+            m_log.out(QObject::tr("Can not connect to KStars DBus interface, is KStars running?"));
             okayToProceed = false;
             bombout();
         }
@@ -118,17 +122,17 @@ int main(int argc, char *argv[])
         switch (m_kstarsinterface.checkSchedulerStatus())
         {
         case SCHEDULER_UNKNOWN:
-            m_log.out("Could not determine the state of the Scheduler");
+            m_log.out(QObject::tr("Could not determine the state of the Scheduler"));
             okayToProceed = false;
             bombout();
             break;
         case SCHEDULER_IDLE:
         case SCHEDULER_PAUSED:
         case SCHEDULER_ABORTED:
-            m_log.out("Scheduler is inactive");
+            m_log.out(QObject::tr("Scheduler is inactive"));
             break;
         default:
-            m_log.out("Scheduler is in use");
+            m_log.out(QObject::tr("Scheduler is in use"));
             okayToProceed = false;
             bombout();
         };
@@ -139,17 +143,17 @@ int main(int argc, char *argv[])
        switch (m_kstarsinterface.checkCaptureStatus())
        {
        case CAPTURE_UNKNOWN:
-           m_log.out("Could not determine the state of the Capture module");
+           m_log.out(QObject::tr("Could not determine the state of the Capture module"));
            okayToProceed = false;
            bombout();
            break;
        case CAPTURE_IDLE:
        case CAPTURE_COMPLETE:
        case CAPTURE_ABORTED:
-           m_log.out("Capture module is inactive");
+           m_log.out(QObject::tr("Capture module is inactive"));
            break;
        default:
-           m_log.out("Capture module is in use");
+           m_log.out(QObject::tr("Capture module is in use"));
            okayToProceed = false;
            bombout();
        };
@@ -162,21 +166,21 @@ int main(int argc, char *argv[])
    if (okayToProceed) {
 
        QObject::connect(&m_process, &process::programStarted, &app, [&m_log] () {
-           m_log.out("FireCapture started");
+           m_log.out(QObject::tr("FireCapture started"));
        });
 
        QObject::connect(&m_process, &process::programFinished, &app, [&m_kstarsinterface, &m_log, &app] () {
-           m_log.out("Reconnecting camera");
+           m_log.out(QObject::tr("Reconnecting camera"));
            m_kstarsinterface.reconnectCamera();
-           m_log.out("All done");
+           m_log.out(QObject::tr("All done"));
            bombout();
        });
 
        if (m_process.startScriptUpToDate(FCpath)) {
-           m_log.out("Starting FireCapture");
+           m_log.out(QObject::tr("Starting FireCapture"));
            m_process.startProgram(FCpath);
        } else {
-           m_log.out("FireCapture start script does not support --no-confirm and can not be patched");
+           m_log.out(QObject::tr("FireCapture start script does not support --no-confirm and can not be patched"));
            bombout();
        }
    }
