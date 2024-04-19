@@ -23,7 +23,7 @@ void kstarsinterface::dbusAccessing()
     if (QDBusConnection::sessionBus().isConnected()) {
         emit dbusAccessible();
     } else {
-        emit errorMessage("Can not connect to DBus session interface, is the DBus deamon running?");
+        emit errorMessage(tr("Can not connect to DBus session interface, is the DBus deamon running?"));
     }
 }
 
@@ -34,7 +34,7 @@ void kstarsinterface::kstarsAccessing()
     if (interface.isValid()) {
         emit kstarsAccessible();
     } else {
-        emit errorMessage("Can not connect to KStars DBus interface, is KStars running?");
+        emit errorMessage(tr("Can not connect to KStars DBus interface, is KStars running?"));
     }
 }
 
@@ -47,7 +47,7 @@ void kstarsinterface::schedulerChecking()
         m_state = static_cast<SchedulerState>(interface.property("status").toInt());
         switch (m_state) {
         case SCHEDULER_UNKNOWN:
-            emit errorMessage("Could not determine the state of the Scheduler");
+            emit errorMessage(tr("Could not determine the state of the Scheduler"));
             break;
         case SCHEDULER_IDLE:
         case SCHEDULER_PAUSED:
@@ -55,7 +55,7 @@ void kstarsinterface::schedulerChecking()
             emit schedulerIdle();
             break;
         default:
-            emit errorMessage("Scheduler is in use");
+            emit errorMessage(tr("Scheduler is in use"));
         };
     } else {
         emit errorMessage("Could not determine the state of the Scheduler");
@@ -72,7 +72,7 @@ void kstarsinterface::captureChecking()
         switch (m_state)
         {
         case CAPTURE_UNKNOWN:
-            emit errorMessage("Could not determine the state of the Capture module");
+            emit errorMessage(tr("Could not determine the state of the Capture module"));
             break;
         case CAPTURE_IDLE:
         case CAPTURE_COMPLETE:
@@ -80,10 +80,10 @@ void kstarsinterface::captureChecking()
             emit captureIdle();
             break;
         default:
-            emit errorMessage("Capture module is in use");
+            emit errorMessage(tr("Capture module is in use"));
         };
     } else {
-        emit errorMessage("Could not determine the state of the Capture module");
+        emit errorMessage(tr("Could not determine the state of the Capture module"));
     }
 }
 
@@ -94,7 +94,7 @@ void kstarsinterface::setFITSfromFile(bool previewFromFile)
     if (interface.isValid()) {
         QDBusMessage message = interface.call("setFITSfromFile", previewFromFile);
     } else if(previewFromFile) {
-        emit errorMessage("Could not set Ekos Preview mode");
+        emit errorMessage(tr("Could not set Ekos Preview mode"));
     }
 }
 
@@ -105,7 +105,7 @@ void kstarsinterface::openFITSfile(const QString &filePath)
     if (interface.isValid()) {
         QDBusMessage message = interface.call("previewFile", filePath);
     } else {
-        emit errorMessage("Could not send Stack to Ekos");
+        emit errorMessage(tr("Could not send Stack to Ekos"));
     }
 }
 
@@ -134,13 +134,13 @@ void kstarsinterface::captureCheckingNoJobs()
             if (args.at(0).toInt() == 0) {
                 emit captureNoJobs();
             } else {
-                emit errorMessage("Capture has jobs");
+                emit errorMessage(tr("Capture has jobs"));
             }
         } else {
-            emit errorMessage("Could not get Capture job count");
+            emit errorMessage(tr("Could not get Capture job count"));
         }
     } else {
-        emit errorMessage("Could not get Capture job count");
+        emit errorMessage(tr("Could not get Capture job count"));
     }
 }
 
@@ -157,13 +157,13 @@ void kstarsinterface::captureGettingFileFormat()
             if (!format.contains("%D") && !format.contains("%C") && !format.contains("%P")) {
                 emit captureFormatOkay();
             } else {
-                emit errorMessage("Placeholder format contains variable path tags");
+                emit errorMessage(tr("Placeholder format contains variable path tags"));
             }
         } else {
-            emit errorMessage("Could not get placeholder format");
+            emit errorMessage(tr("Could not get placeholder format"));
         }
     } else {
-        emit errorMessage("Could not get placeholder format");
+        emit errorMessage(tr("Could not get placeholder format"));
     }
 }
 
@@ -184,10 +184,10 @@ void kstarsinterface::captureGettingFilePath()
             emit captureFilePath(path);
             emit readCaptureFilePath();
         } else {
-            emit errorMessage("Could not get image filepath");
+            emit errorMessage(tr("Could not get image filepath"));
         }
     } else {
-        emit errorMessage("Could not get image filepath");
+        emit errorMessage(tr("Could not get image filepath"));
     }
 }
 
@@ -204,7 +204,7 @@ void kstarsinterface::captureJobRunning()
     if (interface.isValid()) {
         QDBusMessage message = interface.call("start");
     } else {
-        emit errorMessage("Could not start the Capture job");
+        emit errorMessage(tr("Could not start the Capture job"));
     }
 }
 

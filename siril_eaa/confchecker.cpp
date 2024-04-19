@@ -13,7 +13,7 @@ void confChecker::confExisting()
     if (confFile.exists()) {
         emit confExists();
     } else {
-        emit errorMessage(QString("Configuration file %1 does not exist").arg(confFilePath));
+        emit errorMessage(tr("Configuration file %1 does not exist").arg(confFilePath));
     }
 }
 
@@ -23,7 +23,7 @@ void confChecker::confAccessing()
     if (confFile.open(QIODevice::ReadOnly) && confFile.isReadable()) {
         emit confAccessible();
     } else {
-        emit errorMessage(QString("Configuration file %1 is not accessible").arg(confFilePath));
+        emit errorMessage(tr("Configuration file %1 is not accessible").arg(confFilePath));
     }
 }
 
@@ -64,7 +64,7 @@ void confChecker::versionValidating()
     if (okayToProceed) {
         emit versionValid();
     } else {
-        emit errorMessage("KStars version incompatible");
+        emit errorMessage(tr("KStars version incompatible"));
     }
 }
 
@@ -88,7 +88,7 @@ void confChecker::pathValidating()
         emit pathValid();
         emit sirilPathIs(sirilPath);
     } else {
-        emit errorMessage(QString("siril_path %1 in configuration file does not exist").arg(sirilPath));
+        emit errorMessage(tr("siril_path %1 in configuration file does not exist").arg(sirilPath));
     }
 }
 

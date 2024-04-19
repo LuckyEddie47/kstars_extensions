@@ -10,7 +10,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core DBus Network StateMachine)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network StateMachine)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network StateMachine LinguistTools)
+
+qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr es)
 
 add_executable(Siril_EAA
   main.cpp
@@ -26,8 +28,16 @@ add_executable(Siril_EAA
   kstarsVersion.h
   sirilinterface.h sirilinterface.cpp
   README.md Siril_EAA.conf Siril_EAA.png
-
 )
+
+qt_add_translations(Siril_EAA
+                    INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
+                    TS_FILES Siril_EAA_de.ts Siril_EAA_fr.ts Siril_EAA_es.ts)
+
+qt_add_lupdate(SOURCE_TARGETS Siril_EAA
+               TS_FILES Siril_EAA_de.ts Siril_EAA_fr.ts Siril_EAA_es.ts
+               PLURALS_TS_FILE Siril_EAA_en.ts)
+
 target_link_libraries(Siril_EAA Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::StateMachine)
 

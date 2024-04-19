@@ -79,7 +79,7 @@ void sirilinterface::startSiril()
         programProcess.start(sirilPath, arguments);
 
     } else {
-        emit errorMessage("SirilPath has not been set");
+        emit errorMessage(tr("SirilPath has not been set"));
     }
 }
 
@@ -92,13 +92,13 @@ void sirilinterface::connectSiril()
     if (messagePipe->exists()) {
         okayToProceed = true;
     } else {
-        emit errorMessage(QString("Input file: %1 does not exist").arg(sirilMessages));
+        emit errorMessage(tr("Input file: %1 does not exist").arg(sirilMessages));
         okayToProceed = false;
     }
 
     if (okayToProceed) {
         if (!messagePipe->open(QFile::ReadOnly | QFile::Unbuffered)) {
-            emit errorMessage(QString("Can not open message pipe %1").arg(sirilMessages));
+            emit errorMessage(tr("Can not open message pipe %1").arg(sirilMessages));
             okayToProceed = false;
         }
     }
@@ -108,7 +108,7 @@ void sirilinterface::connectSiril()
 
         flags = fcntl(fd, F_GETFL, 0);
         if (flags == -1) {
-            emit errorMessage("Can not access message pipe flags");
+            emit errorMessage(tr("Can not access message pipe flags"));
             okayToProceed = false;
         }
     }
@@ -116,7 +116,7 @@ void sirilinterface::connectSiril()
     if (okayToProceed) {
         flags = fcntl(fd, F_SETFL, flags | O_NONBLOCK);
         if (flags == -1) {
-            emit errorMessage("Can not set message pipe flags");
+            emit errorMessage(tr("Can not set message pipe flags"));
             okayToProceed = false;
         }
     }
@@ -136,7 +136,7 @@ void sirilinterface::setSirilWD()
     if (workingDir != "") {
         sendSirilCommand(QString("cd ").append(workingDir));
     } else {
-        emit errorMessage("Working directory has not been set");
+        emit errorMessage(tr("Working directory has not been set"));
     }
 }
 
