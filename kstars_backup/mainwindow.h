@@ -23,8 +23,6 @@ public:
     ~MainWindow();
     void begin();
     void halt();
-    void handleError(const QString &errorDetail);
-    void addLog(const QString &logMessage);
 
 signals:
     void quit();
@@ -45,8 +43,18 @@ private:
     } modeType;
     modeType mode = MODE_BACKUP;
 
+    typedef enum additionalOutput {
+        NONEL,
+        STATUSL,
+        USEDL,
+        FREEL
+    } additionalOutput;
+
     QString lastDir = "/tmp";
     ulong archiveSize, spaceNeeded, spaceAvailable;
 
+private slots:
+    void handleError(const QString &errorDetail);
+    void addLog(const QString &logMessage, additionalOutput addOut = STATUSL);
 };
 #endif // MAINWINDOW_H

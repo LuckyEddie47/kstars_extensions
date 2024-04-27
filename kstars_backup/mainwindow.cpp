@@ -109,7 +109,7 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         ui->browseB->setEnabled(true);
         if (m_model->rowCount() > 0) {
             ui->goB->setEnabled(true);
-            ui->statusL->setText(tr("Getting size"));
+            addLog(tr("Getting size"));
         } else {
             ui->goB->setEnabled(false);
         }
@@ -119,7 +119,7 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         archiveSize = size;
         QLocale m_locale = this->locale();
         QString displaySize = m_locale.formattedDataSize(size);
-        ui->usedL->setText(tr("Archive: %1").arg(displaySize));
+        addLog(tr("Archive: %1").arg(displaySize), USEDL);
         m_archiver->getDestinationSpace(m_model->stringList().at(0));
     });
 
@@ -128,30 +128,34 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         QLocale m_locale = this->locale();
         QString displaySpace = m_locale.formattedDataSize(space);
         ui->freeL->setVisible(true);
-        ui->freeL->setText(tr("Space: %1").arg(displaySpace));
+        addLog(tr("Space: %1").arg(displaySpace), FREEL);
         ui->statusL->setText(tr("Idle"));
         if (archiveSize > spaceAvailable) {
             ui->goB->setEnabled(false);
-            ui->statusL->setText(tr("Insufficient space"));
+            addLog(tr("Insufficient space"));
         }
     });
 
     connect(m_archiver, &archiver::sourceSize, this, [this] (ulong used) {
         QLocale m_locale = this->locale();
         QString displayUsed = m_locale.formattedDataSize(used);
-        ui->usedL->setText(tr("Source(s): %1").arg(displayUsed));
-        ui->statusL->setText(tr("Idle"));
+        addLog(tr("Source(s): %1").arg(displayUsed), USEDL);
+        addLog(tr("Idle"));
     });
 
     connect(m_archiver, &archiver::done, this, [this] {
-        ui->statusL->setText(tr("Idle"));
+        addLog(tr("Complete"));
         ui->goB->setEnabled(true);
+    });
+
+    connect(m_archiver, &archiver::writing, this, [this] (const QString archiveName) {
+        addLog(tr("Writing: %1").arg(archiveName), NONEL);
     });
 
     connect(ui->goB, &QPushButton::clicked, this, [this] {
         ui->goB->setEnabled(false);
         if (mode == MODE_BACKUP) {
-            ui->statusL->setText(tr("Archiving..."));
+            addLog(tr("Archiving..."));
             m_archiver->write(m_model->stringList());
         } else if (mode == MODE_RESTORE) {
             if (archiveSize > spaceAvailable) {
@@ -164,7 +168,7 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
                                       this);
                 m_msgbox1.setDefaultButton(QMessageBox::No);
                 if (m_msgbox1.exec() == QMessageBox::Yes) {
-                    ui->statusL->setText(tr("Restoring."));
+                    addLog(tr("Restoring."));
                     m_archiver->extract();
                 }
             } else {
@@ -177,14 +181,14 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
                 m_msgbox2.setDefaultButton(QMessageBox::Yes);
                 int ret = m_msgbox2.exec();
                 if (ret == QMessageBox::Yes) {
-                    ui->statusL->setText(tr("Archiving."));
+                    addLog(tr("Archiving."));
                     m_archiver->write(m_model->stringList(), true);
                     connect(m_archiver, &archiver::done, this, [this] {
-                        ui->statusL->setText(tr("Restoring."));
+                        addLog(tr("Restoring."));
                         m_archiver->extract();
                         }, Qt::SingleShotConnection);
                 } else if (ret == QMessageBox::No) {
-                    ui->statusL->setText(tr("Restoring."));
+                    addLog(tr("Restoring."));
                     m_archiver->extract();
                 }
             }
@@ -229,7 +233,7 @@ void MainWindow::setNewPath(const QString &path)
     ui->pathL->setText(path);
     m_archiver->setArchivePath(path);
     if (mode == MODE_RESTORE && path.endsWith(".tar.gz")) {
-        ui->statusL->setText(tr("Reading archive"));
+        addLog(tr("Reading archive"));
         m_archiver->read();
     } else if (mode == MODE_BACKUP) {
         m_archiver->getDestinationSpace(path);
@@ -241,9 +245,16 @@ void MainWindow::handleError(const QString &errorDetail)
     ui->logPTE->appendPlainText(QString("Error: ").append(errorDetail));
 }
 
-void MainWindow::addLog(const QString &logMessage)
+void MainWindow::addLog(const QString &logMessage, additionalOutput addOut)
 {
     ui->logPTE->appendPlainText(logMessage);
+    if (addOut == STATUSL) {
+        ui->statusL->setText(logMessage);
+    } else if (addOut == USEDL) {
+        ui->usedL->setText(logMessage);
+    } else if (addOut == FREEL) {
+        ui->freeL->setText(logMessage);
+    }
 }
 
 void MainWindow::halt()

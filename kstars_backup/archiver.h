@@ -24,6 +24,7 @@ signals:
     void archiveSize(ulong size);
     void destinationSpace(ulong size);
     void sourceSize(ulong size);
+    void writing(const QString archivePath);
     void done();
 
 private:

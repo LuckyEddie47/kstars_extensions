@@ -151,6 +151,7 @@ void archiver::write(const QStringList &paths, bool newBeforeRestore)
     } else {
         outFile = archivePath.append("/").append(createArchiveName());
     }
+    emit writing(outFile);
     QString prog = "tar";
     QStringList args;
     args << "-c" << "-z" << "-P" << "-f" << outFile << paths;

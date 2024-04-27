@@ -51,7 +51,6 @@
         <location filename="mainwindow.cpp" line="49"/>
         <location filename="mainwindow.cpp" line="132"/>
         <location filename="mainwindow.cpp" line="143"/>
-        <location filename="mainwindow.cpp" line="147"/>
         <source>Idle</source>
         <translation>Desocupado</translation>
     </message>
@@ -91,48 +90,58 @@
         <translation>Fuente(s): %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="154"/>
+        <location filename="mainwindow.cpp" line="147"/>
+        <source>Complete</source>
+        <translation>Completo</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="152"/>
+        <source>Writing: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="158"/>
         <source>Archiving...</source>
         <translation>Archivando...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="159"/>
+        <location filename="mainwindow.cpp" line="163"/>
         <source>No room for backup</source>
         <translation>No hay espacio para respaldo</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="160"/>
+        <location filename="mainwindow.cpp" line="164"/>
         <source>It is recommended to create a new backup before restoring, however there is insufficient space available.
 Continue without a new backup?</source>
         <translation>Se recomienda crear una nueva copia de seguridad antes de restaurar; sin embargo, no hay suficiente espacio disponible.
 ¿Continuar sin una nueva copia de seguridad?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="167"/>
-        <location filename="mainwindow.cpp" line="183"/>
+        <location filename="mainwindow.cpp" line="171"/>
         <location filename="mainwindow.cpp" line="187"/>
+        <location filename="mainwindow.cpp" line="191"/>
         <source>Restoring.</source>
         <translation>Restaurando.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="172"/>
+        <location filename="mainwindow.cpp" line="176"/>
         <source>Backup before restoring?</source>
         <translation>¿Copia de seguridad antes de restaurar?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="173"/>
+        <location filename="mainwindow.cpp" line="177"/>
         <source>It is recommended to create a new backup before restoring.
 Create a new backup?</source>
         <translation>Se recomienda crear una nueva copia de seguridad antes de restaurar.
 ¿Crear una nueva copia de seguridad?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="180"/>
+        <location filename="mainwindow.cpp" line="184"/>
         <source>Archiving.</source>
         <translation>Archivando.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="232"/>
+        <location filename="mainwindow.cpp" line="236"/>
         <source>Reading archive</source>
         <translation>Archivo de lectura</translation>
     </message>
