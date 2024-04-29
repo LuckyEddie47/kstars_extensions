@@ -50,7 +50,7 @@
         <location filename="mainwindow.cpp" line="25"/>
         <location filename="mainwindow.cpp" line="49"/>
         <location filename="mainwindow.cpp" line="132"/>
-        <location filename="mainwindow.cpp" line="143"/>
+        <location filename="mainwindow.cpp" line="150"/>
         <source>Idle</source>
         <translation>Desocupado</translation>
     </message>
@@ -81,67 +81,68 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="135"/>
+        <location filename="mainwindow.cpp" line="138"/>
         <source>Insufficient space</source>
         <translation>Espacio insuficiente</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="142"/>
+        <location filename="mainwindow.cpp" line="149"/>
         <source>Source(s): %1</source>
         <translation>Fuente(s): %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="147"/>
+        <location filename="mainwindow.cpp" line="154"/>
         <source>Complete</source>
         <translation>Completo</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="152"/>
+        <location filename="mainwindow.cpp" line="159"/>
         <source>Writing: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="158"/>
+        <location filename="mainwindow.cpp" line="165"/>
         <source>Archiving...</source>
         <translation>Archivando...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="163"/>
+        <location filename="mainwindow.cpp" line="170"/>
         <source>No room for backup</source>
         <translation>No hay espacio para respaldo</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="164"/>
+        <location filename="mainwindow.cpp" line="171"/>
         <source>It is recommended to create a new backup before restoring, however there is insufficient space available.
 Continue without a new backup?</source>
         <translation>Se recomienda crear una nueva copia de seguridad antes de restaurar; sin embargo, no hay suficiente espacio disponible.
 ¿Continuar sin una nueva copia de seguridad?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="171"/>
-        <location filename="mainwindow.cpp" line="187"/>
-        <location filename="mainwindow.cpp" line="191"/>
+        <location filename="mainwindow.cpp" line="178"/>
+        <location filename="mainwindow.cpp" line="194"/>
+        <location filename="mainwindow.cpp" line="198"/>
         <source>Restoring.</source>
         <translation>Restaurando.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="176"/>
+        <location filename="mainwindow.cpp" line="183"/>
         <source>Backup before restoring?</source>
         <translation>¿Copia de seguridad antes de restaurar?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="177"/>
+        <location filename="mainwindow.cpp" line="184"/>
         <source>It is recommended to create a new backup before restoring.
 Create a new backup?</source>
         <translation>Se recomienda crear una nueva copia de seguridad antes de restaurar.
 ¿Crear una nueva copia de seguridad?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="184"/>
+        <location filename="mainwindow.cpp" line="191"/>
         <source>Archiving.</source>
         <translation>Archivando.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="236"/>
+        <location filename="mainwindow.cpp" line="243"/>
         <source>Reading archive</source>
         <translation>Archivo de lectura</translation>
     </message>

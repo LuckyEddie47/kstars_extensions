@@ -130,13 +130,20 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
         ui->freeL->setVisible(true);
         addLog(tr("Space: %1").arg(displaySpace), FREEL);
         ui->statusL->setText(tr("Idle"));
-        if (archiveSize > spaceAvailable) {
+        if ((mode == MODE_RESTORE) && (archiveSize >= spaceAvailable)) {
             ui->goB->setEnabled(false);
             addLog(tr("Insufficient space"));
+        } else if ((mode == MODE_BACKUP) && (spaceNeeded >= spaceAvailable)) {
+            ui->goB->setEnabled(false);
+            addLog(tr("Insufficient space"));
+        } else {
+            ui->goB->setEnabled(true);
+            ui->browseB->setEnabled(true);
         }
     });
 
     connect(m_archiver, &archiver::sourceSize, this, [this] (ulong used) {
+        spaceNeeded = used;
         QLocale m_locale = this->locale();
         QString displayUsed = m_locale.formattedDataSize(used);
         addLog(tr("Source(s): %1").arg(displayUsed), USEDL);
