@@ -181,7 +181,7 @@ QString archiver::createArchiveName()
     QString hostName = QSysInfo::machineHostName();
     QString osVersion = QSysInfo::productVersion();
     QString architecture = QSysInfo::currentCpuArchitecture();
-    QString now = QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss");
+    QString now = QDateTime::currentDateTime().toString("dd.MM.yyyy hh-mm-ss");
     QString outputName = "KStars backup ";
     if (kstars_version != "") {
         outputName.append("V").append(kstars_version).append(" ");
