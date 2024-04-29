@@ -2,8 +2,6 @@
 #include "kstarsDBusConf.h"
 #include "ekosStatus.h"
 
-#include <QtDBus>
-
 kstarsinterface::kstarsinterface(QObject *parent)
 {
     /* Watch for the extensionStatusChanged DBus signal,

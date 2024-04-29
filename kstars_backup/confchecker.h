@@ -19,7 +19,6 @@ public slots:
 
 signals:
     void pathsFound(const QStringList &paths);
-
     void errorMessage(const QString errorDetail);
 
 private:

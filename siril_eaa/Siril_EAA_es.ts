@@ -27,76 +27,76 @@
 <context>
     <name>kstarsinterface</name>
     <message>
-        <location filename="kstarsinterface.cpp" line="26"/>
+        <location filename="kstarsinterface.cpp" line="24"/>
         <source>Can not connect to DBus session interface, is the DBus deamon running?</source>
         <translation>No se puede conectar a la interfaz de sesión de DBus. ¿Se está ejecutando el demonio DBus?</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="37"/>
+        <location filename="kstarsinterface.cpp" line="35"/>
         <source>Can not connect to KStars DBus interface, is KStars running?</source>
         <translation>No se puede conectar a la interfaz DBus de KStars. ¿Se está ejecutando KStars?</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="50"/>
+        <location filename="kstarsinterface.cpp" line="48"/>
         <source>Could not determine the state of the Scheduler</source>
         <translation>No se pudo determinar el estado del Programador</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="58"/>
+        <location filename="kstarsinterface.cpp" line="56"/>
         <source>Scheduler is in use</source>
         <translation>El programador está en uso</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="75"/>
-        <location filename="kstarsinterface.cpp" line="86"/>
+        <location filename="kstarsinterface.cpp" line="73"/>
+        <location filename="kstarsinterface.cpp" line="84"/>
         <source>Could not determine the state of the Capture module</source>
         <translation>No se pudo determinar el estado del módulo de captura</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="83"/>
+        <location filename="kstarsinterface.cpp" line="81"/>
         <source>Capture module is in use</source>
         <translation>El módulo de captura está en uso.</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="97"/>
+        <location filename="kstarsinterface.cpp" line="95"/>
         <source>Could not set Ekos Preview mode</source>
         <translation>No se pudo configurar el modo de vista previa de Ekos</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="108"/>
+        <location filename="kstarsinterface.cpp" line="106"/>
         <source>Could not send Stack to Ekos</source>
         <translation>No se pudo enviar la pila a Ekos</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="137"/>
+        <location filename="kstarsinterface.cpp" line="135"/>
         <source>Capture has jobs</source>
         <translation>La captura tiene trabajos</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="140"/>
-        <location filename="kstarsinterface.cpp" line="143"/>
+        <location filename="kstarsinterface.cpp" line="138"/>
+        <location filename="kstarsinterface.cpp" line="141"/>
         <source>Could not get Capture job count</source>
         <translation>No se pudo obtener el recuento de trabajos de captura</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="160"/>
+        <location filename="kstarsinterface.cpp" line="158"/>
         <source>Placeholder format contains variable path tags</source>
         <translation>El formato de marcador de posición contiene etiquetas de ruta variables</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="163"/>
-        <location filename="kstarsinterface.cpp" line="166"/>
+        <location filename="kstarsinterface.cpp" line="161"/>
+        <location filename="kstarsinterface.cpp" line="164"/>
         <source>Could not get placeholder format</source>
         <translation>No se pudo obtener el formato del marcador de posición</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="187"/>
-        <location filename="kstarsinterface.cpp" line="190"/>
+        <location filename="kstarsinterface.cpp" line="185"/>
+        <location filename="kstarsinterface.cpp" line="188"/>
         <source>Could not get image filepath</source>
         <translation>No se pudo obtener la ruta del archivo de imagen</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="207"/>
+        <location filename="kstarsinterface.cpp" line="205"/>
         <source>Could not start the Capture job</source>
         <translation>No se pudo iniciar el trabajo de captura</translation>
     </message>

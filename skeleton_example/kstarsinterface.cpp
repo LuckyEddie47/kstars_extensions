@@ -10,7 +10,8 @@ kstarsinterface::kstarsinterface(QObject *parent)
      * therefore we have to use the 'old' string connect syntax and can not call
      * a lambda.
      */
-    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(QDBusMessage message)));
+    bus.connect(serviceName, QString(), EkosInterface, "extensionStatusChanged", this, SLOT (receiverStatusChanged(QDBusMessage)));
+
 }
 
 bool kstarsinterface::kstarsStateIsValid()

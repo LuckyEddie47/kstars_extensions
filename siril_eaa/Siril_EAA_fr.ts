@@ -27,76 +27,76 @@
 <context>
     <name>kstarsinterface</name>
     <message>
-        <location filename="kstarsinterface.cpp" line="26"/>
+        <location filename="kstarsinterface.cpp" line="24"/>
         <source>Can not connect to DBus session interface, is the DBus deamon running?</source>
         <translation>Impossible de se connecter à l&apos;interface de session DBus, le démon DBus est-il en cours d&apos;exécution&#xa0;?</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="37"/>
+        <location filename="kstarsinterface.cpp" line="35"/>
         <source>Can not connect to KStars DBus interface, is KStars running?</source>
         <translation>Impossible de se connecter à l&apos;interface DBus de KStars, KStars est-il en cours d&apos;exécution&#xa0;?</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="50"/>
+        <location filename="kstarsinterface.cpp" line="48"/>
         <source>Could not determine the state of the Scheduler</source>
         <translation>Impossible de déterminer l&apos;état du planificateur</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="58"/>
+        <location filename="kstarsinterface.cpp" line="56"/>
         <source>Scheduler is in use</source>
         <translation>Le planificateur est en cours d&apos;utilisation</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="75"/>
-        <location filename="kstarsinterface.cpp" line="86"/>
+        <location filename="kstarsinterface.cpp" line="73"/>
+        <location filename="kstarsinterface.cpp" line="84"/>
         <source>Could not determine the state of the Capture module</source>
         <translation>Impossible de déterminer l&apos;état du module Capture</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="83"/>
+        <location filename="kstarsinterface.cpp" line="81"/>
         <source>Capture module is in use</source>
         <translation>Le module de capture est en cours d&apos;utilisation</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="97"/>
+        <location filename="kstarsinterface.cpp" line="95"/>
         <source>Could not set Ekos Preview mode</source>
         <translation>Impossible de définir le mode Aperçu d&apos;Ekos</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="108"/>
+        <location filename="kstarsinterface.cpp" line="106"/>
         <source>Could not send Stack to Ekos</source>
         <translation>Impossible d&apos;envoyer Stack à Ekos</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="137"/>
+        <location filename="kstarsinterface.cpp" line="135"/>
         <source>Capture has jobs</source>
         <translation>Capture a des emplois</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="140"/>
-        <location filename="kstarsinterface.cpp" line="143"/>
+        <location filename="kstarsinterface.cpp" line="138"/>
+        <location filename="kstarsinterface.cpp" line="141"/>
         <source>Could not get Capture job count</source>
         <translation>Impossible d&apos;obtenir le nombre de tâches de capture</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="160"/>
+        <location filename="kstarsinterface.cpp" line="158"/>
         <source>Placeholder format contains variable path tags</source>
         <translation>Le format d&apos;espace réservé contient des balises de chemin variable</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="163"/>
-        <location filename="kstarsinterface.cpp" line="166"/>
+        <location filename="kstarsinterface.cpp" line="161"/>
+        <location filename="kstarsinterface.cpp" line="164"/>
         <source>Could not get placeholder format</source>
         <translation>Impossible d&apos;obtenir le format d&apos;espace réservé</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="187"/>
-        <location filename="kstarsinterface.cpp" line="190"/>
+        <location filename="kstarsinterface.cpp" line="185"/>
+        <location filename="kstarsinterface.cpp" line="188"/>
         <source>Could not get image filepath</source>
         <translation>Impossible d&apos;obtenir le chemin du fichier image</translation>
     </message>
     <message>
-        <location filename="kstarsinterface.cpp" line="207"/>
+        <location filename="kstarsinterface.cpp" line="205"/>
         <source>Could not start the Capture job</source>
         <translation>Impossible de démarrer le travail de capture</translation>
     </message>
