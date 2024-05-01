@@ -9,14 +9,31 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core DBus)
+find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus LinguistTools)
 
-qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr es)
+# Qt6.7 translation style, kept for reference
+#qt_add_translations(FC_launcher
+#                    INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
+#                    TS_FILES FC_launcher_de.ts FC_launcher_fr.ts FC_launcher_es.ts)
+
+#qt_add_lupdate(SOURCE_TARGETS FC_launcher
+#               TS_FILES FC_launcher_de.ts FC_launcher_fr.ts FC_launcher_es.ts
+#               PLURALS_TS_FILE FC_launcher_en.ts)
+
+#qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr es)
+
+#Pre Qt6.7 translation style
+set(TS_FILES
+  FC_launcher_de.ts
+  FC_launcher_fr.ts
+  FC_launcher_es.ts)
+
+qt_add_translation(QM_FILES ${TS_FILES})
+configure_file(firecapture_launcher.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 add_executable(FC_launcher
   main.cpp
-
   log.h log.cpp
   kstarsinterface.h kstarsinterface.cpp
   kstarsDBusConf.h
@@ -24,16 +41,9 @@ add_executable(FC_launcher
   process.h process.cpp
   bombout.h
   FC_launcher.conf FC_launcher.png README.md
+  ${CMAKE_CURRENT_BINARY_DIR}/firecapture_launcher.qrc
+  ${QM_FILES}
 )
-
-qt_add_translations(FC_launcher
-                    INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
-                    TS_FILES FC_launcher_de.ts FC_launcher_fr.ts FC_launcher_es.ts)
-
-qt_add_lupdate(SOURCE_TARGETS FC_launcher
-               TS_FILES FC_launcher_de.ts FC_launcher_fr.ts FC_launcher_es.ts
-               PLURALS_TS_FILE FC_launcher_en.ts)
-
 
 target_link_libraries(FC_launcher Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus)
 

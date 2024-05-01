@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/i18n">
+        <file>FC_launcher_fr.qm</file>
+        <file>FC_launcher_es.qm</file>
+        <file>FC_launcher_de.qm</file>
+    </qresource>
+</RCC>

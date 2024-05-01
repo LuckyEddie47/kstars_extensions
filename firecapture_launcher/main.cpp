@@ -9,7 +9,7 @@
 #include "process.h"
 #include "bombout.h"
 
-// This is the earlies versin of KStars that this plugin targets
+// This is the earlies version of KStars that this plugin targets
 #define MIN_KSTARS_VERSION "3.7.1"
 
 int main(int argc, char *argv[])
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
                         if (FC.exists()) {
                             okayToProceed = true;
                         } else {
-                            m_log.out(QObject::tr("Conf file %1 contains path '%2' which does not exist")
+                            m_log.out(QObject::tr("Conf file %1 contains path '%2' which does not exi st")
                                              .arg(confFileName, FCpath));
                             bombout();
                         }
