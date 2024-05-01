@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/i18n">
+        <file>Siril_EAA_fr.qm</file>
+        <file>Siril_EAA_es.qm</file>
+        <file>Siril_EAA_de.qm</file>
+    </qresource>
+</RCC>
