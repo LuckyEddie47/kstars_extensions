@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/i18n">
+        <file>kstars_backup_de.qm</file>
+        <file>kstars_backup_es.qm</file>
+        <file>kstars_backup_fr.qm</file>
+    </qresource>
+</RCC>

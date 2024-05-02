@@ -156,7 +156,8 @@ void archiver::write(const QStringList &paths, bool newBeforeRestore)
     QStringList args;
     args << "-c" << "-z" << "-P" << "-f" << outFile << paths;
     m_writer->setProcessChannelMode(QProcess::ForwardedChannels);
-    connect(m_writer, &QProcess::finished, this, [this] {
+    connect(m_writer, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
+            [=](int exitCode, QProcess::ExitStatus exitStatus) {
         emit done();
     });
 
@@ -169,7 +170,8 @@ void archiver::extract()
     QStringList args;
     args << "-x" << "-z" << "-P" << "-f" << archivePath;
     m_extractor->setProcessChannelMode(QProcess::ForwardedChannels);
-    connect(m_extractor, &QProcess::finished, this, [this] {
+    connect(m_extractor, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this,
+            [=](int exitCode, QProcess::ExitStatus exitStatus) {
         emit done();
     });
 

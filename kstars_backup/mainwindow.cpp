@@ -190,10 +190,12 @@ MainWindow::MainWindow(const QString &appFilePath, const QString &ks_version, QW
                 if (ret == QMessageBox::Yes) {
                     addLog(tr("Archiving."));
                     m_archiver->write(m_model->stringList(), true);
-                    connect(m_archiver, &archiver::done, this, [this] {
+                    QObject* context = new QObject();
+                    connect(m_archiver, &archiver::done, this, [this, &context] {
+                        context->deleteLater();
                         addLog(tr("Restoring."));
                         m_archiver->extract();
-                        }, Qt::SingleShotConnection);
+                        });
                 } else if (ret == QMessageBox::No) {
                     addLog(tr("Restoring."));
                     m_archiver->extract();

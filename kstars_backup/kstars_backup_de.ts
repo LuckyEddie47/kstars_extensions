@@ -98,7 +98,7 @@
     <message>
         <location filename="mainwindow.cpp" line="159"/>
         <source>Writing: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Schreiben: %1</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="165"/>
