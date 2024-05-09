@@ -13,24 +13,13 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS)
 #find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network StateMachine LinguistTools) - Qt6 moved StateMachine out of Core
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network LinguistTools)
 
-# Qt6.7 translation style, kept for reference
-#qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr es)
-#
-#qt_add_translations(Siril_EAA
-#                    INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
-#                    TS_FILES Siril_EAA_de.ts Siril_EAA_fr.ts Siril_EAA_es.ts)
-#
-#qt_add_lupdate(SOURCE_TARGETS Siril_EAA
-#               TS_FILES Siril_EAA_de.ts Siril_EAA_fr.ts Siril_EAA_es.ts
-#               PLURALS_TS_FILE Siril_EAA_en.ts)
-
 #Pre Qt6.7 translation style
 set(TS_FILES
   Siril_EAA_de.ts
   Siril_EAA_fr.ts
   Siril_EAA_es.ts)
 
-qt_add_translation(QM_FILES ${TS_FILES})
+QT_ADD_TRANSLATION(QM_FILES ${TS_FILES})
 configure_file(Siril_EAA.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 add_executable(Siril_EAA

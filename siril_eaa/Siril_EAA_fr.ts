@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="fr" sourcelanguage="en_GB">
+<TS version="2.1" language="fr_FR" sourcelanguage="en_GB">
 <context>
     <name>confChecker</name>
     <message>
@@ -139,7 +139,7 @@
     <message>
         <location filename="statemachine.cpp" line="132"/>
         <source>Exit requested</source>
-        <translation type="unfinished">Sortie demandée</translation>
+        <translation>Sortie demandée</translation>
     </message>
 </context>
 </TS>
