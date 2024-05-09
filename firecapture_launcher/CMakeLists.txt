@@ -12,24 +12,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus LinguistTools)
 
-# Qt6.7 translation style, kept for reference
-#qt_add_translations(FC_launcher
-#                    INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
-#                    TS_FILES FC_launcher_de.ts FC_launcher_fr.ts FC_launcher_es.ts)
-
-#qt_add_lupdate(SOURCE_TARGETS FC_launcher
-#               TS_FILES FC_launcher_de.ts FC_launcher_fr.ts FC_launcher_es.ts
-#               PLURALS_TS_FILE FC_launcher_en.ts)
-
-#qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr es)
-
 #Pre Qt6.7 translation style
 set(TS_FILES
   FC_launcher_de.ts
   FC_launcher_fr.ts
   FC_launcher_es.ts)
 
-qt_add_translation(QM_FILES ${TS_FILES})
+QT_ADD_TRANSLATION(QM_FILES ${TS_FILES})
 configure_file(firecapture_launcher.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 add_executable(FC_launcher
