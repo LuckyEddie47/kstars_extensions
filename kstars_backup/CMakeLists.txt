@@ -18,8 +18,7 @@ set(TS_FILES
   KS_backup_fr.ts
   KS_backup_es.ts)
 
-QT5_ADD_TRANSLATION(QM_FILES ${TS_FILES})
-#qt_create_translation(QM_FILES ${TS_FILES})
+QT_ADD_TRANSLATION(QM_FILES ${TS_FILES})
 configure_file(KS_backup.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 set(PROJECT_SOURCES
