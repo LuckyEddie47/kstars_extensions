@@ -9,28 +9,18 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus LinguistTools)
-
-# Qt6.7 translation style, kept for reference
-#qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES de fr es)
-#
-#qt_add_translations(KS_backup
-#                    INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}
-#                    TS_FILES kstars_backup_de.ts kstars_backup_fr.ts kstars_backup_es.ts)
-#
-#qt_add_lupdate(SOURCE_TARGETS KS_backup
-#               TS_FILES kstars_backup_de.ts kstars_backup_fr.ts kstars_backup_es.ts
-#               PLURALS_TS_FILE kstars_backup_en.ts)
 
 #Pre Qt6.7 translation style
 set(TS_FILES
-  kstars_backup_de.ts
-  kstars_backup_fr.ts
-  kstars_backup_es.ts)
+  KS_backup_de.ts
+  KS_backup_fr.ts
+  KS_backup_es.ts)
 
-qt_add_translation(QM_FILES ${TS_FILES})
-configure_file(kstars_backup.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+QT5_ADD_TRANSLATION(QM_FILES ${TS_FILES})
+#qt_create_translation(QM_FILES ${TS_FILES})
+configure_file(KS_backup.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -44,17 +34,12 @@ set(PROJECT_SOURCES
         ${QM_FILES}
 )
 
-#if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
- #   qt_add_executable(
  add_executable(KS_backup
-#        MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         KS_backup.conf KS_backup.png README.md
-        ${QM_FILES}
-        kstars_backup.qrc
-        ${CMAKE_CURRENT_BINARY_DIR}/kstars_backup.qrc
+        ${QM_FILES}        
+        ${CMAKE_CURRENT_BINARY_DIR}/KS_backup.qrc
     )
-#endif()
 
 target_link_libraries(KS_backup PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
                                             Qt${QT_VERSION_MAJOR}::DBus)

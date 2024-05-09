@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QTranslator m_translator;
-    if (m_translator.load(QLocale(), ":/i18n/kstars_backup")) {
+    if (m_translator.load(QLocale(), ":/i18n/KS_backup")) {
         app.installTranslator(&m_translator);
     }
     app.setApplicationName("KS_backup");
