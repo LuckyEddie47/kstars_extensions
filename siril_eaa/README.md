@@ -33,6 +33,7 @@ When finished, click the extension stop button to resume normal Capture mode.
 Issues / Limitations
 --------------------
 Siril must be installed and functional on the same computer that KStars/Ekos is running on. Siril must be version 1.2.2 or later. Remote saving is not supported.
+Siril must be run in headless mode once in order to create the fifos before using this extension. Run your Siril binary from a termainal with the -p switch in order to do this.
 
 Siril's live stacking mode currently only supports alignment and rotational registration, not scaling.
 
