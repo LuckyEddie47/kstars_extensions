@@ -39,9 +39,14 @@ bool confChecker::isValid()
                                     KStarsVersionElementInts.append(element.toInt());
                                 }
                             }
-                            if ((minVersionElementInts.at(0) == KStarsVersionElementInts.at(0)) &&
-                                (minVersionElementInts.at(1) == KStarsVersionElementInts.at(1)) &&
-                                (minVersionElementInts.at(2) == KStarsVersionElementInts.at(2))){
+                            if (KStarsVersionElementInts.at(0) > minVersionElementInts.at(0)) {
+                                confIsValid = true;
+                            } else if ((KStarsVersionElementInts.at(0) == minVersionElementInts.at(0)) &&
+                                       (KStarsVersionElementInts.at(1) > minVersionElementInts.at(1))) {
+                                confIsValid = true;
+                            } else if ((KStarsVersionElementInts.at(0) == minVersionElementInts.at(0)) &&
+                                       (KStarsVersionElementInts.at(1) == minVersionElementInts.at(1)) &&
+                                       (KStarsVersionElementInts.at(2) >= minVersionElementInts.at(2))) {
                                 confIsValid = true;
                             } else {
                                 emit errorMessage(QString("Incorrect minimum_kstars_version in %1").arg(confFilePath));
