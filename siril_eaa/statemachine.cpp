@@ -132,6 +132,9 @@ void statemachine::createMachine()
         handleError(QString(tr("Exit requested")));
     });
 
+    // Siril message passing
+    connect(m_sirilinterface, &sirilinterface::sirilMessage, m_logger, &logger::out);
+
     machine->start();
 }
 

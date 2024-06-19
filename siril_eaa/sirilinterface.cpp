@@ -180,6 +180,9 @@ void sirilinterface::readMessage()
         if (messageBA.contains("\n")) {
             messageBA.truncate(messageBA.lastIndexOf("\n"));
         }
+
+        emit sirilMessage (QString(messageBA));
+
         if (QString(messageBA) == "ready") {
             emit sirilReady();
         } else if (QString(messageBA).contains("status: success cd")) {
@@ -191,8 +194,6 @@ void sirilinterface::readMessage()
                    (QString(messageBA).contains("log: Stacked image"))) {
             emit sirilStackReady();
         }
-
-        emit sirilMessage (QString(messageBA));
     }
 }
 
