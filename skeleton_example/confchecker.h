@@ -14,7 +14,7 @@
 #include <QObject>
 
 // This is the earlies version of KStars that this plugin targets
-#define MIN_KSTARS_VERSION "3.7.2"
+#define MIN_KSTARS_VERSION "3.7.3"
 
 class confChecker : public QObject
 {

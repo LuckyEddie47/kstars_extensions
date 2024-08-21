@@ -33,11 +33,14 @@ When finished, click the extension stop button to resume normal Capture mode.
 Issues / Limitations
 --------------------
 Siril must be installed and functional on the same computer that KStars/Ekos is running on. Siril must be version 1.2.2 or later. Remote saving is not supported.
+
 Siril must be run in headless mode once in order to create the fifos before using this extension. Run your Siril binary from a termainal with the -p switch in order to do this.
 
 Siril's live stacking mode currently only supports alignment and rotational registration, not scaling.
 
-Capture is repeated started in preview mode to generate the individual sub frames. As such the sequence queue must be empty before starting. The extension **will not** empty the queue for you as this is deemed to be a potential for data loss.
+Capture is repeatedly started in preview mode to generate the individual sub frames. As such the sequence queue must be empty before starting. The extension **will not** empty the queue for you as this is deemed to be a potential for data loss.
+
+The "Primary" optical train must be used and only the first camera in Ekos is used.
 
 The Directory and Format fields of Capture are read to locate the sub-frames. The Format **must not** contain any tags in the directory path portion that are set at save time (ie: %D, %C or %P). These are usable in the file name portion of the Format.
 
