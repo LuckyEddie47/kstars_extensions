@@ -107,7 +107,7 @@ void kstarsinterface::openFITSfile(const QString &filePath)
     }
 }
 
-//void kstarsinterface::receiverStatusChanged(bool status)
+//
 void kstarsinterface::receiverStatusChanged(QDBusMessage message)
 {
     Q_UNUSED(message);
@@ -200,7 +200,7 @@ void kstarsinterface::captureJobRunning()
 {
     QDBusInterface interface(serviceName, pathCapture);
     if (interface.isValid()) {
-        QDBusMessage message = interface.call("start");
+        QDBusMessage message = interface.call("start", "Primary");
     } else {
         emit errorMessage(tr("Could not start the Capture job"));
     }
