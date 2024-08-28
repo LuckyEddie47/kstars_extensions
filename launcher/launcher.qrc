@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/i18n">
+        <file>launcher_fr.qm</file>
+        <file>launcher_es.qm</file>
+        <file>launcher_de.qm</file>
+    </qresource>
+</RCC>
