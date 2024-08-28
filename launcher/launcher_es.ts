@@ -79,29 +79,15 @@
         <translation>El módulo de captura está en uso.</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="169"/>
-        <source>FireCapture started</source>
-        <translation>FireCapture comenzó</translation>
-    </message>
-    <message>
-        <location filename="main.cpp" line="173"/>
-        <source>Reconnecting camera</source>
-        <translation>Reconectando la cámara</translation>
+        <location filename="main.cpp" line="182"/>
+        <source>Program started</source>
+        <translation>17 / 5,000
+El programa comenzó</translation>
     </message>
     <message>
         <location filename="main.cpp" line="175"/>
         <source>All done</source>
         <translation>Todo listo</translation>
-    </message>
-    <message>
-        <location filename="main.cpp" line="180"/>
-        <source>Starting FireCapture</source>
-        <translation>Iniciando FireCapture</translation>
-    </message>
-    <message>
-        <location filename="main.cpp" line="183"/>
-        <source>FireCapture start script does not support --no-confirm and can not be patched</source>
-        <translation>El script de inicio de FireCapture no admite --no-confirm y no se puede parchear</translation>
     </message>
 </context>
 </TS>

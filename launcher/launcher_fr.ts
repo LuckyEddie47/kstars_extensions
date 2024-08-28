@@ -80,29 +80,14 @@
         <translation>Le module de capture est en cours d&apos;utilisation</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="169"/>
-        <source>FireCapture started</source>
-        <translation>FireCapture a démarré</translation>
-    </message>
-    <message>
-        <location filename="main.cpp" line="173"/>
-        <source>Reconnecting camera</source>
-        <translation>Reconnexion de la caméra</translation>
+        <location filename="main.cpp" line="182"/>
+        <source>Program started</source>
+        <translation>Le programme a commencé</translation>
     </message>
     <message>
         <location filename="main.cpp" line="175"/>
         <source>All done</source>
         <translation>Terminé</translation>
-    </message>
-    <message>
-        <location filename="main.cpp" line="180"/>
-        <source>Starting FireCapture</source>
-        <translation>Démarrage de FireCapture</translation>
-    </message>
-    <message>
-        <location filename="main.cpp" line="183"/>
-        <source>FireCapture start script does not support --no-confirm and can not be patched</source>
-        <translation>Le script de démarrage de FireCapture ne prend pas en charge --no-confirm et ne peut pas être corrigé</translation>
     </message>
 </context>
 </TS>
