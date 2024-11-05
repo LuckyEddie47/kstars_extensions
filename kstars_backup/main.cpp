@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QTranslator>
+#include <QPushButton>
 
 int main(int argc, char *argv[])
 {
@@ -24,11 +25,12 @@ int main(int argc, char *argv[])
                          QObject::tr("To prevent files being used during the backup/restore "
                                      "process it is necessary to close KStars.\n"
                                      "Okay to proceed?"));
-    m_msgbox.addButton(QObject::tr("Yes"), QMessageBox::YesRole);
-    m_msgbox.addButton(QObject::tr("No"), QMessageBox::NoRole);
-    m_msgbox.setDefaultButton(QMessageBox::No);
+    QPushButton *yesButton = m_msgbox.addButton(QObject::tr("Yes"), QMessageBox::YesRole);
+    QPushButton *noButton = m_msgbox.addButton(QObject::tr("No"), QMessageBox::NoRole);
+    Q_UNUSED(*noButton);
+    m_msgbox.exec();
 
-    if (m_msgbox.exec() == QMessageBox::AcceptRole) {
+    if (m_msgbox.clickedButton() == yesButton) {
         w.begin();
     } else {
         QMetaObject::invokeMethod(&app, "quit", Qt::QueuedConnection);
