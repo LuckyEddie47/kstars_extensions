@@ -45,33 +45,62 @@ void sirilinterface::setRegistrationMode(QString mode)
     registrationMode = mode;
 }
 
-// Check if Siril is already running
+// Check if Siril is already running in headless mode, if so issue exit command
 void sirilinterface::checkSiril()
 {
     if (sirilPath != "") {
-        // Kill any existing running instances
         QProcess checkExistingSiril;
         QString checkProg("bash");
-        QStringList checkArgs = QStringList() << "-c" << "ps -eo cmd | grep -i '[s]iril'";
+        QStringList checkArgs = QStringList() << "-c" << "ps -eo cmd | grep -i '[s]iril.*-p$'";
         checkExistingSiril.setProcessChannelMode(QProcess::MergedChannels);
 
         connect(&checkExistingSiril, &QProcess::readyReadStandardOutput, this, [&] () {
             QString output = checkExistingSiril.readAllStandardOutput();
             QStringList processes = output.split("\n", Qt::SkipEmptyParts);
             if (processes.count() > 1) {
-                emit errorMessage(tr("Siril is already running, can not proceed"));
-            } else {
-                emit sirilChecked();
+                QProcess exitCmdProc;
+                QString exitCmd("bash");
+                QStringList exitCmdArgs = QStringList() << "-c" << "echo 'exit' > /tmp/siril_command.in";
+                exitCmdProc.start(exitCmd, exitCmdArgs);
+                exitCmdProc.waitForFinished(1000);
             }
         });
+
         checkExistingSiril.start(checkProg, checkArgs);
         checkExistingSiril.waitForFinished();
+
+        // Allow time for the exit command to be obeyed (if issued)
+        QTimer::singleShot(500, this, [this] () {
+            emit sirilChecked();
+        });
     }
 }
 
 // Launch Siril
 void sirilinterface::startSiril()
 {
+    // Before attempting to start Siril, remove any existing command named pipes
+    QProcess checkPipes;
+    QString checkPipe("bash");
+    QStringList checkPipesArgs = QStringList() << "-c" << "ls /tmp/ | grep -i siril_command";
+    checkPipes.setProcessChannelMode(QProcess::MergedChannels);
+
+    connect(&checkPipes, &QProcess::readyReadStandardOutput, this, [&] () {
+        QString output = checkPipes.readAllStandardOutput();
+        QStringList pipes = output.split("\n", Qt::SkipEmptyParts);
+        QProcess pipesKiller;
+        QString pipeKill("rm");
+        foreach (QString pipe, pipes) {
+            QStringList pipeKillArgs = QStringList() << pipe;
+            pipesKiller.start(pipeKill, pipeKillArgs);
+            pipesKiller.waitForFinished();
+        }
+    });
+
+    checkPipes.start(checkPipe, checkPipesArgs);
+    checkPipes.waitForFinished();
+
+    // Now try starting Siril
     if (sirilPath != "") {
         QString wd = sirilPath.left(sirilPath.lastIndexOf("/"));
         QStringList arguments;
@@ -217,7 +246,7 @@ void sirilinterface::readMessage()
 void sirilinterface::sendSirilCommand(QString command)
 {
     // Timer is for Siril command rate limiting
-    QTimer::singleShot(100, this, [&, this] {
+    QTimer::singleShot(100, this, [this, command] {
         QFile commandPipe(sirilCommands);
         if (commandPipe.open(QIODevice::WriteOnly)) {
             commandPipe.setTextModeEnabled(true);
