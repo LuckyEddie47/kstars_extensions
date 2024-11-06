@@ -45,20 +45,34 @@ void sirilinterface::setRegistrationMode(QString mode)
     registrationMode = mode;
 }
 
+// Check if Siril is already running
+void sirilinterface::checkSiril()
+{
+    if (sirilPath != "") {
+        // Kill any existing running instances
+        QProcess checkExistingSiril;
+        QString checkProg("bash");
+        QStringList checkArgs = QStringList() << "-c" << "ps -eo cmd | grep -i '[s]iril'";
+        checkExistingSiril.setProcessChannelMode(QProcess::MergedChannels);
+
+        connect(&checkExistingSiril, &QProcess::readyReadStandardOutput, this, [&] () {
+            QString output = checkExistingSiril.readAllStandardOutput();
+            QStringList processes = output.split("\n", Qt::SkipEmptyParts);
+            if (processes.count() > 1) {
+                emit errorMessage(tr("Siril is already running, can not proceed"));
+            } else {
+                emit sirilChecked();
+            }
+        });
+        checkExistingSiril.start(checkProg, checkArgs);
+        checkExistingSiril.waitForFinished();
+    }
+}
+
 // Launch Siril
 void sirilinterface::startSiril()
 {
     if (sirilPath != "") {
-        // Kill any existing running instances
-        QProcess killer;
-        QString killerProc("pkill");
-        QStringList killerArgs = QStringList() << "-f" << "/siril";
-        killer.start(killerProc, killerArgs);
-        killer.waitForReadyRead(1000);
-        killer.terminate();
-        killer.waitForFinished(1000);
-        killer.kill();
-
         QString wd = sirilPath.left(sirilPath.lastIndexOf("/"));
         QStringList arguments;
         arguments << "-p";
@@ -127,6 +141,8 @@ void sirilinterface::connectSiril()
         QTimer::singleShot(1000, this, [this] {
             emit sirilConnected();
         });
+    } else {
+        emit errorMessage(tr("Failed to connect to Siril"));
     }
 }
 
@@ -200,13 +216,19 @@ void sirilinterface::readMessage()
 // Send command to Siril
 void sirilinterface::sendSirilCommand(QString command)
 {
-    QFile commandPipe(sirilCommands);
-    if (commandPipe.open(QIODevice::WriteOnly)) {
-        commandPipe.setTextModeEnabled(true);
-        QTextStream commandTS(&commandPipe);
-        commandTS << command << Qt::endl;
-        commandPipe.close();
-    }
+    // Timer is for Siril command rate limiting
+    QTimer::singleShot(100, this, [&, this] {
+        QFile commandPipe(sirilCommands);
+        if (commandPipe.open(QIODevice::WriteOnly)) {
+            commandPipe.setTextModeEnabled(true);
+            QTextStream commandTS(&commandPipe);
+            commandTS << command << Qt::endl;
+            commandPipe.close();
+
+            emit sirilMessage(QString("Sent siril command: %1").arg(command));  // Only for Debug
+        }
+    });
+
 }
 
 void sirilinterface::newImageFromKStars(const QString &filePath)

@@ -41,11 +41,12 @@ void statemachine::createMachine()
     checkingEkos->setInitialState(checkingDbus);
 
     QState *settingUpSiril = new QState();
+    QState *checkingSiril = new QState(settingUpSiril);
     QState *launchingSiril = new QState(settingUpSiril);
     QState *connectingSiril = new QState(settingUpSiril);
     QState *settingWDSiril = new QState(settingUpSiril);
     QState *settingLSSiril = new QState(settingUpSiril);
-    settingUpSiril->setInitialState(launchingSiril);
+    settingUpSiril->setInitialState(checkingSiril);
 
     QState *runningLS = new QState();
     QState *settingEkosJob = new QState(runningLS);
@@ -104,6 +105,8 @@ void statemachine::createMachine()
     connect(m_kstarsinterface, &kstarsinterface::captureFilePath, m_sirilinterface, &sirilinterface::setWD); // Note odd one out passing working dir
 
     // Siril launch and configure
+    connect(checkingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::checkSiril);
+    checkingSiril->addTransition(m_sirilinterface, SIGNAL(sirilChecked()), launchingSiril);
     connect(launchingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::startSiril);
     launchingSiril->addTransition(m_sirilinterface, SIGNAL(sirilStarted()), connectingSiril);
     connect(connectingSiril, &QAbstractState::entered, m_sirilinterface, &sirilinterface::connectSiril);
@@ -124,6 +127,9 @@ void statemachine::createMachine()
     receivingStack->addTransition(m_kstarsinterface, SIGNAL(readyForNext()), runningEkosJob);
 
     // Connect error signals
+    connect(m_sirilinterface, &sirilinterface::sirilConnected, this, [this] () {
+        sirilRunning = true;
+    });
     connect(m_confChecker, &confChecker::errorMessage, this, &statemachine::handleError);
     connect(m_kstarsinterface, &kstarsinterface::errorMessage, this, &statemachine::handleError);
     connect(m_sirilinterface, &sirilinterface::errorMessage, this, &statemachine::handleError);
@@ -143,8 +149,9 @@ void statemachine::handleError(QString errorMessage)
 {
     m_logger->out(errorMessage);
     m_kstarsinterface->captureStopAndReset();
-    m_sirilinterface->sendSirilCommand("exit");
-
+    if (sirilRunning) {
+        m_sirilinterface->sendSirilCommand("exit");
+    }
     // Remove Siril temporary files
     QDir m_dir(m_sirilinterface->getWD());
     m_dir.setNameFilters(QStringList("live_stack_*.fit"));
@@ -155,7 +162,6 @@ void statemachine::handleError(QString errorMessage)
         }
     }
     QFile::remove(QString(m_sirilinterface->getWD()).append("%1%2").arg("/", "live_stack_.seq"));
-
     /* We give Siril a little time to exit gracefully and then
      * close the extension. Unable to monitor for Siril closure
      * as the message pipe is closed as part of its exit
