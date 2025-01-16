@@ -183,13 +183,13 @@ QString archiver::createArchiveName()
     QString hostName = QSysInfo::machineHostName();
     QString osVersion = QSysInfo::productVersion();
     QString architecture = QSysInfo::currentCpuArchitecture();
-    QString now = QDateTime::currentDateTime().toString("dd.MM.yyyy hh-mm-ss");
-    QString outputName = "KStars backup ";
+    QString now = QDateTime::currentDateTime().toString("dd.MM.yyyy_hh-mm-ss");
+    QString outputName = "KStars_backup_";
     if (kstars_version != "") {
-        outputName.append("V").append(kstars_version).append(" ");
+        outputName.append("V").append(kstars_version).append("_");
     }
-    outputName.append(hostName).append(" ").append(osVersion).append(" ")
-              .append(architecture).append(" ").append(now).append(".tar.gz");
+    outputName.append(hostName).append("_").append(osVersion).append("_")
+              .append(architecture).append("_").append(now).append(".tar.gz");
     return outputName;
 }
 
