@@ -25,6 +25,7 @@ public slots:
     void setFlatPath(QString path);
     void setRegistrationMode(QString mode);
 
+    void checkSiril();
     void startSiril();
     void connectSiril();
     void setSirilWD();
@@ -37,6 +38,7 @@ public slots:
 signals:
     void sirilClosed();
     void sirilFinished();
+    void sirilChecked();
     void sirilStarted();
     void sirilConnected();
     void sirilReady();

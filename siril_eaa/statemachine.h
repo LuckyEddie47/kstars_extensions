@@ -28,6 +28,7 @@ private:
     sirilinterface* m_sirilinterface;
 
     QString sirilPath = "";
+    bool sirilRunning = false;
 
     void createMachine();
     void handleError(QString errorMessage);

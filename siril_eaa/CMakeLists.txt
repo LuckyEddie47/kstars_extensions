@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS)
-#find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network StateMachine LinguistTools) - Qt6 moved StateMachine out of Core
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network LinguistTools)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network StateMachine LinguistTools) # - Qt6 moved StateMachine out of Core
+#find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network LinguistTools)
 
 #Pre Qt6.7 translation style
 set(TS_FILES
@@ -39,8 +39,8 @@ add_executable(Siril_EAA
 )
 
 target_link_libraries(Siril_EAA Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::DBus
-#    Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::StateMachine) - Qt6 moved StateMachine out of Core
-    Qt${QT_VERSION_MAJOR}::Network)
+    Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::StateMachine) # - Qt6 moved StateMachine out of Core
+#    Qt${QT_VERSION_MAJOR}::Network)
 
 include(GNUInstallDirs)
 install(TARGETS Siril_EAA

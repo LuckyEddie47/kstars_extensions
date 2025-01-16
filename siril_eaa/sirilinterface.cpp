@@ -45,20 +45,63 @@ void sirilinterface::setRegistrationMode(QString mode)
     registrationMode = mode;
 }
 
+// Check if Siril is already running in headless mode, if so issue exit command
+void sirilinterface::checkSiril()
+{
+    if (sirilPath != "") {
+        QProcess checkExistingSiril;
+        QString checkProg("bash");
+        QStringList checkArgs = QStringList() << "-c" << "ps -eo cmd | grep -i '[s]iril.*-p$'";
+        checkExistingSiril.setProcessChannelMode(QProcess::MergedChannels);
+
+        connect(&checkExistingSiril, &QProcess::readyReadStandardOutput, this, [&] () {
+            QString output = checkExistingSiril.readAllStandardOutput();
+            QStringList processes = output.split("\n", Qt::SkipEmptyParts);
+            if (processes.count() > 1) {
+                QProcess exitCmdProc;
+                QString exitCmd("bash");
+                QStringList exitCmdArgs = QStringList() << "-c" << "echo 'exit' > /tmp/siril_command.in";
+                exitCmdProc.start(exitCmd, exitCmdArgs);
+                exitCmdProc.waitForFinished(1000);
+            }
+        });
+
+        checkExistingSiril.start(checkProg, checkArgs);
+        checkExistingSiril.waitForFinished();
+
+        // Allow time for the exit command to be obeyed (if issued)
+        QTimer::singleShot(500, this, [this] () {
+            emit sirilChecked();
+        });
+    }
+}
+
 // Launch Siril
 void sirilinterface::startSiril()
 {
-    if (sirilPath != "") {
-        // Kill any existing running instances
-        QProcess killer;
-        QString killerProc("pkill");
-        QStringList killerArgs = QStringList() << "-f" << "/siril";
-        killer.start(killerProc, killerArgs);
-        killer.waitForReadyRead(1000);
-        killer.terminate();
-        killer.waitForFinished(1000);
-        killer.kill();
+    // Before attempting to start Siril, remove any existing command named pipes
+    QProcess checkPipes;
+    QString checkPipe("bash");
+    QStringList checkPipesArgs = QStringList() << "-c" << "ls /tmp/ | grep -i siril_command";
+    checkPipes.setProcessChannelMode(QProcess::MergedChannels);
 
+    connect(&checkPipes, &QProcess::readyReadStandardOutput, this, [&] () {
+        QString output = checkPipes.readAllStandardOutput();
+        QStringList pipes = output.split("\n", Qt::SkipEmptyParts);
+        QProcess pipesKiller;
+        QString pipeKill("rm");
+        foreach (QString pipe, pipes) {
+            QStringList pipeKillArgs = QStringList() << pipe;
+            pipesKiller.start(pipeKill, pipeKillArgs);
+            pipesKiller.waitForFinished();
+        }
+    });
+
+    checkPipes.start(checkPipe, checkPipesArgs);
+    checkPipes.waitForFinished();
+
+    // Now try starting Siril
+    if (sirilPath != "") {
         QString wd = sirilPath.left(sirilPath.lastIndexOf("/"));
         QStringList arguments;
         arguments << "-p";
@@ -127,6 +170,8 @@ void sirilinterface::connectSiril()
         QTimer::singleShot(1000, this, [this] {
             emit sirilConnected();
         });
+    } else {
+        emit errorMessage(tr("Failed to connect to Siril"));
     }
 }
 
@@ -200,13 +245,19 @@ void sirilinterface::readMessage()
 // Send command to Siril
 void sirilinterface::sendSirilCommand(QString command)
 {
-    QFile commandPipe(sirilCommands);
-    if (commandPipe.open(QIODevice::WriteOnly)) {
-        commandPipe.setTextModeEnabled(true);
-        QTextStream commandTS(&commandPipe);
-        commandTS << command << Qt::endl;
-        commandPipe.close();
-    }
+    // Timer is for Siril command rate limiting
+    QTimer::singleShot(100, this, [this, command] {
+        QFile commandPipe(sirilCommands);
+        if (commandPipe.open(QIODevice::WriteOnly)) {
+            commandPipe.setTextModeEnabled(true);
+            QTextStream commandTS(&commandPipe);
+            commandTS << command << Qt::endl;
+            commandPipe.close();
+
+            emit sirilMessage(QString("Sent siril command: %1").arg(command));  // Only for Debug
+        }
+    });
+
 }
 
 void sirilinterface::newImageFromKStars(const QString &filePath)
