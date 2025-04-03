@@ -39,3 +39,18 @@ The following describes additional points for developers of extensions.
 - All interaction with KStars/Ekos/INDI should be via the DBus interface. See the skeleton example. Useful tools for interrogating, monitoring and understanding DBus include D-Feet and Bustle
 
    It may appear on initial investigation that using the Qt DBus Adaptors system would be much easier than direct use of the Qt DBus Interfaces/Messages and KStars does provide the required xml definitions. However currently there is heavy use of custom types, the definitions of which are combined with other information in the KStars sources. This results in a large set of files from KStars that require inclusion within an extension in order to make use of the Qt DBus Adaptors. Hopefully this will be addressed in the future. 
+
+## Building these example extensions
+
+All my extensions use the Qt framework. To build these yourself you must have a working dev installation of Qt. All of these example extensions can be built with Qt 5.15.2 or 6.8.0 or later. You may have to comment/uncomment some of the Qt version specific options in the projects CMakeLists.txt - in particular the Qt Translation framework changed significantly.
+
+The easy way to build on a system with a GUI is to install Qt Creator, open the project CMakeLists.txt, configure the project and then use the Build button.
+To build from the cli...
+
+- change directory into the project directory, eg. ``cd /home/pi/Code/kstars_extensions/launcher``
+- make a build directory, eg. ``mkdir build``
+- change directory into your new build directory, eg. ``cd build``
+- call the desired Qt Cmake pointing to the source directory to configure the build, eg. ``/home/pi/Qt/6.8.0/gcc_arm64/bin/qt-cmake ../``
+- run the build pointing to the current directory, eg. ``make --build .``
+ 
+Either of these choices will build the binary file but not install it. You are required to copy this binary into the kstars/extension directory along with it's .conf file and option icon file. 
